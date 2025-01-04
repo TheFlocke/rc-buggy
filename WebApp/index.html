@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CRBK-RC-Car Remote</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name='viewport' content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no' />	
+	<meta name="msapplication-TileColor" content="#ffffff"/>
+	<meta name="msapplication-TileImage" content="icons/ms-icon-144x144.png"/>
+	<meta name="theme-color" content="#ffffff"/>
+
+	<script type="module" src="./main.js"></script>
+	
+	<link rel="stylesheet"type="text/css" href="styles.css"/>
+	<link rel= "stylesheet" href= "./fontawesome/css/fontawesome.css" />
+	<link href="./fontawesome/css/brands.css" rel="stylesheet" />
+	<link href="./fontawesome/css/solid.css" rel="stylesheet" />
+	<link rel="manifest" href="./manifest.json" />
+
+	
+	<link rel="apple-touch-icon" sizes="57x57" href="icons/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="icons/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="icons/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="icons/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="icons/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="icons/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="icons/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="icons/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192"  href="icons/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+</head>
+<body>
+  <div id="title">
+	<div style="display:flex; align-items: center;">
+        <div><img src="logo.png" style="height:3em"></img></div>
+        <div style="padding-left:0.5em;">
+            <div>CRBK RCCAR</div>
+            <div style="font-size:80%; text-align:right">v<span id="version">ersion</span></div>
+        </div>
+	</div>
+	<div id="switch1" style="display:flex; flex: 0 1; flex-direction: row; align-items:center">
+        <button style="" id="swLED1"><i class="fa-solid fa-lightbulb fa-2xl"></i>&nbsp;LED 1</button>
+	</div>
+	<div id="switch2" style="display:flex; flex: 0 1; flex-direction: row; align-items:center">
+        <button style="" id="swLED2"><i class="fa-solid fa-lightbulb fa-2xl"></i>&nbsp;LED2</button>
+	</div>
+	<div id="connectBle" style="display:flex; flex: 0 1; flex-direction: row; align-items:center">
+        <button style="" id="connectBleButton"><i class="fa-brands fa-bluetooth fa-2xl"></i></button>
+        <button style="" id="disconnectBleButton"><i class="fa-regular fa-rectangle-xmark fa-2xl"></i>&nbsp;<div id="connection">connection</div></button>
+        
+	</div>
+  </div>
+  <div id="main">
+      <div id="orientation_frame" class="stopped">
+        <div id="orientation_center"></div>
+        <div style="font-size: 80%; text-align:right; color:white; padding-right:1em"><span id="orientation_info">orientation</span></div>
+        <div style="font-size: 80%; text-align:right; color:white; padding-right:1em"><span id="orientation_info_device">device info</span></div>
+      </div>
+      
+      <div id="controller">
+        <div>
+            <button id="buttonLeft" style="height:100%" >Links</button>
+        </div>
+        <div style="display: flex; flex-direction: column">
+            <button id="buttonSpeedUp">Schneller</button>
+            <button id="buttonSpeedStop">Stopp</button>
+            <button id="buttonSpeedDown">Langsamer</button>
+        </div>
+        <div>
+            <button id="buttonRight" style="height:100%">Rechts</button>
+        </div>
+      </div>
+      <div id="status">
+          <div id="status_static">
+            <table>
+              <tr><td><i class="fa-solid fa-arrow-right"></i>&nbsp;<i class="fa-solid fa-car-side"></i></td><td id="sent_timestamp">-</td><td id="valueSent">-</td></tr>
+              <tr><td><i class="fa-solid fa-car-side"></i>&nbsp;<i class="fa-solid fa-arrow-right"></i></td><td id="retrieved_timestamp">-</td><td id="retrievedValue">-</td></tr>
+            </table>
+              <p><span class="info" id="info"></span></p>
+              <p><span class="info" id="version"></span></p>
+              <p><span class="info" id="update"></span></p>
+              <p><span id="errors" class="error"></span></p>
+          </div>
+          <div id="status_scroll">
+              <p><span id="bleState" class="error"></span></p>
+              <p><span id="bleService" class="error"></span></p>
+              <p><span id="bleCharCmd" class="error"></span></p>
+              <p><span id="bleCharState" class="error"></span></p>
+              <p><span id="bleServiceList" class="info"></span></p>
+          </div>
+      </div>
+  </div>
+  
+</body>
+
+</html>
