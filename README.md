@@ -1,4 +1,6 @@
-# rc-car
+# RC-Buggy
+// muss alles noch angepasst werden
+
 Easy to use RC-Car Lösung
 
 Ziele dieses Projekts ist die Umsetzung eines vollständig ferngesteuerten Autos mit möglichst geringem Aufwand insbesondere in Bezug auf die Energieversorgung und Fernsteuerung.
