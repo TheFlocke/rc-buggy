@@ -1,0 +1,25 @@
+{
+  "packageId": "info.abitur-am-berufskolleg.apps/rccar",
+  "host": "apps.abitur-am-berufskolleg.info",
+  "name": "crbk | RC-Car",
+  "launcherName": "RC-Car",
+  "themeColor": "#d35c52ff",
+  "navigationColor": "#000000",
+  "backgroundColor": "#c23b33ff",
+  "enableNotifications": false,
+  "startUrl": ".",
+  "iconUrl": "https://apps.abitur-am-berufskolleg.info/rccar/icons-512.png",
+  "maskableIconUrl": "https://apps.abitur-am-berufskolleg.info/rccar/icons-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "alias": "android",
+    "path": "./android/keystore"
+  },
+  "appVersionName": 1.0,
+  "appVersionCode": 3,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://apps.abitur-am-berufskolleg.info/rccarc/manifest.json",
+  "fallbackType": "customtabs",
+  "appVersion": 1.1
+}
