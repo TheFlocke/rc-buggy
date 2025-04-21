@@ -1,5 +1,5 @@
 #include <crbk_ble.h>
-
+#include "TMC2209.h"
 #include "crbk_servo.h"
 
 const int ACT_LED = 8; // Activitiy LED for the Sensor PCB
@@ -26,31 +26,20 @@ const int GPIO_38 = 38;
 const int GPIO_47 = 47;
 const int GPIO_48 = 48;
 
-CRBKServo servo(D6); 
 
-const int LED1=D0;
-const int LED2=D9; // LOW Active
+TMC2209 stepper_driver_left;
+const TMC2209::SerialAddress SERIAL_ADDRESS_left = TMC2209::SERIAL_ADDRESS_left; // defining Serial address assigned by the library as a constant
+TMC2209 stepper_driver_right;
+const TMC2209::SerialAddress SERIAL_ADDRESS_right = TMC2209::SERIAL_ADDRESS_right; // defining Serial address assigned by the library as a constant
+const uint8_t REPLY_DELAY = 4;
+const long SERIAL_BAUD_RATE = 115200;
+
 
 void setup() {
-  pinMode(MOTOR1A, OUTPUT);
-  pinMode(MOTOR1B, OUTPUT);
-  pinMode(MOTOR2A, OUTPUT);
-  pinMode(MOTOR2B, OUTPUT);
-
-  pinMode(MOTOR3A, OUTPUT);
-  pinMode(MOTOR3B, OUTPUT);
-  pinMode(MOTOR4A, OUTPUT);
-  pinMode(MOTOR4B, OUTPUT);
-
-  pinMode(LED1, OUTPUT);
-  pinMode(LED2, OUTPUT);
-
-  digitalWrite(LED1, LOW);
-  digitalWrite(LED2, HIGH);
-
-  crbkRCCarBLE.setup("CRBK-RCCAR-6");
-
-  servo.set(0);
+  stepper_driver_left.setup(Serial1,SERIAL_BAUD_RATE,SERIAL_ADDRESS_left,UART_RX,UART_TX);
+  stepper_driver_left.setReplyDelay(REPLY_DELAY);
+  stepper_driver_right.setup(Serial1,SERIAL_BAUD_RATE,SERIAL_ADDRESS_right,UART_RX,UART_TX);
+  stepper_driver_right.setReplyDelay(REPLY_DELAY);
 }
 
 void loop() { 
@@ -66,71 +55,4 @@ void loop() {
     // reduziere Geschwindigkeit nach rechts
     right -= right*(direction/90.0);
   }
-  if(speed>0) {
-    // forward
-    pinMode(MOTOR1B, OUTPUT);
-    pinMode(MOTOR2B, OUTPUT);
-
-    pinMode(MOTOR3B, OUTPUT);
-    pinMode(MOTOR4B, OUTPUT);
-
-    analogWrite(MOTOR1A, left);
-    digitalWrite(MOTOR1B, LOW);
-
-    analogWrite(MOTOR2A, right);
-    digitalWrite(MOTOR2B, LOW);
-
-    analogWrite(MOTOR3A, left);
-    digitalWrite(MOTOR3B, LOW);
-
-    analogWrite(MOTOR4A, right);
-    digitalWrite(MOTOR4B, LOW);
-  } else if(speed<0) {
-    // backward
-    pinMode(MOTOR1A, OUTPUT);
-    pinMode(MOTOR2A, OUTPUT);
-
-    pinMode(MOTOR3A, OUTPUT);
-    pinMode(MOTOR4A, OUTPUT);
-
-    analogWrite(MOTOR1B, left);
-    digitalWrite(MOTOR1A, LOW);
-
-    analogWrite(MOTOR2B, right);
-    digitalWrite(MOTOR2A, LOW);
-
-    analogWrite(MOTOR3B, left);
-    digitalWrite(MOTOR3A, LOW);
-
-    analogWrite(MOTOR4B, right);
-    digitalWrite(MOTOR4A, LOW);
-  } else {
-    // stopp
-    pinMode(MOTOR1A, OUTPUT);
-    pinMode(MOTOR1B, OUTPUT);
-    pinMode(MOTOR2A, OUTPUT);
-    pinMode(MOTOR2B, OUTPUT);
-
-    pinMode(MOTOR3A, OUTPUT);
-    pinMode(MOTOR3B, OUTPUT);
-    pinMode(MOTOR4A, OUTPUT);
-    pinMode(MOTOR4B, OUTPUT);
-
-    digitalWrite(MOTOR1A, LOW);
-    digitalWrite(MOTOR1B, LOW);
-
-    digitalWrite(MOTOR2A, LOW);
-    digitalWrite(MOTOR2B, LOW);
-
-    digitalWrite(MOTOR3A, LOW);
-    digitalWrite(MOTOR3B, LOW);
-
-    digitalWrite(MOTOR4A, LOW);
-    digitalWrite(MOTOR4B, LOW);
-  }
-
-  digitalWrite(LED1, crbkRCCarBLE.getLED1() ? HIGH : LOW);
-  digitalWrite(LED2, crbkRCCarBLE.getLED2() ? LOW : HIGH);
-
-  servo.set(crbkRCCarBLE.getDirection());
 }
