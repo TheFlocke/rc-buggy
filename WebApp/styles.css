@@ -200,3 +200,10 @@ h1 {
 .off { 
     color: rgb(194, 59, 51); 
 }
+
+input[type=range][orient=vertical] {
+    writing-mode: vertical-lr;
+    direction: rtl;
+    appearance: slider-vertical;
+    vertical-align: bottom;
+}

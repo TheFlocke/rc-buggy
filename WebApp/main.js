@@ -111,6 +111,18 @@ window.onload = () => {
 }
 
 
+window.handleSpeedInput = function(event) {
+	const speed = event.target.value;
+	console.log("Current speed:", speed);
+	writeCmd(`0:${speed}`)
+};
+
+window.handleSpeedRelease = function(event) {
+	event.target.value = 0;  // Snap back to 0
+	console.log("Speed reset to 0");
+	writeCmd('stop')
+};
+
 function toggleLED1() {
     led1=!led1;
 	if(led1) {
@@ -292,12 +304,18 @@ async function connectToDevice(){
 		disconnectButton.style.display = "block";
 		connectButton.style.display = "none";
 
+		document.getElementById('status').style.display = "block";
+
+
+
 	} catch(error) {
 		errorMessageContainer.innerHTML = error;
 	}
 }
 
 function onDisconnected(event){
+	document.getElementById('status').style.display = "none";
+
 	disconnectButton.style.display = "none";
 	connectButton.style.display = "block";
 	
