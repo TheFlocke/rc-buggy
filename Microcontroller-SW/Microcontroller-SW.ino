@@ -2,15 +2,29 @@
 
 #include "crbk_servo.h"
 
-const int MOTOR1A=D1;
-const int MOTOR1B=D2;
-const int MOTOR2A=D3;
-const int MOTOR2B=D4;
-
-const int MOTOR3A=D7;
-const int MOTOR3B=D8;
-const int MOTOR4A=D5;
-const int MOTOR4B=D10;
+const int ACT_LED = 8; // Activitiy LED for the Sensor PCB
+const int SD_CSB = 9;
+const int BME680_CSB = 10;
+const int SPI_SDI = 11;
+const int SPI_SCK = 12;
+const int SPI_SDO = 13;
+const int I2C_SDA = 14;
+const int I2C_SCL = 15;
+const int PD_INT = 16;
+// GPIO Ports used to control the TMC2209
+const int UART_TX = 1;
+const int UART_RX = 2;
+const int STEP1_DIR = 4;
+const int STEP2_DIR  = 5;
+const int STEP1_STEP = 6;
+const int STEP2_STEP = 7;
+// GPIO Ports that are not reserved by any devices
+const int GPIO_17 = 17;
+const int GPIO_18 = 18;
+const int GPIO_21 = 21;
+const int GPIO_38 = 38;
+const int GPIO_47 = 47;
+const int GPIO_48 = 48;
 
 CRBKServo servo(D6); 
 
