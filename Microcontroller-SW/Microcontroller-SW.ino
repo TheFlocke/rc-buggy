@@ -26,7 +26,8 @@ const int GPIO_38 = 38;
 const int GPIO_47 = 47;
 const int GPIO_48 = 48;
 
-
+// initializing motorrdriver(s)
+// Important: For NEMA 17 motors, the current is in general in the range of 0.5A to 0.8A RMS, which is a reference voltage (Vref) of 0.7V to 1.1V.
 TMC2209 stepper_driver_left;
 const TMC2209::SerialAddress SERIAL_ADDRESS_left = TMC2209::SERIAL_ADDRESS_left; // defining Serial address assigned by the library as a constant
 TMC2209 stepper_driver_right;
@@ -36,10 +37,16 @@ const long SERIAL_BAUD_RATE = 115200;
 
 
 void setup() {
+// setting up serial connection for communication with motordriver(s)
   stepper_driver_left.setup(Serial1,SERIAL_BAUD_RATE,SERIAL_ADDRESS_left,UART_RX,UART_TX);
   stepper_driver_left.setReplyDelay(REPLY_DELAY);
   stepper_driver_right.setup(Serial1,SERIAL_BAUD_RATE,SERIAL_ADDRESS_right,UART_RX,UART_TX);
   stepper_driver_right.setReplyDelay(REPLY_DELAY);
+// Setting pinMode for for motor-control
+  pinMode(STEP1_DIR, OUTPUT);
+  pinMode(STEP2_DIR, OUTPUT);
+  pinMode(STEP1_STEP, OUTPUT);
+  pinMode(STEP2_STEP, OUTPUT);
 }
 
 void loop() { 
