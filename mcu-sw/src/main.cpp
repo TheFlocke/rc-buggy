@@ -1,7 +1,6 @@
 #include <Arduino.h>
-#include <crbk_ble.h>
+#include <../lib/crbk_ble.h>
 #include <TMC2209.h>
-#include <crbk_servo.h>
 
 const int ACT_LED = 8; // Activitiy LED for the Sensor PCB
 const int SD_CSB = 9;
@@ -30,9 +29,9 @@ const int GPIO_48 = 48;
 // initializing motorrdriver(s)
 // Important: For NEMA 17 motors, the current is in general in the range of 0.5A to 0.8A RMS, which is a reference voltage (Vref) of 0.7V to 1.1V.
 TMC2209 stepper_driver_left;
-const TMC2209::SerialAddress SERIAL_ADDRESS_left = TMC2209::SERIAL_ADDRESS_left; // defining Serial address assigned by the library as a constant
+const TMC2209::SerialAddress SERIAL_ADDRESS_left = TMC2209::SERIAL_ADDRESS_0; // defining Serial address assigned by the library as a constant
 TMC2209 stepper_driver_right;
-const TMC2209::SerialAddress SERIAL_ADDRESS_right = TMC2209::SERIAL_ADDRESS_right; // defining Serial address assigned by the library as a constant
+const TMC2209::SerialAddress SERIAL_ADDRESS_right = TMC2209::SERIAL_ADDRESS_1; // defining Serial address assigned by the library as a constant
 const uint8_t REPLY_DELAY = 4;
 const long SERIAL_BAUD_RATE = 115200;
 
