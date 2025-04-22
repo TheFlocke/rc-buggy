@@ -2,7 +2,7 @@
 // Created by Philipp Winterberg on 22.04.25.
 //
 #include "Arduino.h"
-#include "crbk_servo.h"
+#include "../lib/crbk_servo.h"
 
 #define RESOLUTION 8 // in bit
 #define FREQUENCY 50  // in Hz

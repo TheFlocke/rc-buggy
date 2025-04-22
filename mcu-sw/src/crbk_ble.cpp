@@ -8,7 +8,7 @@
 #include <BLEUtils.h>
 #include <BLE2904.h>
 #include <BLE2902.h>
-#include <BLE2901.h>
+#include <WString.h>
 
 CrbkRCCarBLE crbkRCCarBLE;
 
