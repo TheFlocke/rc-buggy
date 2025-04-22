@@ -1,4 +1,8 @@
-#include <crbk_ble.h>
+//
+// Created by Philipp Winterberg on 22.04.25.
+//
+
+#include "../lib/crbk_ble.h"
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
@@ -10,12 +14,12 @@ CrbkRCCarBLE crbkRCCarBLE;
 
 class CmdCallbacks : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *pCharacteristic) {
-      crbkRCCarBLE.setCmd(pCharacteristic->getValue());    
+      crbkRCCarBLE.setCmd(pCharacteristic->getValue());
   }
 };
 
 class StateCallbacks : public BLECharacteristicCallbacks {
-  void onRead(BLECharacteristic *pCharacteristic) {    
+  void onRead(BLECharacteristic *pCharacteristic) {
     pCharacteristic->setValue(crbkRCCarBLE.getCmd());
     pCharacteristic->notify();
   }
@@ -31,8 +35,8 @@ class ServerCallbacks : public BLEServerCallbacks {
   }
 };
 
-String CrbkRCCarBLE::getCmd() const { 
-  return "Speed: "+String(_speed)+", Direction: "+String(_direction)+"("+String(getDriveMode())+")"; 
+String CrbkRCCarBLE::getCmd() const {
+  return "Speed: "+String(_speed)+", Direction: "+String(_direction)+"("+String(getDriveMode())+")";
 }
 
 void CrbkRCCarBLE::setCmd(String value) {
@@ -43,8 +47,8 @@ void CrbkRCCarBLE::setCmd(String value) {
   if(t>0 && t < value.length() ) {
     _direction = value.substring(0,t).toInt();
     _speed = value.substring(t+1,value.length()).toInt();
-    
-    
+
+
     if(_speed>255) _speed=255;
     if(_speed<-255) _speed=-255;
     if(_direction>90) _direction=90;
@@ -85,10 +89,10 @@ void CrbkRCCarBLE::setCmd(String value) {
   }
 }
 
-int CrbkRCCarBLE::getDriveMode() const { 
+int CrbkRCCarBLE::getDriveMode() const {
   if(_speed==0)
     return STOPPED;
-    
+
   if(_speed > 0) {
     if(_direction<0) return LEFTFORWARD;
     else if(_direction>0) return RIGHTFORWARD;
@@ -161,7 +165,7 @@ void CrbkRCCarBLE::setup(String name) {
     descriptor_2904->setFormat(BLE2904::FORMAT_UTF8);
     _pStateCharacteristic->addDescriptor(descriptor_2904);
   }
-  
+
   // Start the service
   pService->start();
 
@@ -187,3 +191,4 @@ void CrbkRCCarBLE::handle() {
     _lastConnectionState = _connected;
   }
 }
+

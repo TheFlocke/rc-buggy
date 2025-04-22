@@ -5,15 +5,15 @@
 
 class CRBKServo
 {
-    public:
-        CRBKServo(int pin);
+public:
+    CRBKServo(int pin);
 
-    public:
-        void up();
-        void down();
-        void set(int angle);
-    private:
-        int _pin;
+public:
+    void up();
+    void down();
+    void set(int angle);
+private:
+    int _pin;
 
 };
 

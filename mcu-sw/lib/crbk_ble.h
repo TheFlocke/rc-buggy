@@ -13,24 +13,24 @@
 
 class CrbkRCCarBLE {
 
-  String _name;
-  bool   _connected = false;
-  bool   _lastConnectionState = false;
-  int    _speed=0;
-  int    _direction=0;
-  bool   _led1=false;
-  bool   _led2=false;
-  
-  BLEServer *_pServer = NULL;
-  BLECharacteristic *_pStateCharacteristic = NULL;
+    String _name;
+    bool   _connected = false;
+    bool   _lastConnectionState = false;
+    int    _speed=0;
+    int    _direction=0;
+    bool   _led1=false;
+    bool   _led2=false;
 
-  public:
+    BLEServer *_pServer = NULL;
+    BLECharacteristic *_pStateCharacteristic = NULL;
+
+public:
     void setup(String name);
     void handle();
 
     void onConnect();
     void onDisconnect();
-    
+
     void setCmd(String value);
     String getCmd() const;
 
@@ -44,14 +44,14 @@ class CrbkRCCarBLE {
 
     int getDriveMode() const;
     enum {
-      STOPPED,
-      FORWARD,
-      LEFTFORWARD,
-      RIGHTFORWARD,
-      BACKWARD,
-      LEFTBACKWARD,
-      RIGHTBACKWARD
-    };
+        STOPPED,
+        FORWARD,
+        LEFTFORWARD,
+        RIGHTFORWARD,
+        BACKWARD,
+        LEFTBACKWARD,
+        RIGHTBACKWARD
+      };
 };
 
 extern CrbkRCCarBLE crbkRCCarBLE;
