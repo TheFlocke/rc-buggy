@@ -62,4 +62,30 @@ void loop() {
     // reduziere Geschwindigkeit nach rechts
     right -= right*(direction/90.0);
   }
+if(speed>0) {
+  // forward
+
+  analogWrite(STEP1_STEP, left);
+  digitalWrite(STEP1_DIR, LOW);
+
+  analogWrite(STEP2_STEP, right);
+  digitalWrite(STEP2_DIR, LOW);
+
+} else if(speed<0) {
+  // backward
+
+  analogWrite(STEP1_STEP, left);
+  digitalWrite(STEP1_DIR, HIGH);
+
+  analogWrite(STEP2_STEP, right);
+  digitalWrite(STEP2_DIR, HIGH);
+
+} else {
+  // stop (so they aren't left floating)
+  digitalWrite(STEP1_STEP, LOW);
+  digitalWrite(STEP1_DIR, LOW);
+
+  digitalWrite(STEP2_STEP, LOW);
+  digitalWrite(STEP2_DIR, LOW);
+}
 }
