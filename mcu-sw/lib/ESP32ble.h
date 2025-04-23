@@ -10,11 +10,18 @@
 
 
 class ESP32ble {
+    // everything for BLE connection
     String _name;
     bool _connected = false;
     bool _lastConnectionState = false;
+    // everything for the movement of the rover
     int _speed = 0;
     int _direction = 0;
+    // everything for the movement of the arm
+    int _arm1 = 0;
+    int _arm2 = 0;
+    int _arm3 = 0;
+    int _arm4 = 0;
 
     BLEServer *_pServer = nullptr;
     BLECharacteristic *_pCmdStateCharacteristic = nullptr;
@@ -52,6 +59,10 @@ public:
         LEFTBACKWARD,
         RIGHTBACKWARD
     };
+
+    String getARM() const;
+
+    void setARM(String value);
 };
 
 extern ESP32ble esp32ble;

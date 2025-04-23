@@ -86,6 +86,38 @@ int ESP32ble::getDriveMode() const {
     }
 }
 
+String ESP32ble::getARM() const {
+    return "Servo_1: " + String(_arm1) + ", Servo_2: " + String(_arm2) + ", Servo_3: " + String(_arm3) + ", Gripper: " + String(_arm4);
+}
+
+void ESP32ble::setARM(String value) {
+    String cmd = value;
+
+    // prüfen auf kombinierte anweisung: // `${arm1}:${arm2}:${arm3}:${arm4}`
+    int t1 = value.indexOf(":");
+    int t2 = value.indexOf(":", t1 + 1);
+    int t3 = value.indexOf(":", t2 + 1);
+    if (t1 > 0 && t3 < value.length()) {
+
+        _arm1 = value.substring(0, t1).toInt();
+        _arm2 = value.substring(t1 + 1, t2).toInt();
+        _arm3 = value.substring(t2 + 1, t3).toInt();
+        _arm4 = value.substring(t3 + 1).toInt();
+
+        // Frontend schickt zu große Werte ==> werden von dem Backend korrigiert
+        if (_arm1 > 255) _arm1 = 255;
+        if (_arm1 < 0) _arm1 = 0;
+        if (_arm2 > 255) _arm2 = 255;
+        if (_arm2 < 0) _arm2 = 0;
+        if (_arm3 > 255) _arm3 = 255;
+        if (_arm3 < 0) _arm3 = 0;
+        if (_arm4 > 255) _arm4 = 255;
+        if (_arm4 < 0) _arm4 = 0;
+    }
+
+    // sonst soll er die Values so lassen ==> daher nichts hingeschrieben
+}
+
 void ESP32ble::onConnect() {
     _connected = true;
 }
