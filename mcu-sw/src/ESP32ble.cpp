@@ -105,14 +105,14 @@ void ESP32ble::setARM(String value) {
         _arm4 = value.substring(t3 + 1).toInt();
 
         // Frontend schickt zu große Werte ==> werden von dem Backend korrigiert
-        if (_arm1 > 255) _arm1 = 255;
-        if (_arm1 < 0) _arm1 = 0;
-        if (_arm2 > 255) _arm2 = 255;
-        if (_arm2 < 0) _arm2 = 0;
-        if (_arm3 > 255) _arm3 = 255;
+        if (_arm1 > 180) _arm1 = 180;
+        if (_arm1 < 12) _arm1 = 12;
+        if (_arm2 > 180) _arm2 = 180;
+        if (_arm2 < 12) _arm2 = 12;
+        if (_arm3 > 180) _arm3 = 180;
         if (_arm3 < 0) _arm3 = 0;
-        if (_arm4 > 255) _arm4 = 255;
-        if (_arm4 < 0) _arm4 = 0;
+        if (_arm4 > 180) _arm4 = 180;
+        if (_arm4 < 90) _arm4 = 90;
     }
 
     // sonst soll er die Values so lassen ==> daher nichts hingeschrieben
