@@ -166,7 +166,7 @@ void ESP32ble::setup(String name) {
     // Create a BLE ARM_STATE Characteristic
     _pStateArmCharacteristic = pService->createCharacteristic(
         CHARACTERISTIC_STATE_ARM,
-         NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+        NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     _pStateArmCharacteristic->setCallbacks(new StateCallbacks()); {
         // Creates BLE Descriptor 0x2902: Client Characteristic Configuration Descriptor (CCCD)
