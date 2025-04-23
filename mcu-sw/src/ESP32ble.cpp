@@ -65,9 +65,9 @@ void ESP32ble::setCmd(String value) {
         }
     }
 
-    if (_pStateCharacteristic) {
-        _pStateCharacteristic->setValue(getCmd());
-        _pStateCharacteristic->notify();
+    if (_pCmdStateCharacteristic) {
+        _pCmdStateCharacteristic->setValue(getCmd());
+        _pCmdStateCharacteristic->notify();
     }
 }
 
@@ -121,23 +121,23 @@ void ESP32ble::setup(String name) {
         pCmdCharacteristic->addDescriptor(descriptor_2904);
     }
 
-    // Create a BLE State Characteristic
-    _pStateCharacteristic = pService->createCharacteristic(
-        CHARACTERISTIC_STATE,
-        NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+    // Create a BLE STATE_CMD Characteristic
+    _pCmdStateCharacteristic = pService->createCharacteristic(
+        CHARACTERISTIC_STATE_ARM,
+        NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pStateCharacteristic->setCallbacks(new StateCallbacks()); {
+    _pCmdStateCharacteristic->setCallbacks(new StateCallbacks()); {
         // Creates BLE Descriptor 0x2902: Client Characteristic Configuration Descriptor (CCCD)
-        _pStateCharacteristic->addDescriptor(new BLE2904());
+        _pCmdStateCharacteristic->addDescriptor(new BLE2904());
         // Adds also the Characteristic Type Description - 0x2904 descriptor
         BLE2904 *descriptor_2904 = new BLE2904();
         descriptor_2904->setFormat(BLE2904::FORMAT_UTF8);
-        _pStateCharacteristic->addDescriptor(descriptor_2904);
+        _pCmdStateCharacteristic->addDescriptor(descriptor_2904);
     }
 
     // Create a BLE SENSOR Characteristic
     _pSensorCharacteristic = pService->createCharacteristic(
-        CHARACTERISTIC_STATE,
+        CHARACTERISTIC_SENSOR,
         NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     _pSensorCharacteristic->setCallbacks(new StateCallbacks()); {
@@ -161,6 +161,20 @@ void ESP32ble::setup(String name) {
         BLE2904 *descriptor_2904 = new BLE2904();
         descriptor_2904->setFormat(BLE2904::FORMAT_UTF8);
         _pArmCharacteristic->addDescriptor(descriptor_2904);
+    }
+
+    // Create a BLE ARM_STATE Characteristic
+    _pStateArmCharacteristic = pService->createCharacteristic(
+        CHARACTERISTIC_STATE_ARM,
+         NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+    );
+    _pStateArmCharacteristic->setCallbacks(new StateCallbacks()); {
+        // Creates BLE Descriptor 0x2902: Client Characteristic Configuration Descriptor (CCCD)
+        _pStateArmCharacteristic->addDescriptor(new BLE2904());
+        // Adds also the Characteristic Type Description - 0x2904 descriptor
+        BLE2904 *descriptor_2904 = new BLE2904();
+        descriptor_2904->setFormat(BLE2904::FORMAT_UTF8);
+        _pStateArmCharacteristic->addDescriptor(descriptor_2904);
     }
 
     // Start the service
