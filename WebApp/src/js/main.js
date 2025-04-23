@@ -98,7 +98,7 @@ window.onload = () => {
 	}
 
 	// Connect Button (search for BLE Devices only if BLE is available)
-	connectButton.addEventListener('click', (event) => {
+	connectButton.addEventListener('click', () => {
 		if (navigator.bluetooth){
 			connectToDevice();
 		}
@@ -109,19 +109,6 @@ window.onload = () => {
 	
 	window.addEventListener("deviceorientation", handleOrientation, true);
 }
-
-
-window.handleSpeedInput = function(event) {
-	const speed = event.target.value;
-	console.log("Current speed:", speed);
-	writeCmd(`0:${speed}`)
-};
-
-window.handleSpeedRelease = function(event) {
-	event.target.value = 0;  // Snap back to 0
-	console.log("Speed reset to 0");
-	writeCmd('stop')
-};
 
 function toggleLED1() {
     led1=!led1;
@@ -214,7 +201,7 @@ function handleOrientation(event) {
 async function registerServiceWorker() { 
 	try {
 		if ('serviceWorker' in navigator) {
-			let registration = await navigator.serviceWorker.register('./sw.js');
+			let registration = await navigator.serviceWorker.register('./src/js/sw.js');
             registration.onupdatefound = () => {
 					const installingWorker = registration.installing;
 					installingWorker.onstatechange = () => {
