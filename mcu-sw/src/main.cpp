@@ -21,12 +21,12 @@ const int STEP2_DIR  = 5;
 const int STEP1_STEP = 6;
 const int STEP2_STEP = 7;
 // GPIO Ports that are not reserved by any devices
-const int GPIO_17 = 17;
-const int GPIO_18 = 18;
-const int GPIO_21 = 21;
-const int GPIO_38 = 38;
-const int GPIO_47 = 47;
-const int GPIO_48 = 48;
+[[maybe_unused]] const int GPIO_17 = 17;
+[[maybe_unused]] const int GPIO_18 = 18;
+[[maybe_unused]] const int GPIO_21 = 21;
+[[maybe_unused]] const int GPIO_38 = 38;
+[[maybe_unused]] const int GPIO_47 = 47;
+[[maybe_unused]] const int GPIO_48 = 48;
 
 // initializing motorrdriver(s)
 // Important: For NEMA 17 motors, the current is in general in the range of 0.5A to 0.8A RMS, which is a reference voltage (Vref) of 0.7V to 1.1V.
@@ -52,6 +52,39 @@ void setup() {
 }
 
 void loop() {
+crbkRCCarBLE.handle();
+  int speed = crbkRCCarBLE.getSpeed();
+  int left  = abs(speed);
+  int right = abs(speed);
+  int direction = crbkRCCarBLE.getDirection();
+  if(direction<0) {
+    // reduziere Geschwindigkeit nach links
+    left -= left*(-direction/90.0);
+  } else if(direction>0) {
+    // reduziere Geschwindigkeit nach rechts
+    right -= right*(direction/90.0);
+  }
+  if(speed>0) {
+    // forward
+    analogWrite(STEP1_STEP, left);
+    digitalWrite(STEP1_DIR, LOW);
 
+    analogWrite(STEP2_STEP, right);
+    digitalWrite(STEP2_DIR, LOW);
+  } else if(speed<0) {
+    // backward
+    analogWrite(STEP1_STEP, left);
+    digitalWrite(STEP1_DIR, HIGH);
+
+    analogWrite(STEP2_STEP, right);
+    digitalWrite(STEP2_DIR, HIGH);
+  } else {
+    // stop (so they aren't left floating)
+    digitalWrite(STEP1_STEP, LOW);
+    digitalWrite(STEP1_DIR, LOW);
+
+    digitalWrite(STEP2_STEP, LOW);
+    digitalWrite(STEP2_DIR, LOW);
+  }
 }
 */
