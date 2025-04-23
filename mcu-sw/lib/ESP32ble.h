@@ -65,9 +65,9 @@ public:
         RIGHTBACKWARD
     };
 
-    String getARM() const;
+    String getArm() const;
 
-    void setARM(String value);
+    void setArm(String value);
 
     String getSensor() const;
 };

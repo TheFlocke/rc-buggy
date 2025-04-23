@@ -9,9 +9,29 @@ class CmdCallbacks : public BLECharacteristicCallbacks {
     }
 };
 
-class StateCallbacks : public BLECharacteristicCallbacks {
+class StateCmdCallbacks : public BLECharacteristicCallbacks {
     void onRead(BLECharacteristic *pCharacteristic) {
         pCharacteristic->setValue(esp32ble.getCmd());
+        pCharacteristic->notify();
+    }
+};
+
+class ArmCallbacks : public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *pCharacteristic) {
+        esp32ble.setArm(pCharacteristic->getValue());
+    }
+};
+
+class StateArmCallbacks : public BLECharacteristicCallbacks {
+    void onRead(BLECharacteristic *pCharacteristic) {
+        pCharacteristic->setValue(esp32ble.getArm());
+        pCharacteristic->notify();
+    }
+};
+
+class SensorCallbacks : public BLECharacteristicCallbacks {
+    void onRead(BLECharacteristic *pCharacteristic) {
+        pCharacteristic->setValue(esp32ble.getSensor());
         pCharacteristic->notify();
     }
 };
@@ -86,11 +106,11 @@ int ESP32ble::getDriveMode() const {
     }
 }
 
-String ESP32ble::getARM() const {
+String ESP32ble::getArm() const {
     return "Servo_1: " + String(_arm1) + ", Servo_2: " + String(_arm2) + ", Servo_3: " + String(_arm3) + ", Gripper: " + String(_arm4);
 }
 
-void ESP32ble::setARM(String value) {
+void ESP32ble::setArm(String value) {
     String cmd = value;
 
     // prüfen auf kombinierte anweisung: // `${arm1}:${arm2}:${arm3}:${arm4}`
@@ -162,7 +182,7 @@ void ESP32ble::setup(String name) {
         CHARACTERISTIC_STATE_ARM,
         NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCmdStateCharacteristic->setCallbacks(new StateCallbacks()); {
+    _pCmdStateCharacteristic->setCallbacks(new StateCmdCallbacks()); {
         // Creates BLE Descriptor 0x2902: Client Characteristic Configuration Descriptor (CCCD)
         _pCmdStateCharacteristic->addDescriptor(new BLE2904());
         // Adds also the Characteristic Type Description - 0x2904 descriptor
@@ -176,7 +196,7 @@ void ESP32ble::setup(String name) {
         CHARACTERISTIC_SENSOR,
         NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pSensorCharacteristic->setCallbacks(new StateCallbacks()); {
+    _pSensorCharacteristic->setCallbacks(new SensorCallbacks()); {
         // Creates BLE Descriptor 0x2902: Client Characteristic Configuration Descriptor (CCCD)
         _pSensorCharacteristic->addDescriptor(new BLE2904());
         // Adds also the Characteristic Type Description - 0x2904 descriptor
@@ -190,7 +210,7 @@ void ESP32ble::setup(String name) {
         CHARACTERISTIC_ARM,
         NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pArmCharacteristic->setCallbacks(new StateCallbacks()); {
+    _pArmCharacteristic->setCallbacks(new ArmCallbacks()); {
         // Creates BLE Descriptor 0x2902: Client Characteristic Configuration Descriptor (CCCD)
         _pArmCharacteristic->addDescriptor(new BLE2904());
         // Adds also the Characteristic Type Description - 0x2904 descriptor
@@ -204,7 +224,7 @@ void ESP32ble::setup(String name) {
         CHARACTERISTIC_STATE_ARM,
         NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pStateArmCharacteristic->setCallbacks(new StateCallbacks()); {
+    _pStateArmCharacteristic->setCallbacks(new StateArmCallbacks()); {
         // Creates BLE Descriptor 0x2902: Client Characteristic Configuration Descriptor (CCCD)
         _pStateArmCharacteristic->addDescriptor(new BLE2904());
         // Adds also the Characteristic Type Description - 0x2904 descriptor
