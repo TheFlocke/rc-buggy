@@ -179,7 +179,7 @@ void ESP32ble::setup(String name) {
 
     // Create a BLE STATE_CMD Characteristic
     _pCmdStateCharacteristic = pService->createCharacteristic(
-        CHARACTERISTIC_STATE_ARM,
+        CHARACTERISTIC_STATE_CMD,
         NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     _pCmdStateCharacteristic->setCallbacks(new StateCmdCallbacks()); {
