@@ -10,3 +10,97 @@ window.handleSpeedRelease = function() {
     event.target.value = 0;  // Snap back to 0
     console.log("Speed reset to 0");
 };
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up each draggable dot
+    setupDraggableDot('arm1-dot', 'arm1');
+    setupDraggableDot('arm2-dot', 'arm2');
+    setupDraggableDot('arm3-dot', 'arm3');
+
+    function setupDraggableDot(dotClass, armClass) {
+        const dot = document.querySelector('.' + dotClass);
+        const arm = document.querySelector('.' + armClass);
+        const container = dot.parentElement;
+
+        // Center coordinates of the circle
+        const center = {
+            x: container.offsetWidth / 2,
+            y: container.offsetHeight / 2
+        };
+
+        // Radius of the circle (half the container width)
+        const radius = container.offsetWidth / 2;
+
+        // Variables to track dragging state
+        let isDragging = false;
+        let startAngle = 0;
+
+        // Initial position (top of the circle)
+        positionDotOnCircle(0);
+
+        // Event listeners
+        dot.addEventListener('mousedown', onMouseDown);
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+
+        function onMouseDown(e) {
+            e.preventDefault();
+            isDragging = true;
+
+            // Calculate the current angle based on dot position
+            const rect = dot.getBoundingClientRect();
+            const dotCenterX = rect.left + rect.width / 2;
+            const dotCenterY = rect.top + rect.height / 2;
+
+            const containerRect = container.getBoundingClientRect();
+            const containerCenterX = containerRect.left + containerRect.width / 2;
+            const containerCenterY = containerRect.top + containerRect.height / 2;
+
+            startAngle = Math.atan2(
+                dotCenterY - containerCenterY,
+                dotCenterX - containerCenterX
+            );
+        }
+
+        function onMouseMove(e) {
+            if (!isDragging) return;
+
+            const containerRect = container.getBoundingClientRect();
+            const containerCenterX = containerRect.left + containerRect.width / 2;
+            const containerCenterY = containerRect.top + containerRect.height / 2;
+
+            // Calculate angle based on mouse position relative to circle center
+            const angle = Math.atan2(
+                e.clientY - containerCenterY,
+                e.clientX - containerCenterX
+            );
+
+            positionDotOnCircle(angle);
+
+            // Rotate the arm based on the angle
+            if (armClass === 'arm1') {
+                arm.style.transform = `rotate(${angle * (180 / Math.PI)}deg)`;
+            } else if (armClass === 'arm2') {
+                document.querySelector('.arm2-rotate').style.transform = `rotate(${angle * (180 / Math.PI)}deg)`;
+            } else if (armClass === 'arm3') {
+                arm.style.transform = `rotate(${angle * (180 / Math.PI)}deg)`;
+            }
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+        }
+
+        function positionDotOnCircle(angle) {
+            // Calculate position on the circle based on angle
+            const x = center.x + radius * Math.cos(angle);
+            const y = center.y + radius * Math.sin(angle);
+
+            // Position the dot
+            dot.style.left = `${x}px`;
+            dot.style.top = `${y}px`;
+            dot.style.transform = 'translate(-50%, -50%)';
+        }
+    }
+});
