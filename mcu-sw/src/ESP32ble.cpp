@@ -1,0 +1,163 @@
+#include "../lib/ESP32ble.h"
+#include "NimBLEDevice.h"
+
+ESP32ble esp32ble;
+
+class CmdCallbacks : public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *pCharacteristic) {
+        esp32ble.setCmd(pCharacteristic->getValue());
+    }
+};
+
+class StateCallbacks : public BLECharacteristicCallbacks {
+    void onRead(BLECharacteristic *pCharacteristic) {
+        pCharacteristic->setValue(esp32ble.getCmd());
+        pCharacteristic->notify();
+    }
+};
+
+class ServerCallbacks : public BLEServerCallbacks {
+    void onConnect(BLEServer *pServer) {
+        esp32ble.onConnect();
+    };
+
+    void onDisconnect(BLEServer *pServer) {
+        esp32ble.onDisconnect();
+    }
+};
+
+String ESP32ble::getCmd() const {
+    return "Speed: "+String(_speed)+", Direction: "+String(_direction)+"("+String(getDriveMode())+")";
+}
+
+void ESP32ble::setCmd(String value) {
+    String cmd = value;
+
+    // prüfen auf kombinierte anweisung: // `${direction}:${speed}`
+    int t=cmd.indexOf(":");
+    if(t>0 && t < value.length() ) {
+        _direction = value.substring(0,t).toInt();
+        _speed = value.substring(t+1,value.length()).toInt();
+
+
+        if(_speed>255) _speed=255;
+        if(_speed<-255) _speed=-255;
+        if(_direction>90) _direction=90;
+        if(_direction<-90) _direction=-90;
+
+    } else {
+        if(cmd=="left") {
+            _direction-=1;
+            if(_direction<-90) _direction=-90;
+        } else if(cmd=="right") {
+            _direction+=1;
+            if(_direction>90) _direction=90;
+        } else if(cmd=="straight") {
+            _direction=0;
+        } else if(cmd=="up") {
+            _speed+=10;
+            if(_speed>255) _speed=255;
+        } else if(cmd=="down") {
+            _speed-=10;
+            if(_speed<-255) _speed=-255;
+        } else {
+            // default stop!
+            _speed=0;
+        }
+    }
+
+    if(_pStateCharacteristic) {
+        _pStateCharacteristic->setValue(getCmd());
+        _pStateCharacteristic->notify();
+    }
+}
+
+int ESP32ble::getDriveMode() const {
+    if(_speed==0)
+        return STOPPED;
+
+    if(_speed > 0) {
+        if(_direction<0) return LEFTFORWARD;
+        else if(_direction>0) return RIGHTFORWARD;
+        return FORWARD;
+    } else {
+        if(_direction<0) return LEFTBACKWARD;
+        else if(_direction>0) return RIGHTBACKWARD;
+        return BACKWARD;
+    }
+}
+
+void ESP32ble::onConnect() {
+    _connected = true;
+}
+
+void ESP32ble::onDisconnect() {
+    _connected = false;
+}
+
+void ESP32ble::setup(String name) {
+  // Create the BLE Device
+  this->_name = name;
+  NimBLEDevice::init(name.c_str());
+
+  // Create the BLE Server
+  _pServer = NimBLEDevice::createServer();
+  _pServer->setCallbacks(new ServerCallbacks());
+
+  // Create the BLE Service
+  NimBLEService *pService = _pServer->createService(SERVICE_UUID);
+
+  NimBLECharacteristic *pCharacteristic = pService->createCharacteristic(
+    CHARACTERISTIC_CMD,
+    NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+  );
+
+  // Creates BLE Descriptor 0x2904: Client Characteristic Configuration Descriptor (CCCD)
+  pCharacteristic->addDescriptor(new BLE2904());
+  pCharacteristic->setCallbacks(new CmdCallbacks());
+
+  {
+
+    // Adds also the Characteristic Type Description - 0x2904 descriptor
+    BLE2904 *descriptor_2904 = new BLE2904();
+    descriptor_2904->setFormat(BLE2904::FORMAT_UTF8);
+    pCharacteristic->addDescriptor(descriptor_2904);
+  }
+  // Create a BLE State Characteristic
+  _pStateCharacteristic = pService->createCharacteristic(
+    CHARACTERISTIC_STATE,
+    NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+  );
+  _pStateCharacteristic->setCallbacks(new StateCallbacks());
+
+  {
+    // Creates BLE Descriptor 0x2902: Client Characteristic Configuration Descriptor (CCCD)
+    _pStateCharacteristic->addDescriptor(new BLE2904());
+    // Adds also the Characteristic Type Description - 0x2904 descriptor
+    BLE2904 *descriptor_2904 = new BLE2904();
+    descriptor_2904->setFormat(BLE2904::FORMAT_UTF8);
+    _pStateCharacteristic->addDescriptor(descriptor_2904);
+  }
+
+  // Start the service
+  pService->start();
+
+  // Start advertising
+  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+  pAdvertising->addServiceUUID(SERVICE_UUID);
+  BLEDevice::startAdvertising();
+}
+
+void ESP32ble::handle() {
+    // disconnecting
+    if (!_connected && _lastConnectionState) {
+        delay(500);                     // give the bluetooth stack the chance to get things ready
+        BLEDevice::startAdvertising();  // restart advertising
+        _lastConnectionState = _connected;
+    }
+    // connecting
+    if (_connected && !_lastConnectionState) {
+        _lastConnectionState = _connected;
+    }
+}
+

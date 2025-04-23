@@ -1,7 +1,6 @@
 #include <Arduino.h>
-#include <../lib/ble.h>
+#include <../lib/ESP32ble.h>
 #include <TMC2209.h>
-#include "NimBLEDevice.h"
 
 
 const int ACT_LED = 8; // Activitiy LED for the Sensor PCB
@@ -37,26 +36,28 @@ const TMC2209::SerialAddress SERIAL_ADDRESS_right = TMC2209::SERIAL_ADDRESS_1; /
 const uint8_t REPLY_DELAY = 4;
 const long SERIAL_BAUD_RATE = 115200;
 
-/*
+
 void setup() {
-// setting up serial connection for communication with motordriver(s)
+  // setting up serial connection for communication with motordriver(s)
   stepper_driver_left.setup(Serial1,SERIAL_BAUD_RATE,SERIAL_ADDRESS_left,UART_RX,UART_TX);
   stepper_driver_left.setReplyDelay(REPLY_DELAY);
   stepper_driver_right.setup(Serial1,SERIAL_BAUD_RATE,SERIAL_ADDRESS_right,UART_RX,UART_TX);
   stepper_driver_right.setReplyDelay(REPLY_DELAY);
-// Setting pinMode for for motor-control
+  // Setting pinMode for motor-control
   pinMode(STEP1_DIR, OUTPUT);
   pinMode(STEP2_DIR, OUTPUT);
   pinMode(STEP1_STEP, OUTPUT);
   pinMode(STEP2_STEP, OUTPUT);
+  // Giving ESP32 a BLE name
+  esp32ble.setup("rc-rover");
 }
 
 void loop() {
-crbkRCCarBLE.handle();
-  int speed = crbkRCCarBLE.getSpeed();
+esp32ble.handle();
+  int speed = esp32ble.getSpeed();
   int left  = abs(speed);
   int right = abs(speed);
-  int direction = crbkRCCarBLE.getDirection();
+  int direction = esp32ble.getDirection();
   if(direction<0) {
     // reduziere Geschwindigkeit nach links
     left -= left*(-direction/90.0);
@@ -87,4 +88,3 @@ crbkRCCarBLE.handle();
     digitalWrite(STEP2_DIR, LOW);
   }
 }
-*/
