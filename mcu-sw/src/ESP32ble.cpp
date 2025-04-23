@@ -118,6 +118,10 @@ void ESP32ble::setARM(String value) {
     // sonst soll er die Values so lassen ==> daher nichts hingeschrieben
 }
 
+String ESP32ble::getSensor() const {
+    return "Temp: " + String(_temp) + ", Humidity: " + String(_humidity) + ", Pressure: " + String(_pressure) + ", Gas: " + String(_gas);
+}
+
 void ESP32ble::onConnect() {
     _connected = true;
 }

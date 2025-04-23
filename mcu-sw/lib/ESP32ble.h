@@ -22,6 +22,11 @@ class ESP32ble {
     int _arm2 = 0;
     int _arm3 = 0;
     int _arm4 = 0;
+    // everything from the sensor
+    int _temp = 0;
+    int _humidity = 0;
+    int _pressure = 0;
+    int _gas = 0;
 
     BLEServer *_pServer = nullptr;
     BLECharacteristic *_pCmdStateCharacteristic = nullptr;
@@ -63,6 +68,8 @@ public:
     String getARM() const;
 
     void setARM(String value);
+
+    String getSensor() const;
 };
 
 extern ESP32ble esp32ble;
