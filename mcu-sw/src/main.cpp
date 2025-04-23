@@ -1,6 +1,8 @@
 #include <Arduino.h>
-#include <../lib/crbk_ble.h>
+#include <../lib/ble.h>
 #include <TMC2209.h>
+#include "NimBLEDevice.h"
+
 
 const int ACT_LED = 8; // Activitiy LED for the Sensor PCB
 const int SD_CSB = 9;
@@ -35,7 +37,7 @@ const TMC2209::SerialAddress SERIAL_ADDRESS_right = TMC2209::SERIAL_ADDRESS_1; /
 const uint8_t REPLY_DELAY = 4;
 const long SERIAL_BAUD_RATE = 115200;
 
-
+/*
 void setup() {
 // setting up serial connection for communication with motordriver(s)
   stepper_driver_left.setup(Serial1,SERIAL_BAUD_RATE,SERIAL_ADDRESS_left,UART_RX,UART_TX);
@@ -50,38 +52,6 @@ void setup() {
 }
 
 void loop() {
-  crbkRCCarBLE.handle();
-  int speed = crbkRCCarBLE.getSpeed();
-  int left  = abs(speed);
-  int right = abs(speed);
-  int direction = crbkRCCarBLE.getDirection();
-  if(direction<0) {
-    // reduziere Geschwindigkeit nach links
-    left -= left*(-direction/90.0);
-  } else if(direction>0) {
-    // reduziere Geschwindigkeit nach rechts
-    right -= right*(direction/90.0);
-  }
-  if(speed>0) {
-    // forward
-    analogWrite(STEP1_STEP, left);
-    digitalWrite(STEP1_DIR, LOW);
 
-    analogWrite(STEP2_STEP, right);
-    digitalWrite(STEP2_DIR, LOW);
-  } else if(speed<0) {
-    // backward
-    analogWrite(STEP1_STEP, left);
-    digitalWrite(STEP1_DIR, HIGH);
-
-    analogWrite(STEP2_STEP, right);
-    digitalWrite(STEP2_DIR, HIGH);
-  } else {
-    // stop (so they aren't left floating)
-    digitalWrite(STEP1_STEP, LOW);
-    digitalWrite(STEP1_DIR, LOW);
-
-    digitalWrite(STEP2_STEP, LOW);
-    digitalWrite(STEP2_DIR, LOW);
-  }
 }
+*/
