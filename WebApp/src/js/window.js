@@ -121,14 +121,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (safeArea[arm].min < degree && safeArea[arm].max > degree) {
                 console.log(degree)
-                return degree
+                return parseInt(degree)
             }
 
-            if (safeArea[arm].min > degree) {
+            if (safeArea[arm].min > degree && -100 < degree) {
                 console.log(safeArea[arm].min)
                 return safeArea[arm].min
             }
-            if (safeArea[arm].max < degree) {
+            if (safeArea[arm].max < degree || 0 > degree) {
                 console.log(safeArea[arm].max)
                 return safeArea[arm].max
             }

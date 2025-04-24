@@ -404,7 +404,7 @@ async function writeCmd(value) {
     return sent;
 }
 
-async function writeArmCmd(value) {
+export async function writeArmCmd(value) {
 	let sent = "failed";
 	if (bleServer && bleServer.connected) {
 		const textEncoder = new TextEncoder();
