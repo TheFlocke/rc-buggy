@@ -64,7 +64,43 @@
                 <input id="speedDial1" max="255" min="-255" onchange="handleSpeedRelease(1)" oninput="handleSpeedInput(1)"
                        orient="vertical" type="range"
                        value="0">
-
+                <div id="status">
+                    <div id="status_static">
+                        <table>
+                            <tr>
+                                <td><i class="fa-solid fa-arrow-right"></i>&nbsp;<i class="fa-solid fa-car-side"></i></td>
+                                <td id="sent_timestamp">-</td>
+                                <td id="valueSent">-</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa-solid fa-car-side"></i>&nbsp;<i class="fa-solid fa-arrow-right"></i></td>
+                                <td id="retrieved_timestamp">-</td>
+                                <td id="retrievedValue">-</td>
+                            </tr>
+                        </table>
+                        <p><span class="info" id="info"></span></p>
+                        <p><span class="info" id="update"></span></p>
+                        <p><span class="error" id="errors"></span></p>
+                    </div>
+                    <div id="status_scroll">
+                        <p><span class="error" id="bleState"></span></p>
+                        <p><span class="error" id="bleService"></span></p>
+                        <p><span class="error" id="bleCharCmd"></span></p>
+                        <p><span class="error" id="bleCharState"></span></p>
+                        <p><span class="error" id="bleSensorState"></span></p>
+                        <p><span class="error" id="bleArm"></span></p>
+                        <p><span class="error" id="bleArmState"></span></p>
+                        <p><span class="info" id="bleServiceList"></span></p>
+                    </div>
+                    <div class="status_history">
+                        <div class="historySent">
+                            /// historx
+                        </div>
+                        <div class="historyReceived">
+                            // hostory
+                        </div>
+                    </div>
+                </div>
                 <label for="speedDial2"></label>
                 <input id="speedDial2" max="255" min="-255" onchange="handleSpeedRelease(2)" oninput="handleSpeedInput(2)"
                        orient="vertical" type="range"
@@ -117,35 +153,7 @@
             <button id="buttonRight" style="height:100%">Rechts</button>
         </div>
     </div>
-    <div id="status">
-        <div id="status_static">
-            <table>
-                <tr>
-                    <td><i class="fa-solid fa-arrow-right"></i>&nbsp;<i class="fa-solid fa-car-side"></i></td>
-                    <td id="sent_timestamp">-</td>
-                    <td id="valueSent">-</td>
-                </tr>
-                <tr>
-                    <td><i class="fa-solid fa-car-side"></i>&nbsp;<i class="fa-solid fa-arrow-right"></i></td>
-                    <td id="retrieved_timestamp">-</td>
-                    <td id="retrievedValue">-</td>
-                </tr>
-            </table>
-            <p><span class="info" id="info"></span></p>
-            <p><span class="info" id="update"></span></p>
-            <p><span class="error" id="errors"></span></p>
-        </div>
-        <div id="status_scroll">
-            <p><span class="error" id="bleState"></span></p>
-            <p><span class="error" id="bleService"></span></p>
-            <p><span class="error" id="bleCharCmd"></span></p>
-            <p><span class="error" id="bleCharState"></span></p>
-            <p><span class="error" id="bleSensorState"></span></p>
-            <p><span class="error" id="bleArm"></span></p>
-            <p><span class="error" id="bleArmState"></span></p>
-            <p><span class="info" id="bleServiceList"></span></p>
-        </div>
-    </div>
+
 
 </div>
 

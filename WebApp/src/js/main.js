@@ -259,8 +259,6 @@ async function connectToDevice(){
 }
 
 function onDisconnected(event){
-	document.getElementById('status').style.display = "none";
-
 	disconnectButton.style.display = "none";
 	connectButton.style.display = "block";
 	
