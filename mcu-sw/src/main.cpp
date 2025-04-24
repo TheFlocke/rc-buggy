@@ -57,14 +57,6 @@ void loop() {
   int speed = esp32ble.getSpeed();
   int left  = abs(speed);
   int right = abs(speed);
-  int direction = esp32ble.getDirection();
-  if(direction<0) {
-    // reduziere Geschwindigkeit nach links
-    left -= left*(-direction/90.0);
-  } else if(direction>0) {
-    // reduziere Geschwindigkeit nach rechts
-    right -= right*(direction/90.0);
-  }
   if(speed>0) {
     // forward
     analogWrite(STEP1_STEP, left);

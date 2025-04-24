@@ -47,62 +47,42 @@ class ServerCallbacks : public BLEServerCallbacks {
 };
 
 String ESP32ble::getCmd() const {
-    return "Speed: " + String(_speed) + ", Direction: " + String(_direction) + "(" + String(getDriveMode()) + ")";
+    return "Speed_1: " + String(_speed1) + ", Speed_2: " + String(_speed2);
 }
 
 void ESP32ble::setCmd(String value) {
     String cmd = value;
 
-    // prüfen auf kombinierte anweisung: // `${direction}:${speed}`
-    int t = cmd.indexOf(":");
-    if (t > 0 && t < value.length()) {
-        _direction = value.substring(0, t).toInt();
-        _speed = value.substring(t + 1, value.length()).toInt();
+    // prüfen auf kombinierte anweisung: // `${speed1}:${speed2}:${wheel1}:${wheel2}`
+    int t1 = value.indexOf(":");
+    int t2 = value.indexOf(":", t1 + 1);
+    int t3 = value.indexOf(":", t2 + 1);
+    if (t1 > 0 && t3 < value.length()) {
 
+        _speed1 = value.substring(0, t1).toInt();
+        _speed2 = value.substring(t1 + 1, t2).toInt();
+        _wheel1 = value.substring(t2 + 1, t3).toInt();
+        _wheel2 = value.substring(t3 + 1).toInt();
 
-        if (_speed > 255) _speed = 255;
-        if (_speed < -255) _speed = -255;
-        if (_direction > 90) _direction = 90;
-        if (_direction < -90) _direction = -90;
+        // Frontend schickt zu große Werte ==> werden von dem Backend korrigiert
+        if (_speed1 > 255) _speed1 = 255;
+        if (_speed1 < -255) _speed1 = -255;
+        if (_speed2 > 255) _speed2 = 255;
+        if (_speed2 < -255) _speed2 = -255;
+        if (_wheel1 > 180) _wheel1 = 180;
+        if (_wheel1 < 0) _wheel1 = 0;
+        if (_wheel2 > 180) _wheel2 = 180;
+        if (_wheel2 < 0) _wheel2 = 0;
     } else {
-        if (cmd == "left") {
-            _direction -= 1;
-            if (_direction < -90) _direction = -90;
-        } else if (cmd == "right") {
-            _direction += 1;
-            if (_direction > 90) _direction = 90;
-        } else if (cmd == "straight") {
-            _direction = 0;
-        } else if (cmd == "up") {
-            _speed += 10;
-            if (_speed > 255) _speed = 255;
-        } else if (cmd == "down") {
-            _speed -= 10;
-            if (_speed < -255) _speed = -255;
-        } else {
-            // default stop!
-            _speed = 0;
+        _speed1 = 0;
+        _speed2 = 0;
+        // Wheel wird einfach auf der letzten Position gelassen
         }
-    }
+
 
     if (_pCmdStateCharacteristic) {
         _pCmdStateCharacteristic->setValue(getCmd());
         _pCmdStateCharacteristic->notify();
-    }
-}
-
-int ESP32ble::getDriveMode() const {
-    if (_speed == 0)
-        return STOPPED;
-
-    if (_speed > 0) {
-        if (_direction < 0) return LEFTFORWARD;
-        else if (_direction > 0) return RIGHTFORWARD;
-        return FORWARD;
-    } else {
-        if (_direction < 0) return LEFTBACKWARD;
-        else if (_direction > 0) return RIGHTBACKWARD;
-        return BACKWARD;
     }
 }
 

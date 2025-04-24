@@ -15,8 +15,10 @@ class ESP32ble {
     bool _connected = false;
     bool _lastConnectionState = false;
     // everything for the movement of the rover
-    int _speed = 0;
-    int _direction = 0;
+    int _speed1 = 0;
+    int _speed2 = 0;
+    int _wheel1 = 0;
+    int _wheel2 = 0;
     // everything for the movement of the arm (default set to home)
     int _arm1 = 12;
     int _arm2 = 12;
