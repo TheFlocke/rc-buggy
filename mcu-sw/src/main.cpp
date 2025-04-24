@@ -1,6 +1,7 @@
 #include <Arduino.h>
-#include <../lib/crbk_ble.h>
+#include <../lib/ESP32ble.h>
 #include <TMC2209.h>
+
 
 const int ACT_LED = 8; // Activitiy LED for the Sensor PCB
 const int SD_CSB = 9;
@@ -19,12 +20,12 @@ const int STEP2_DIR  = 5;
 const int STEP1_STEP = 6;
 const int STEP2_STEP = 7;
 // GPIO Ports that are not reserved by any devices
-const int GPIO_17 = 17;
-const int GPIO_18 = 18;
-const int GPIO_21 = 21;
-const int GPIO_38 = 38;
-const int GPIO_47 = 47;
-const int GPIO_48 = 48;
+[[maybe_unused]] const int GPIO_17 = 17;
+[[maybe_unused]] const int GPIO_18 = 18;
+[[maybe_unused]] const int GPIO_21 = 21;
+[[maybe_unused]] const int GPIO_38 = 38;
+[[maybe_unused]] const int GPIO_47 = 47;
+[[maybe_unused]] const int GPIO_48 = 48;
 
 // initializing motorrdriver(s)
 // Important: For NEMA 17 motors, the current is in general in the range of 0.5A to 0.8A RMS, which is a reference voltage (Vref) of 0.7V to 1.1V.
@@ -37,31 +38,25 @@ const long SERIAL_BAUD_RATE = 115200;
 
 
 void setup() {
-// setting up serial connection for communication with motordriver(s)
+  // setting up serial connection for communication with motordriver(s)
   stepper_driver_left.setup(Serial1,SERIAL_BAUD_RATE,SERIAL_ADDRESS_left,UART_RX,UART_TX);
   stepper_driver_left.setReplyDelay(REPLY_DELAY);
   stepper_driver_right.setup(Serial1,SERIAL_BAUD_RATE,SERIAL_ADDRESS_right,UART_RX,UART_TX);
   stepper_driver_right.setReplyDelay(REPLY_DELAY);
-// Setting pinMode for for motor-control
+  // Setting pinMode for motor-control
   pinMode(STEP1_DIR, OUTPUT);
   pinMode(STEP2_DIR, OUTPUT);
   pinMode(STEP1_STEP, OUTPUT);
   pinMode(STEP2_STEP, OUTPUT);
+  // Giving ESP32 a BLE name
+  esp32ble.setup("rc-rover");
 }
 
 void loop() {
-  crbkRCCarBLE.handle();
-  int speed = crbkRCCarBLE.getSpeed();
+  esp32ble.handle();
+  int speed = esp32ble.getSpeed();
   int left  = abs(speed);
   int right = abs(speed);
-  int direction = crbkRCCarBLE.getDirection();
-  if(direction<0) {
-    // reduziere Geschwindigkeit nach links
-    left -= left*(-direction/90.0);
-  } else if(direction>0) {
-    // reduziere Geschwindigkeit nach rechts
-    right -= right*(direction/90.0);
-  }
   if(speed>0) {
     // forward
     analogWrite(STEP1_STEP, left);
