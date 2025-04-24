@@ -248,7 +248,8 @@ input[type=range][orient=vertical] {
     width: 400px;   /* Set to your desired image/container size */
     height: 400px;  /* Set to your desired image/container size */
     transform: rotate(-12deg);
-    display: none;
+    display: block;
+    visibility: hidden;
 }
 
 .arm {

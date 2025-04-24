@@ -124,12 +124,12 @@ window.onload = () => {
 }
 
 function toggleLED1() {
-	document.getElementById('armController').style.display = 'none';
+	document.getElementById('armController').style.visibility = 'hidden';
 	document.getElementById('speedController').style.display = 'flex';
 }
 
 function toggleLED2() {
-    document.getElementById('armController').style.display = 'block';
+    document.getElementById('armController').style.visibility = 'visible';
 	document.getElementById('speedController').style.display = 'none';
 }
 
