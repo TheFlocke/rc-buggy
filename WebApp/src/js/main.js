@@ -16,6 +16,8 @@ let bleArm;
 let bleArmState;
 let bleServiceContainer;
 let bleServiceList;
+let bleSendHistory;
+let bleReceiveHistory;
 let orientation;
 let orientationDevice;
 let switch1;
@@ -81,6 +83,8 @@ window.onload = () => {
 	bleArm = document.getElementById('bleArm');
 	bleArmState = document.getElementById('bleArmState')
 	bleServiceList = document.getElementById('bleServiceList');
+	bleSendHistory = document.getElementById('sendHistory');
+	bleReceiveHistory = document.getElementById('receiveHistory')
     sentTimestamp = document.getElementById('sent_timestamp');
     retrievedTimestamp = document.getElementById('retrieved_timestamp');
 	errorMessageContainer = document.getElementById('errors');
@@ -286,11 +290,25 @@ function handleCharacteristicChange(event){
 	retrievedValue.innerHTML = newValueReceived;
 	retrievedTimestamp.innerHTML = getDateTime();
 	orientationDevice.innerHTML = newValueReceived;
+
+	const div = document.createElement('div');
+	const header = document.createElement('h1');
+	const text = document.createElement('p');
+	header.innerHTML = 'RECEIVE';
+	text.innerHTML = value;
+	div.appendChild(header)
+	div.appendChild(text)
+	div.classList.add('entry')
+	bleReceiveHistory.prepend(div)
+	// Remove oldest entry if more than 6 children
+	if (bleReceiveHistory.children.length > 6) {
+		bleReceiveHistory.removeChild(bleReceiveHistory.lastElementChild);
+	}
 }
 
 let sending = false;
 
-async function writeCmd(value) {
+export async function writeCmd(value) {
     if(sending) return "busy";
     sending=true;
     let sent="failed";
@@ -301,6 +319,19 @@ async function writeCmd(value) {
 		try {
 			await cmdCharacteristic.writeValueWithoutResponse(uint8Array);
 			latestValueSent.innerHTML = value;
+			const div = document.createElement('div');
+			const header = document.createElement('h1');
+			const text = document.createElement('p');
+			header.innerHTML = 'CMD';
+			text.innerHTML = value;
+			div.appendChild(header)
+			div.appendChild(text)
+			div.classList.add('entry')
+			bleSendHistory.prepend(div)
+			// Remove oldest entry if more than 6 children
+			if (bleSendHistory.children.length > 6) {
+				bleSendHistory.removeChild(bleSendHistory.lastElementChild);
+			}
             sent="ok";
 		} catch(error) {
 			console.error("Error writing to the CMD characteristic: ", error);
@@ -325,6 +356,19 @@ export async function writeArmCmd(value) {
 		try {
 			armCharacteristic.writeValueWithoutResponse(uint8Array);
 			latestValueSent.innerHTML = value;
+			const div = document.createElement('div');
+			const header = document.createElement('h1');
+			const text = document.createElement('p');
+			header.innerHTML = 'ARM';
+			text.innerHTML = value;
+			div.appendChild(header)
+			div.appendChild(text)
+			div.classList.add('entry')
+			bleSendHistory.prepend(div)
+			// Remove oldest entry if more than 6 children
+			if (bleSendHistory.children.length > 6) {
+				bleSendHistory.removeChild(bleSendHistory.lastElementChild);
+			}
 			sent = "ok";
 		} catch (error) {
 			console.error("Error writing to ARM characteristic: ", error);
