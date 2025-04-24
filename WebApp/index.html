@@ -60,8 +60,6 @@
         <div id="sliderContainer">
 
             <div id="speedController">
-
-
                 <label for="speedDial1"></label>
                 <input id="speedDial1" max="255" min="-255" onchange="handleSpeedRelease(1)" oninput="handleSpeedInput(1)"
                        orient="vertical" type="range"
@@ -74,6 +72,30 @@
             </div>
 
         </div>
+        <div id="armController">
+            <div class="dot-container arm1-dot-container">
+                <div class="draggable-dot arm1-dot"></div>
+            </div>
+            <div class="dot-container arm2-dot-container">
+                <div class="draggable-dot arm2-dot"></div>
+            </div>
+            <div class="dot-container arm3-dot-container">
+                <div class="draggable-dot arm3-dot"></div>
+            </div>
+
+            <div class="arm-view">
+
+                <div class="arm1-rotate">
+                    <img class="arm arm1" src="img/arm_1.png">
+                    <div class="arm2-rotate">
+                        <img class="arm arm2" src="img/arm_2.png">
+                        <div class="arm3-rotate">
+                            <img class="arm arm3" src="img/arm_3.png">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="orientation_center"></div>
         <div style="font-size: 80%; text-align:right; color:white; padding-right:1em"><span id="orientation_info">orientation</span>
         </div>
@@ -82,30 +104,7 @@
 
     </div>
 
-    <div id="armController">
-        <div class="dot-container arm1-dot-container">
-            <div class="draggable-dot arm1-dot"></div>
-        </div>
-        <div class="dot-container arm2-dot-container">
-            <div class="draggable-dot arm2-dot"></div>
-        </div>
-        <div class="dot-container arm3-dot-container">
-            <div class="draggable-dot arm3-dot"></div>
-        </div>
 
-        <div class="arm-view">
-
-        <div class="arm1-rotate">
-        <img class="arm arm1" src="img/arm_1.png">
-        <div class="arm2-rotate">
-            <img class="arm arm2" src="img/arm_2.png">
-            <div class="arm3-rotate">
-                <img class="arm arm3" src="img/arm_3.png">
-            </div>
-        </div>
-        </div>
-        </div>
-    </div>
 
 
 

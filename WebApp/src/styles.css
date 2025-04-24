@@ -250,10 +250,12 @@ input[type=range][orient=vertical] {
     transform: rotate(-12deg);
     display: block;
     visibility: hidden;
+    top: -1000px;
+    left: 1300px;
 }
 
 .arm {
-    position: absolute;
+    position: relative;
     left: 0;
 
     width: 100%;
@@ -284,6 +286,7 @@ input[type=range][orient=vertical] {
 .arm2-rotate {
     position: relative; /* Creates a positioning context */
     z-index: 2;
+    top: -180px;
 
 
     transform-origin: 35px 30px; /* Using standard transform-origin with x and y offsets */
@@ -294,8 +297,8 @@ input[type=range][orient=vertical] {
     position: relative;
     z-index: 2;
 
-    top: 0px;
-    left: 270px;
+    top: -60px;
+    left: 340px;
     transform-origin: 30px 30px; /* Using standard transform-origin with x-offset */
     transform: rotate(0deg);
 }
