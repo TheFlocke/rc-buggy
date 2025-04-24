@@ -316,6 +316,14 @@ async function connectToDevice(){
 		cmdStateCharacteristic.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
 		await cmdStateCharacteristic.startNotifications();
 		cmdStateCharacteristic.readValue();
+
+		armStateCharacteristic.addEventListener('characteristicvaluechanged', handleCharacteristicChange)
+		await armStateCharacteristic.startNotifications();
+		armStateCharacteristic.readValue();
+
+		sensorCharacteristic.addEventListener('characteristicvaluechanged', handleCharacteristicChange)
+		await sensorCharacteristic.startNotifications();
+		sensorCharacteristic.readValue();
 		
 		infoMessageContainer.innerHTML = "erfolgreich verbunden";
         document.getElementById('connection').innerHTML='Verbunden mit ' + device.name;
