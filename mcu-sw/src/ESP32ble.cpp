@@ -47,7 +47,7 @@ class ServerCallbacks : public BLEServerCallbacks {
 };
 
 String ESP32ble::getCmd() const {
-    return "Speed_1: " + String(_speed1) + ", Speed_2: " + String(_speed2);
+    return "Speed_1: " + String(_speed1) + ", Speed_2: " + String(_speed2) + "Wheel_1: " + String(_wheel1) + ", Wheel_2: " + String(_wheel2);
 }
 
 void ESP32ble::setCmd(String value) {
