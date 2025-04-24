@@ -236,7 +236,6 @@ h1 {
 
 .arm-view {
     order: 1; /* Arm view above controls */
-    border: transparent solid 10px;
     width: 90% !important;
     height: 600px !important;
     margin-bottom: 20px; /* Space between arm view and controls */
@@ -300,13 +299,13 @@ input[type=range][orient=vertical] {
 .arm1-rotate {
     position: relative;
 
-    height: 400px;
-    width: 400px;
+    height: 300px;
+    width: 300px;
 
     top: 250px;
 
     bottom: auto;
-    transform-origin: 360px 110px; /* Using standard transform-origin with x-offset */
+    transform-origin: 270px 82px; /* Using standard transform-origin with x-offset */
     transform: rotate(0deg);
     /* top: 0; left: 0; default, adjust if needed */
 }
@@ -318,18 +317,18 @@ input[type=range][orient=vertical] {
 .arm2-rotate {
     position: relative; /* Creates a positioning context */
     z-index: 2;
-    top: -140px;
+    top: -105px;
 
-    transform-origin: 35px 30px; /* Using standard transform-origin with x and y offsets */
+    transform-origin: 26px 22px; /* Using standard transform-origin with x and y offsets */
     transform: rotate(-6deg);
 }
 
 .arm3-rotate {
     position: relative;
     z-index: 2;
-    left: 340px;
-    top: -70px;
-    transform-origin: 30px 30px; /* Using standard transform-origin with x-offset */
+    left: 255px;
+    top: -52px;
+    transform-origin: 22px 22px; /* Using standard transform-origin with x-offset */
     transform: rotate(-90deg);
 }
 
