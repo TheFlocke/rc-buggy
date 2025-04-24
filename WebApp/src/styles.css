@@ -290,7 +290,7 @@ input[type=range][orient=vertical] {
 
 
     transform-origin: 35px 30px; /* Using standard transform-origin with x and y offsets */
-    transform: rotate(0deg);
+    transform: rotate(-12deg);
 }
 
 .arm3-rotate {
@@ -300,7 +300,7 @@ input[type=range][orient=vertical] {
     top: -60px;
     left: 340px;
     transform-origin: 30px 30px; /* Using standard transform-origin with x-offset */
-    transform: rotate(0deg);
+    transform: rotate(-90deg);
 }
 
 .arm3 {

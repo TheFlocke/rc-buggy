@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupDraggableDot('arm3-dot', 'arm3');
 
     function setupDraggableDot(dotClass, armClass) {
+        let setup = true;
         const dot = document.querySelector('.' + dotClass);
         const arm = document.querySelector('.' + armClass);
         const container = dot.parentElement;
@@ -136,9 +137,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function positionDotOnCircle(angle) {
             console.log(dotClass)
+
+            if (setup) {
+                angle = (safeArea[armClass].min)/ (180 * Math.PI);
+                setup = false;
+            }
+
+            console.log(center.x, radius, angle)
+
             // Calculate position on the circle based on angle
             const x = center.x + radius * Math.cos(angle);
             const y = center.y + radius * Math.sin(angle);
+
+            console.log(x);
+            console.log(y)
 
             // Position the dot
             dot.style.left = `${x}px`;
