@@ -1,20 +1,18 @@
 #ifndef ServoStep_h
 #define ServoStep_h
 
-#include "Arduino.h"
+#include "../lib/i2c_bus.h"
+#include <Adafruit_PWMServoDriver.h>
 
-class CRBKServo
-{
+
+class Servo {
+
+
+
 public:
-    CRBKServo(int pin);
+    void set(int pin, int angle);
 
-public:
-    void up();
-    void down();
-    void set(int angle);
-private:
-    int _pin;
-
+    void setup();
 };
 
 #endif

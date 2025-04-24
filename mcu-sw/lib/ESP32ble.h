@@ -49,10 +49,13 @@ public:
 
     String getCmd() const;
 
-    //-90° ... 90°
-    int getDirection() const { return _direction; }
+
     //-255 ... 255
-    int getSpeed() const { return _speed; }
+    int getSpeed1() const { return _speed1; }
+    int getSpeed2() const { return _speed2; }
+    // 0 ... 180
+    int getWheel1() const { return _wheel1; }
+    int getWheel2() const { return _wheel2; }
 
 
     int getDriveMode() const;
