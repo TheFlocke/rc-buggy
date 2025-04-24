@@ -1,0 +1,353 @@
+@media (orientation: landscape) {
+    body {
+        flex-direction: row;
+    }
+    #title {
+        flex-direction:column;
+        max-width: 10em;
+    }
+    #main {
+        flex-direction:row;
+    }
+    #orientation_frame {
+        border-left-width: 5px;
+        border-left-style: solid;
+    }
+    #controller {
+      display: none;
+    }
+    #status {
+      display: block;
+    }
+}
+
+@media (orientation: portrait) {
+    body {
+        flex-direction: column;
+    }
+    #main {
+        flex-direction:column;
+        height: 100%;
+    }
+    #orientation_frame {
+        border-top-width: 5px;
+        border-top-style: solid;
+    }
+    #controller {
+      display: none;
+    }
+    #status {
+      display: flex;
+    }
+}
+
+.info {
+	color:rgb(10, 100, 10);
+}
+
+.error {
+	color:rgb(120, 10, 10);	
+}
+
+html {
+	height: 100%;
+}
+
+body {
+	color: white;
+	font-family:sans-serif;
+	background-color: rgb(50,50,50);
+	min-width:23em;
+	margin: 0em;
+	height:100%;
+    display:flex;
+}
+
+#main {
+    display:flex;
+    height:100%;
+    width:100%;
+}
+
+#title {
+	display:flex; 
+    justify-content:space-between;
+	background-color: rgb(0,0,0);
+	color: rgb(194, 59, 51);
+    align-items: center;
+}
+
+#title > div {
+    padding: 0.5em;
+}
+
+#title button {
+  background-color: unset;
+  border: none;
+  padding-left:1em;
+  padding-right:1em;
+  color: rgb(194, 59, 51); 
+  font-size:110%;
+  height: 2.2em;
+}
+
+h1 {
+	font-size:1.3rem;
+}
+
+#orientation_frame {
+    position: relative;
+    padding:0.2em;
+    background-image: url("./back.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.running {
+	border-color: rgb(50,200,50);
+}
+
+.stopped {
+	border-color: rgb(194, 59, 51);
+}
+
+#orientation_center {
+    position: absolute;
+    top: 90px;
+    left: 90px;
+    width: 30px;
+    height: 30px;
+    background: rgb(194, 59, 51);
+    border-radius: 100%;
+}
+
+#controller {
+  justify-content: center;
+}
+
+#controller>div {
+  align-items: center;
+  justify-content: space-between;
+  color: #AAA;
+  flex: 1;
+  display:flex;
+  border: 0.5em solid rgb(50, 50, 50);
+}
+
+#controller>div:first-child {
+  justify-content: flex-start;
+}
+
+#controller>div:last-child {
+  justify-content: flex-end;
+}
+
+#controller button {
+  width: 100%;
+  height:30%;
+  padding: 1em;
+  background-color: rgb(173, 204, 242);
+  font-weight: bold;
+  color: rgb(17, 20, 24);
+  font-size:120%;
+  border: none;
+}
+
+#buttonLeft {
+  border-top-left-radius:0.5em;
+  border-bottom-left-radius:0.5em;
+}
+
+#buttonRight {
+  border-top-right-radius:0.5em;
+  border-bottom-right-radius:0.5em;
+}
+
+#status{
+  padding:1em;
+  font-size:90%;
+  font-weight: bold;
+  font-family:"Courier New";
+  background-color: rgba(200,200,200,0.9);
+  margin: 0.5em;
+  margin-top: 1.5em;
+  height:100%;
+    width: 70%;
+  flex-direction: column;
+}
+
+#status td {
+	padding-right: 1em;
+	padding-bottom: 0.2em;
+}
+
+#status_scroll{
+  margin-top:1em;
+  flex: 1 1 auto;
+  overflow: scroll;
+}
+
+#status p {
+	margin:0em;
+	margin-bottom: 0.5em;
+}
+
+.on { 
+    color: yellow; 
+}
+
+.off { 
+    color: rgb(194, 59, 51); 
+}
+
+#speedController {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    pointer-events: none; /* Allow interaction with underlying elements */
+}
+
+/* Add this new container for proper positioning */
+#sliderContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+
+input[type=range][orient=vertical] {
+    writing-mode: bt-lr;
+    -webkit-appearance: slider-vertical;
+    appearance: slider-vertical;
+    width: 8vw;
+    height: 90vh;
+    margin: 5vh 0;
+    position: absolute;
+    top: 0;
+    pointer-events: auto;
+}
+
+#speedDial1 {
+    left: 10px;
+}
+
+#speedDial2 {
+    right: 10px;
+}
+
+
+
+#armController {
+    position: relative;
+    width: 400px;   /* Set to your desired image/container size */
+    height: 400px;  /* Set to your desired image/container size */
+    transform: rotate(-12deg);
+    display: block;
+    visibility: hidden;
+    top: -1000px;
+    left: 1300px;
+}
+
+.arm {
+    position: relative;
+    left: 0;
+
+    width: 100%;
+
+    /* Optional: make all images fill the container */
+    /* Optional: pointer-events: none; if you want clicks to pass through */
+}
+
+/* Example: Custom positions for each layer */
+.arm1 {
+    z-index: 1;
+}
+
+.arm1-rotate {
+    position: relative;
+    top: 300px;
+    left: -1200px;
+
+    transform-origin: 280px 100px; /* Using standard transform-origin with x-offset */
+    transform: rotate(12deg);
+    /* top: 0; left: 0; default, adjust if needed */
+}
+
+.arm2 {
+    z-index: 3;
+}
+
+.arm2-rotate {
+    position: relative; /* Creates a positioning context */
+    z-index: 2;
+    top: -180px;
+
+
+    transform-origin: 35px 30px; /* Using standard transform-origin with x and y offsets */
+    transform: rotate(-12deg);
+}
+
+.arm3-rotate {
+    position: relative;
+    z-index: 2;
+
+    top: -60px;
+    left: 340px;
+    transform-origin: 30px 30px; /* Using standard transform-origin with x-offset */
+    transform: rotate(-90deg);
+}
+
+.arm3 {
+    z-index: 2;
+
+    height: 50px !important;
+    width: auto !important;
+}
+
+
+.dot-container {
+    position: absolute;
+    width: 100px; /* Adjust based on your desired circle size */
+    height: 100px;
+    border: 1px dashed #ccc; /* Optional: to visualize the circular path */
+    border-radius: 50%;
+    pointer-events: none; /* Allow clicks to pass through to the dot */
+}
+
+.draggable-dot {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: #3887be;
+    border-radius: 50%;
+    cursor: move;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: auto; /* Make sure the dot receives events */
+}
+
+/* Position each dot container relative to its arm */
+.arm1-dot-container {
+    top: 150px; /* Adjust based on your arm positions */
+    left: 160px;
+}
+
+.arm2-dot-container {
+    top: 270px; /* Adjust based on your arm positions */
+    left: 160px;
+}
+
+.arm3-dot-container {
+    top: 400px; /* Adjust based on your arm positions */
+    left: 160px;
+}
+
+
