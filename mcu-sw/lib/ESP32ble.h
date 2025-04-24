@@ -30,11 +30,11 @@ class ESP32ble {
     int _pressure = 0;
     int _gas = 0;
 
-    BLEServer *_pServer = nullptr;
-    BLECharacteristic *_pCmdStateCharacteristic = nullptr;
-    BLECharacteristic *_pSensorCharacteristic = nullptr;
-    BLECharacteristic *_pArmCharacteristic = nullptr;
-    BLECharacteristic *_pStateArmCharacteristic = nullptr;
+    NimBLEServer *_pServer = nullptr;
+    NimBLECharacteristic *_pCmdStateCharacteristic = nullptr;
+    NimBLECharacteristic *_pSensorCharacteristic = nullptr;
+    NimBLECharacteristic *_pArmCharacteristic = nullptr;
+    NimBLECharacteristic *_pStateArmCharacteristic = nullptr;
 
 public:
     void setup(String name);
