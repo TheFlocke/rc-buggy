@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <../lib/ESP32ble.h>
 #include <TMC2209.h>
+#include "Wire.h"
+#include "../lib/i2c_bus.h"
 
 
 const int ACT_LED = 8; // Activitiy LED for the Sensor PCB
@@ -27,6 +29,10 @@ const int STEP2_STEP = 7;
 [[maybe_unused]] const int GPIO_47 = 47;
 [[maybe_unused]] const int GPIO_48 = 48;
 
+// Using I2C 0 bus of 2 on the esp32
+TwoWire I2CBUS = TwoWire(0);
+
+
 // initializing motorrdriver(s)
 // Important: For NEMA 17 motors, the current is in general in the range of 0.5A to 0.8A RMS, which is a reference voltage (Vref) of 0.7V to 1.1V.
 TMC2209 stepper_driver_left;
@@ -50,11 +56,13 @@ void setup() {
   pinMode(STEP2_STEP, OUTPUT);
   // Giving ESP32 a BLE name
   esp32ble.setup("rc-rover");
+  // Initalazing I2C with predefined Ports
+  I2CBUS.begin(I2C_SDA, I2C_SCL, 100000);
 }
 
 void loop() {
   esp32ble.handle();
-  int speed = esp32ble.getSpeed();
+  int speed = esp32ble.getSpeed1();
   int left  = abs(speed);
   int right = abs(speed);
   if(speed>0) {
