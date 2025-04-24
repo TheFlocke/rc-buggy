@@ -201,6 +201,44 @@ h1 {
     color: rgb(194, 59, 51); 
 }
 
+/* Update the sliderContainer to be positioned absolutely */
+#sliderContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 10; /* Ensure it's above other elements */
+}
+
+/* Update the armController to be positioned in the same space */
+#armController {
+    position: absolute;
+    visibility: hidden;
+    display: flex;
+    flex-direction: row; /* Ensure horizontal layout */
+    justify-content: space-between; /* Create space between elements */
+    align-items: center; /* Vertical alignment */
+    z-index: 5;
+    width: 90%; /* Total width of both containers + spacing */
+}
+
+.arm-controlls {
+    order: 2; /* Move to right side */
+    width: 500px !important;
+    height: 800px;
+    justify-self: center;
+}
+
+.arm-view {
+    order: 1; /* Move to left side */
+    border: transparent solid 300px;
+    width: 400px !important;
+    height: 400px !important;
+}
+
+
+/* Adjust the speedController to be centered better */
 #speedController {
     position: absolute;
     top: 0;
@@ -210,28 +248,23 @@ h1 {
     display: flex;
     justify-content: space-between;
     padding: 0 20px;
-    pointer-events: none; /* Allow interaction with underlying elements */
+    pointer-events: none;
+    z-index: 15; /* Ensure sliders are on top */
 }
 
-/* Add this new container for proper positioning */
-#sliderContainer {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-
+/* Adjust the vertical sliders to be more proportional to the screen */
 input[type=range][orient=vertical] {
     writing-mode: bt-lr;
     -webkit-appearance: slider-vertical;
     appearance: slider-vertical;
     width: 8vw;
-    height: 90vh;
-    margin: 5vh 0;
+    height: 70vh; /* Reduced from 90vh */
+    margin: 15vh 0; /* Increased from 5vh to center vertically */
     position: absolute;
     top: 0;
     pointer-events: auto;
 }
+
 
 #speedDial1 {
     left: 10px;
@@ -241,18 +274,6 @@ input[type=range][orient=vertical] {
     right: 10px;
 }
 
-
-
-#armController {
-    position: relative;
-    width: 400px;   /* Set to your desired image/container size */
-    height: 400px;  /* Set to your desired image/container size */
-    transform: rotate(-12deg);
-    display: block;
-    visibility: hidden;
-    top: -1000px;
-    left: 1300px;
-}
 
 .arm {
     position: relative;
@@ -267,15 +288,21 @@ input[type=range][orient=vertical] {
 /* Example: Custom positions for each layer */
 .arm1 {
     z-index: 1;
+
+    transform: rotate(-6deg);
 }
 
 .arm1-rotate {
     position: relative;
-    top: 300px;
-    left: -1200px;
 
+    height: 400px;
+    width: 400px;
+
+    top: 250px;
+
+    bottom: auto;
     transform-origin: 280px 100px; /* Using standard transform-origin with x-offset */
-    transform: rotate(12deg);
+    transform: rotate(0deg);
     /* top: 0; left: 0; default, adjust if needed */
 }
 
@@ -286,19 +313,17 @@ input[type=range][orient=vertical] {
 .arm2-rotate {
     position: relative; /* Creates a positioning context */
     z-index: 2;
-    top: -180px;
-
+    top: -140px;
 
     transform-origin: 35px 30px; /* Using standard transform-origin with x and y offsets */
-    transform: rotate(-12deg);
+    transform: rotate(-6deg);
 }
 
 .arm3-rotate {
     position: relative;
     z-index: 2;
-
-    top: -60px;
     left: 340px;
+    top: -70px;
     transform-origin: 30px 30px; /* Using standard transform-origin with x-offset */
     transform: rotate(-90deg);
 }
@@ -336,17 +361,14 @@ input[type=range][orient=vertical] {
 /* Position each dot container relative to its arm */
 .arm1-dot-container {
     top: 150px; /* Adjust based on your arm positions */
-    left: 160px;
 }
 
 .arm2-dot-container {
     top: 270px; /* Adjust based on your arm positions */
-    left: 160px;
 }
 
 .arm3-dot-container {
     top: 400px; /* Adjust based on your arm positions */
-    left: 160px;
 }
 
 
