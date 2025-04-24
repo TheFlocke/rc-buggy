@@ -136,8 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function positionDotOnCircle(angle) {
-            console.log(dotClass)
-
             if (setup) {
                 angle = (safeArea[armClass].min)/ (180 * Math.PI);
                 setup = false;
