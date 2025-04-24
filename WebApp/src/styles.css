@@ -211,30 +211,35 @@ h1 {
     z-index: 0; /* Ensure it's above other elements */
 }
 
-/* Update the armController to be positioned in the same space */
 #armController {
     position: absolute;
     visibility: hidden;
     display: flex;
-    flex-direction: row; /* Ensure horizontal layout */
-    justify-content: space-between; /* Create space between elements */
-    align-items: center; /* Vertical alignment */
+    flex-direction: column; /* Change to column layout */
+    justify-content: flex-end; /* Align to bottom */
+    align-items: center; /* Center horizontally */
     z-index: 5;
-    width: 90%; /* Total width of both containers + spacing */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height of container */
+    bottom: 0; /* Anchor to bottom */
 }
 
 .arm-controlls {
-    order: 2; /* Move to right side */
-    width: 500px !important;
-    height: 800px;
-    justify-self: center;
+    order: 2; /* Controls below the arm view */
+    width: 100% !important; /* Full width */
+    height: 150px; /* Reduced height */
+    display: flex;
+    justify-content: space-around; /* Evenly space the dot containers */
+    align-items: center;
+    margin-bottom: 20px; /* Space from bottom */
 }
 
 .arm-view {
-    order: 1; /* Move to left side */
-    border: transparent solid 20px;
-    width: 400px !important;
-    height: 400px !important;
+    order: 1; /* Arm view above controls */
+    border: transparent solid 10px;
+    width: 90% !important;
+    height: 600px !important;
+    margin-bottom: 20px; /* Space between arm view and controls */
 }
 
 
@@ -336,18 +341,19 @@ input[type=range][orient=vertical] {
 }
 
 
+/* Reposition dot containers to be in a row at the bottom */
 .dot-container {
-    position: absolute;
-    width: 100px; /* Adjust based on your desired circle size */
-    height: 100px;
+    position: relative; /* Change from absolute */
+    width: 80px; /* Slightly smaller */
+    height: 80px;
     border: 1px dashed #ccc;
     border-radius: 50%;
     pointer-events: none;
-    /* Add these new properties */
-    right: 20px; /* Distance from right edge */
-    left: auto; /* Override any previous left positioning */
+    display: inline-block; /* Allow horizontal arrangement */
+    margin: 0 10px; /* Add spacing between dots */
 }
 
+/* Ensure the draggable dots are centered in their containers */
 .draggable-dot {
     position: absolute;
     width: 15px;
@@ -358,20 +364,13 @@ input[type=range][orient=vertical] {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    pointer-events: auto; /* Make sure the dot receives events */
+    pointer-events: auto;
 }
 
 /* Position each dot container relative to its arm */
-.arm1-dot-container {
-    top: 150px; /* Adjust based on your arm positions */
-}
-
-.arm2-dot-container {
-    top: 270px; /* Adjust based on your arm positions */
-}
-
-.arm3-dot-container {
-    top: 400px; /* Adjust based on your arm positions */
+/* Reset individual dot container positioning */
+.arm1-dot-container, .arm2-dot-container, .arm3-dot-container {
+    top: auto; /* Remove top positioning */
 }
 
 
