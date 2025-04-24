@@ -1,3 +1,4 @@
+import { writeArmCmd } from './main.js'
 
 window.handleSpeedInput = function() {
     // noinspection JSDeprecatedSymbols
@@ -28,6 +29,13 @@ document.addEventListener('DOMContentLoaded', function() {
             arm3: { min: 0, max: 180},
             arm4: { min: 90, max: 180}
         };
+
+        const current = {
+            arm1: 12,
+            arm2: 12,
+            arm3: 0,
+            arm4: 90
+        }
 
 
         // Center coordinates of the circle
@@ -90,10 +98,17 @@ document.addEventListener('DOMContentLoaded', function() {
             // Rotate the arm based on the angle
             if (armClass === 'arm1') {
                 document.querySelector('.arm1-rotate').style.transform = `rotate(${calculateDegrees(angle, 'arm1')}deg)`;
+                current.arm1 = calculateDegrees(angle, 'arm1')
+                writeArmCmd(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
             } else if (armClass === 'arm2') {
                 document.querySelector('.arm2-rotate').style.transform = `rotate(${(calculateDegrees(angle, 'arm2')) * -1}deg)`;
+                current.arm2 = calculateDegrees(angle, 'arm2')
+                writeArmCmd(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
             } else if (armClass === 'arm3') {
                 document.querySelector('.arm3-rotate').style.transform = `rotate(${calculateDegrees(angle, 'arm3') - 90}deg)`;
+                current.arm3 = calculateDegrees(angle, 'arm3')
+
+                writeArmCmd(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
             }
         }
 
@@ -102,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function calculateDegrees(angle, arm) {
-            degree = angle * (180 / Math.PI)
+            let degree = angle * (180 / Math.PI)
 
             if (safeArea[arm].min < degree && safeArea[arm].max > degree) {
                 console.log(degree)

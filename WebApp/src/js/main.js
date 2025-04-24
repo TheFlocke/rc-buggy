@@ -404,6 +404,30 @@ async function writeCmd(value) {
     return sent;
 }
 
+async function writeArmCmd(value) {
+	let sent = "failed";
+	if (bleServer && bleServer.connected) {
+		const textEncoder = new TextEncoder();
+		const uint8Array = textEncoder.encode(value);
+		sentTimestamp.innerHTML = getDateTime();
+		try {
+			armCharacteristic.writeValueWithoutResponse(uint8Array);
+			latestValueSent.innerHTML = value;
+			sent = "ok";
+		} catch (error) {
+			console.error("Error writing to ARM characteristic: ", error);
+		};
+	} else  {
+		console.error ("Bluetooth is not connected. Cannot write to characteristic.")
+		onDisconnected();
+		sent="disconnected"
+	}
+	// 100ms verzögerung einbauen, um nicht zu häufig zu schicken!
+	await new Promise((resolve, reject) => setTimeout(resolve, 100));
+	sending=false;
+	return sent;
+}
+
 function writeCmdBlocked(value){
     let sent="failed";
 	if (bleServer && bleServer.connected) {
