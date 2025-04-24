@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include <../lib/ESP32ble.h>
+#include "../lib/ESP32ble.h"
+#include "../lib/i2c_bus.h"
+#include "../lib/Servo.h"
 #include <TMC2209.h>
 #include "Wire.h"
-#include "../lib/i2c_bus.h"
-
 
 const int ACT_LED = 8; // Activitiy LED for the Sensor PCB
 const int SD_CSB = 9;
@@ -44,6 +44,12 @@ const long SERIAL_BAUD_RATE = 115200;
 
 
 void setup() {
+  // Giving ESP32 a BLE name
+  esp32ble.setup("rc-rover");
+  // Initalazing I2C with predefined Ports
+  I2CBUS.begin(I2C_SDA, I2C_SCL, 100000);
+  // Loading Servo Setup and executing it ==> to see more go to ../src/servo.cpp
+  servo.setup();
   // setting up serial connection for communication with motordriver(s)
   stepper_driver_left.setup(Serial1,SERIAL_BAUD_RATE,SERIAL_ADDRESS_left,UART_RX,UART_TX);
   stepper_driver_left.setReplyDelay(REPLY_DELAY);
@@ -54,37 +60,26 @@ void setup() {
   pinMode(STEP2_DIR, OUTPUT);
   pinMode(STEP1_STEP, OUTPUT);
   pinMode(STEP2_STEP, OUTPUT);
-  // Giving ESP32 a BLE name
-  esp32ble.setup("rc-rover");
-  // Initalazing I2C with predefined Ports
-  I2CBUS.begin(I2C_SDA, I2C_SCL, 100000);
 }
 
 void loop() {
   esp32ble.handle();
-  int speed = esp32ble.getSpeed1();
-  int left  = abs(speed);
-  int right = abs(speed);
-  if(speed>0) {
-    // forward
-    analogWrite(STEP1_STEP, left);
-    digitalWrite(STEP1_DIR, LOW);
 
-    analogWrite(STEP2_STEP, right);
-    digitalWrite(STEP2_DIR, LOW);
-  } else if(speed<0) {
-    // backward
-    analogWrite(STEP1_STEP, left);
-    digitalWrite(STEP1_DIR, HIGH);
+  // Pull all the Int for later use from the Webinterface
+  // Left Wheel
+  int speed1 = esp32ble.getSpeed1();
+  int wheel1 = esp32ble.getWheel1();
+  // Right Wheel
+  int speed2 = esp32ble.getSpeed2();
+  int wheel2 = esp32ble.getWheel2();
+  // Arm
+  int arm1 = esp32ble.getArm1();
+  int arm2 = esp32ble.getArm2();
+  int arm3 = esp32ble.getArm3();
+  int grabber = esp32ble.getArm4();
 
-    analogWrite(STEP2_STEP, right);
-    digitalWrite(STEP2_DIR, HIGH);
-  } else {
-    // stop (so they aren't left floating)
-    digitalWrite(STEP1_STEP, LOW);
-    digitalWrite(STEP1_DIR, LOW);
+  // Put here the Control Mechanism for the Speed
 
-    digitalWrite(STEP2_STEP, LOW);
-    digitalWrite(STEP2_DIR, LOW);
-  }
+
+
 }
