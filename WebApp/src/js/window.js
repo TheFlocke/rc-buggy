@@ -91,9 +91,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (armClass === 'arm1') {
                 document.querySelector('.arm1-rotate').style.transform = `rotate(${calculateDegrees(angle, 'arm1')}deg)`;
             } else if (armClass === 'arm2') {
-                document.querySelector('.arm2-rotate').style.transform = `rotate(${calculateDegrees(angle, 'arm2')}deg)`;
+                document.querySelector('.arm2-rotate').style.transform = `rotate(${(calculateDegrees(angle, 'arm2')) * -1}deg)`;
             } else if (armClass === 'arm3') {
-                document.querySelector('.arm3-rotate').style.transform = `rotate(${calculateDegrees(angle, 'arm3')}deg)`;
+                document.querySelector('.arm3-rotate').style.transform = `rotate(${calculateDegrees(angle, 'arm3') - 90}deg)`;
             }
         }
 
