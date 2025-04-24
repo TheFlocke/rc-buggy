@@ -2,8 +2,10 @@ import { writeArmCmd, writeCmd } from './main.js'
 
 
 let currentSpeed = {
-    1: 0,
-    2: 0,
+    speed1: 0,
+    speed2: 0,
+    wheel1: 0,
+    wheel2: 0
 }
 
 window.handleSpeedInput = function(motor) {
@@ -11,14 +13,14 @@ window.handleSpeedInput = function(motor) {
     const speed = event.target.value;
     currentSpeed[motor] = speed
     console.log("Motor: "+motor+" -- Current speed:", speed);
-    writeCmd(currentSpeed[1]+':'+currentSpeed[2]+':0:0')
+    writeCmd(currentSpeed.speed1+':'+currentSpeed.speed2+':'+currentSpeed.wheel1+':'+currentSpeed.wheel2)
 };
 
 window.handleSpeedRelease = function(motor) {
     // noinspection JSDeprecatedSymbols
     event.target.value = 0;  // Snap back to 0
     currentSpeed[motor] = 0
-    writeCmd(currentSpeed[1]+':'+currentSpeed[2]+':0:0')
+    writeCmd(currentSpeed.speed1+':'+currentSpeed.speed2+':'+currentSpeed.wheel1+':'+currentSpeed.wheel2)
     console.log("Motor: "+ motor +" -- Speed reset to 0");
 };
 
