@@ -232,7 +232,7 @@ h1 {
 
 .arm-view {
     order: 1; /* Move to left side */
-    border: transparent solid 300px;
+    border: transparent solid 20px;
     width: 400px !important;
     height: 400px !important;
 }
