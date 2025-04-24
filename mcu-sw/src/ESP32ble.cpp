@@ -3,51 +3,52 @@
 
 ESP32ble esp32ble;
 
-class CmdCallbacks : public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *pCharacteristic) {
+class CmdCallbacks : public NimBLECharacteristicCallbacks {
+    void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
         esp32ble.setCmd(pCharacteristic->getValue());
     }
 };
 
-class StateCmdCallbacks : public BLECharacteristicCallbacks {
-    void onRead(BLECharacteristic *pCharacteristic) {
+class StateCmdCallbacks : public NimBLECharacteristicCallbacks {
+    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
         pCharacteristic->setValue(esp32ble.getCmd());
         pCharacteristic->notify();
     }
 };
 
-class ArmCallbacks : public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *pCharacteristic) {
+class ArmCallbacks : public NimBLECharacteristicCallbacks {
+    void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
         esp32ble.setArm(pCharacteristic->getValue());
     }
 };
 
-class StateArmCallbacks : public BLECharacteristicCallbacks {
-    void onRead(BLECharacteristic *pCharacteristic) {
+class StateArmCallbacks : public NimBLECharacteristicCallbacks {
+    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) {
         pCharacteristic->setValue(esp32ble.getArm());
         pCharacteristic->notify();
     }
 };
 
-class SensorCallbacks : public BLECharacteristicCallbacks {
-    void onRead(BLECharacteristic *pCharacteristic) {
+class SensorCallbacks : public NimBLECharacteristicCallbacks {
+    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
         pCharacteristic->setValue(esp32ble.getSensor());
         pCharacteristic->notify();
     }
 };
 
-class ServerCallbacks : public BLEServerCallbacks {
-    void onConnect(BLEServer *pServer) {
+class ServerCallbacks : public NimBLEServerCallbacks {
+    void onConnect(NimBLEServer *pServer, NimBLEConnInfo &connInfo) override {
         esp32ble.onConnect();
     };
 
-    void onDisconnect(BLEServer *pServer) {
+    void onDisconnect(NimBLEServer *pServer, NimBLEConnInfo &connInfo, int reason) override {
         esp32ble.onDisconnect();
     }
 };
 
 String ESP32ble::getCmd() const {
-    return "Speed_1: " + String(_speed1) + ", Speed_2: " + String(_speed2) + "Wheel_1: " + String(_wheel1) + ", Wheel_2: " + String(_wheel2);
+    return "Speed_1: " + String(_speed1) + ", Speed_2: " + String(_speed2) + "Wheel_1: " + String(_wheel1) +
+           ", Wheel_2: " + String(_wheel2);
 }
 
 void ESP32ble::setCmd(String value) {
@@ -58,7 +59,6 @@ void ESP32ble::setCmd(String value) {
     int t2 = value.indexOf(":", t1 + 1);
     int t3 = value.indexOf(":", t2 + 1);
     if (t1 > 0 && t3 < value.length()) {
-
         _speed1 = value.substring(0, t1).toInt();
         _speed2 = value.substring(t1 + 1, t2).toInt();
         _wheel1 = value.substring(t2 + 1, t3).toInt();
@@ -77,7 +77,7 @@ void ESP32ble::setCmd(String value) {
         _speed1 = 0;
         _speed2 = 0;
         // Wheel wird einfach auf der letzten Position gelassen
-        }
+    }
 
 
     if (_pCmdStateCharacteristic) {
@@ -87,7 +87,8 @@ void ESP32ble::setCmd(String value) {
 }
 
 String ESP32ble::getArm() const {
-    return "Servo_1: " + String(_arm1) + ", Servo_2: " + String(_arm2) + ", Servo_3: " + String(_arm3) + ", Gripper: " + String(_arm4);
+    return "Servo_1: " + String(_arm1) + ", Servo_2: " + String(_arm2) + ", Servo_3: " + String(_arm3) + ", Gripper: " +
+           String(_arm4);
 }
 
 void ESP32ble::setArm(String value) {
@@ -98,7 +99,6 @@ void ESP32ble::setArm(String value) {
     int t2 = value.indexOf(":", t1 + 1);
     int t3 = value.indexOf(":", t2 + 1);
     if (t1 > 0 && t3 < value.length()) {
-
         _arm1 = value.substring(0, t1).toInt();
         _arm2 = value.substring(t1 + 1, t2).toInt();
         _arm3 = value.substring(t2 + 1, t3).toInt();
@@ -119,7 +119,8 @@ void ESP32ble::setArm(String value) {
 }
 
 String ESP32ble::getSensor() const {
-    return "Temp: " + String(_temp) + ", Humidity: " + String(_humidity) + ", Pressure: " + String(_pressure) + ", Gas: " + String(_gas);
+    return "Temp: " + String(_temp) + ", Humidity: " + String(_humidity) + ", Pressure: " + String(_pressure) +
+           ", Gas: " + String(_gas);
 }
 
 void ESP32ble::onConnect() {
@@ -149,8 +150,8 @@ void ESP32ble::setup(String name) {
     );
     pCmdCharacteristic->setCallbacks(new CmdCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
-        BLE2904 *descriptor_2904 = new BLE2904();
-        descriptor_2904->setFormat(BLE2904::FORMAT_UTF8);
+        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
+        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
         pCmdCharacteristic->addDescriptor(descriptor_2904);
     }
 
@@ -160,10 +161,9 @@ void ESP32ble::setup(String name) {
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     _pCmdStateCharacteristic->setCallbacks(new StateCmdCallbacks()); {
-        // Creates BLE Descriptor 0x2902: Client Characteristic Configuration Descriptor (CCCD) (needed for notify)
         // Adds also the Characteristic Type Description - 0x2904 descriptor
-        BLE2904 *descriptor_2904 = new BLE2904();
-        descriptor_2904->setFormat(BLE2904::FORMAT_UTF8);
+        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
+        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
         _pCmdStateCharacteristic->addDescriptor(descriptor_2904);
     }
 
@@ -174,8 +174,8 @@ void ESP32ble::setup(String name) {
     );
     _pSensorCharacteristic->setCallbacks(new SensorCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
-        BLE2904 *descriptor_2904 = new BLE2904();
-        descriptor_2904->setFormat(BLE2904::FORMAT_UTF8);
+        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
+        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
         _pSensorCharacteristic->addDescriptor(descriptor_2904);
     }
 
@@ -186,8 +186,8 @@ void ESP32ble::setup(String name) {
     );
     _pArmCharacteristic->setCallbacks(new ArmCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
-        BLE2904 *descriptor_2904 = new BLE2904();
-        descriptor_2904->setFormat(BLE2904::FORMAT_UTF8);
+        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
+        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
         _pArmCharacteristic->addDescriptor(descriptor_2904);
     }
 
@@ -198,8 +198,8 @@ void ESP32ble::setup(String name) {
     );
     _pStateArmCharacteristic->setCallbacks(new StateArmCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
-        BLE2904 *descriptor_2904 = new BLE2904();
-        descriptor_2904->setFormat(BLE2904::FORMAT_UTF8);
+        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
+        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
         _pStateArmCharacteristic->addDescriptor(descriptor_2904);
     }
 
@@ -207,16 +207,17 @@ void ESP32ble::setup(String name) {
     pService->start();
 
     // Start advertising
-    BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+    NimBLEAdvertising *pAdvertising = NimBLEDevice::getAdvertising();
+    pAdvertising->setName(_name.c_str());
     pAdvertising->addServiceUUID(SERVICE_UUID);
-    BLEDevice::startAdvertising();
+    NimBLEDevice::startAdvertising();
 }
 
 void ESP32ble::handle() {
     // disconnecting
     if (!_connected && _lastConnectionState) {
         delay(500); // give the bluetooth stack the chance to get things ready
-        BLEDevice::startAdvertising(); // restart advertising
+        NimBLEDevice::startAdvertising(); // restart advertising
         _lastConnectionState = _connected;
     }
     // connecting
