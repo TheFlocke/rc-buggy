@@ -213,12 +213,15 @@ input[type=range][orient=vertical] {
     position: relative;
     width: 400px;   /* Set to your desired image/container size */
     height: 400px;  /* Set to your desired image/container size */
+    transform: rotate(-12deg);
 }
 
 .arm {
     position: absolute;
-    position: absolute;
     left: 0;
+
+    width: 100%;
+
     /* Optional: make all images fill the container */
     /* Optional: pointer-events: none; if you want clicks to pass through */
 }
@@ -226,11 +229,15 @@ input[type=range][orient=vertical] {
 /* Example: Custom positions for each layer */
 .arm1 {
     z-index: 1;
-    top: 300px;
-    left: -900px;
+}
 
-    transform-origin: 80px 70px; /* Using standard transform-origin with x-offset */
-    transform: rotate(0deg);
+.arm1-rotate {
+    position: relative;
+    top: 300px;
+    left: -1200px;
+
+    transform-origin: 280px 100px; /* Using standard transform-origin with x-offset */
+    transform: rotate(12deg);
     /* top: 0; left: 0; default, adjust if needed */
 }
 
@@ -241,19 +248,27 @@ input[type=range][orient=vertical] {
 .arm2-rotate {
     position: relative; /* Creates a positioning context */
     z-index: 2;
-    top: 300px;
-    left: -910px;
 
-    transform-origin: 70px 60px; /* Using standard transform-origin with x and y offsets */
+
+    transform-origin: 35px 30px; /* Using standard transform-origin with x and y offsets */
+    transform: rotate(0deg);
+}
+
+.arm3-rotate {
+    position: relative;
+    z-index: 2;
+
+    top: 0px;
+    left: 270px;
+    transform-origin: 30px 30px; /* Using standard transform-origin with x-offset */
     transform: rotate(0deg);
 }
 
 .arm3 {
     z-index: 2;
-    top: -5mm;
-    left: 160mm;
-    transform-origin: 80px 50%; /* Using standard transform-origin with x-offset */
-    transform: rotate(0deg);
+
+    height: 50px !important;
+    width: auto !important;
 }
 
 

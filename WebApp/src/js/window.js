@@ -22,6 +22,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const dot = document.querySelector('.' + dotClass);
         const arm = document.querySelector('.' + armClass);
         const container = dot.parentElement;
+        const safeArea = {
+            arm1: { min: 12, max: 180 },
+            arm2: { min: 12, max: 180 },
+            arm3: { min: 0, max: 180},
+            arm4: { min: 90, max: 180}
+        };
+
 
         // Center coordinates of the circle
         const center = {
@@ -76,20 +83,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.clientX - containerCenterX
             );
 
+            console.log(parseInt(angle * (180 / Math.PI) + 12))
+
             positionDotOnCircle(angle);
 
             // Rotate the arm based on the angle
             if (armClass === 'arm1') {
-                arm.style.transform = `rotate(${angle * (180 / Math.PI)}deg)`;
+                document.querySelector('.arm1-rotate').style.transform = `rotate(${calculateDegrees(angle, 'arm1')}deg)`;
             } else if (armClass === 'arm2') {
-                document.querySelector('.arm2-rotate').style.transform = `rotate(${angle * (180 / Math.PI)}deg)`;
+                document.querySelector('.arm2-rotate').style.transform = `rotate(${calculateDegrees(angle, 'arm2')}deg)`;
             } else if (armClass === 'arm3') {
-                arm.style.transform = `rotate(${angle * (180 / Math.PI)}deg)`;
+                document.querySelector('.arm3-rotate').style.transform = `rotate(${calculateDegrees(angle, 'arm3')}deg)`;
             }
         }
 
         function onMouseUp() {
             isDragging = false;
+        }
+
+        function calculateDegrees(angle, arm) {
+            degree = angle * (180 / Math.PI)
+
+            if (safeArea[arm].min < degree && safeArea[arm].max > degree) {
+                console.log(degree)
+                return degree
+            }
+
+            if (safeArea[arm].min > degree) {
+                console.log(safeArea[arm].min)
+                return safeArea[arm].min
+            }
+            if (safeArea[arm].max < degree) {
+                console.log(safeArea[arm].max)
+                return safeArea[arm].max
+            }
         }
 
         function positionDotOnCircle(angle) {
