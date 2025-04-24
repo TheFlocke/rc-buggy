@@ -99,12 +99,6 @@ window.onload = () => {
 
 	switch1.addEventListener('click', () => toggleLED1());
 	switch2.addEventListener('click', () => toggleLED2());
-	buttonLeft.addEventListener('click', () => writeCmd("left"));
-	buttonRight.addEventListener('click', () => writeCmd("right"));
-	buttonUp.addEventListener('click', () => writeCmd("up"));
-	buttonDown.addEventListener('click', () => writeCmd("down"));
-	buttonStop.addEventListener('click', () => writeCmd("stop"));
-	orientationFrame.addEventListener('click', () => toggleStart());
 
 	if (!navigator.bluetooth) {
 		errorMessageContainer.innerHTML = "Web Bluetooth API ist für diesen Browser nicht verfügbar!";
@@ -119,8 +113,6 @@ window.onload = () => {
 
 	// Disconnect Button
 	disconnectButton.addEventListener('click', disconnectDevice);
-	
-	window.addEventListener("deviceorientation", handleOrientation, true);
 }
 
 function toggleLED1() {
@@ -131,68 +123,6 @@ function toggleLED1() {
 function toggleLED2() {
     document.getElementById('armController').style.visibility = 'visible';
 	document.getElementById('speedController').style.display = 'none';
-}
-
-function toggleStart() {
-	if(running) {
-		running = false;
-		orientationFrame.classList.remove("running");
-		orientationFrame.classList.add("stopped");
-		writeCmdBlocked("0:0");
-	} else {
-		running = true;
-		orientationFrame.classList.add("running");
-		orientationFrame.classList.remove("stopped");		
-		writeCmdBlocked(`${direction}:${speed}`);
-	}
-}
-function handleOrientation(event) {
-    let newSpeed = speed;
-    let newDirection=direction;
-    if(screen.orientation.angle!=0) {
-        // Y <-90 || Y>0 -> speed =0
-        // Y 0 ... -90 -> 255 -> 0
-        // -80° -> speed = -255
-        // -60° -> speed = 0
-        // -40° -> speed = 255
-        let Y = event.gamma+60; // -20 ... 0 ... 20 -> -255 ... 0 ... 255
-        newSpeed = Math.round(Y*255/20);
-        // -30 .. 30° 
-        newDirection=Math.round(event.beta*90/30);
-    } else {
-        // Y <-90 || Y>0 -> speed =0
-        // Y 0 ... -90 -> 255 -> 0
-        // 80° -> speed = -255
-        // 60° -> speed = 0
-        // 40° -> speed = 255
-        let Y = event.beta-60; // -20 ... 0 ... 20 -> -255 ... 0 ... 255
-        newSpeed = -Math.round(Y*255/20);
-        // -30 .. 30° 
-        newDirection=Math.round(event.gamma*90/30);
-    }
-    
-    if(newSpeed < -255) newSpeed = -255;
-    if(newSpeed > 255) newSpeed = 255;
-    if(newDirection<-90) newDirection=-90;
-    if(newDirection> 90) newDirection=90;    
-    
-    if(invertDirection)
-        newDirection=-newDirection;
-    if(newDirection!=direction || newSpeed!=speed) {
-        speed=newSpeed;
-        direction=newDirection;
-        if(running)
-            writeCmd(`${direction}:${speed}`);
-        else
-            writeCmd("0:0");
-    }
-        
-    let orientation_maxX = orientationFrame.clientWidth - orientationCenter.clientWidth;
-    let orientation_maxY = orientationFrame.clientHeight - orientationCenter.clientHeight;
-
-    orientationCenter.style.left = `${(orientation_maxX * (direction+90)) / 180}px`;
-    orientationCenter.style.top = `${orientation_maxY/2-(orientation_maxY * speed) / 510}px`; 
-    orientation.innerHTML=`dir=${direction}, speed=${speed} (bga: ${Math.round(event.beta)}, ${Math.round(event.gamma)}, ${Math.round(event.alpha)})`;
 }
 
 async function registerServiceWorker() { 
@@ -410,27 +340,6 @@ export async function writeArmCmd(value) {
 	await new Promise((resolve, reject) => setTimeout(resolve, 100));
 	sending=false;
 	return sent;
-}
-
-function writeCmdBlocked(value){
-    let sent="failed";
-	if (bleServer && bleServer.connected) {
-		const textEncoder = new TextEncoder();
-		const uint8Array = textEncoder.encode(value);
-		sentTimestamp.innerHTML = getDateTime();
-		try {
-			cmdCharacteristic.writeValueWithResponse(uint8Array);
-			latestValueSent.innerHTML = value;
-            sent="ok";
-		} catch(error) {
-			console.error("Error writing to the CMD characteristic: ", error);
-		};
-	} else {
-		console.error ("Bluetooth is not connected. Cannot write to characteristic.")
-		onDisconnected();
-        sent="disconnected"
-	}
-    return sent;
 }
 
 function disconnectDevice() {
