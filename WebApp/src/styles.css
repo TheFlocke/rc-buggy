@@ -391,3 +391,8 @@ input[type=range][orient=vertical] {
     margin-top: 10px
 }
 
+
+#wheel1, #wheel2 {
+    pointer-events: auto;
+}
+
