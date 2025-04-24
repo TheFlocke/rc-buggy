@@ -5,6 +5,18 @@
 	(uuid "98d0ca98-769d-47ac-a7a4-c3014eaa21c0")
 	(paper "A4")
 	(lib_symbols)
+	(text "AUTHOR: @THEFLOCKE"
+		(exclude_from_sim no)
+		(at 249.936 196.596 0)
+		(effects
+			(font
+				(face "KiCad Font")
+				(size 1.27 1.27)
+				(color 194 0 194 1)
+			)
+		)
+		(uuid "c32c94bc-233c-439a-a774-df9cfb7c85e3")
+	)
 	(sheet
 		(at 25.4 25.4)
 		(size 63.5 38.1)

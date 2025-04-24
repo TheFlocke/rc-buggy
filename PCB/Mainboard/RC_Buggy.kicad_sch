@@ -1386,6 +1386,18 @@
 		)
 		(uuid "25d75206-6697-43d7-a73c-9cfa9bf429bd")
 	)
+	(text "AUTHOR: @THEFLOCKE"
+		(exclude_from_sim no)
+		(at 249.936 196.596 0)
+		(effects
+			(font
+				(face "KiCad Font")
+				(size 1.27 1.27)
+				(color 194 0 194 1)
+			)
+		)
+		(uuid "52851cc1-f11e-420c-9c81-f0a1f639955d")
+	)
 	(text "BOOT mode"
 		(exclude_from_sim no)
 		(at 112.014 28.448 0)
