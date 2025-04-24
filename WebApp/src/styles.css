@@ -201,12 +201,46 @@ h1 {
     color: rgb(194, 59, 51); 
 }
 
-input[type=range][orient=vertical] {
-    writing-mode: vertical-lr;
-    direction: rtl;
-    appearance: slider-vertical;
-    vertical-align: bottom;
+#speedController {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    pointer-events: none; /* Allow interaction with underlying elements */
 }
+
+/* Add this new container for proper positioning */
+#sliderContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+
+input[type=range][orient=vertical] {
+    writing-mode: bt-lr;
+    -webkit-appearance: slider-vertical;
+    appearance: slider-vertical;
+    width: 8vw;
+    height: 90vh;
+    margin: 5vh 0;
+    position: absolute;
+    top: 0;
+    pointer-events: auto;
+}
+
+#speedDial1 {
+    left: 10px;
+}
+
+#speedDial2 {
+    right: 10px;
+}
+
 
 
 #armController {
@@ -214,6 +248,7 @@ input[type=range][orient=vertical] {
     width: 400px;   /* Set to your desired image/container size */
     height: 400px;  /* Set to your desired image/container size */
     transform: rotate(-12deg);
+    display: none;
 }
 
 .arm {

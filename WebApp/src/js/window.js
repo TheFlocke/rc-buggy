@@ -1,15 +1,15 @@
 import { writeArmCmd } from './main.js'
 
-window.handleSpeedInput = function() {
+window.handleSpeedInput = function(motor) {
     // noinspection JSDeprecatedSymbols
     const speed = event.target.value;
-    console.log("Current speed:", speed);
+    console.log("Motor: "+motor+" -- Current speed:", speed);
 };
 
-window.handleSpeedRelease = function() {
+window.handleSpeedRelease = function(motor) {
     // noinspection JSDeprecatedSymbols
     event.target.value = 0;  // Snap back to 0
-    console.log("Speed reset to 0");
+    console.log("Motor: "+ motor +" -- Speed reset to 0");
 };
 
 
@@ -135,6 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function positionDotOnCircle(angle) {
+            console.log(dotClass)
             // Calculate position on the circle based on angle
             const x = center.x + radius * Math.cos(angle);
             const y = center.y + radius * Math.sin(angle);

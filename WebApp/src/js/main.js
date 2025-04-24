@@ -124,29 +124,13 @@ window.onload = () => {
 }
 
 function toggleLED1() {
-    led1=!led1;
-	if(led1) {
-		writeCmdBlocked("led1-on");
-        switch1.getElementsByTagName("i")[0].classList.remove("off");
-        switch1.getElementsByTagName("i")[0].classList.add("on");
-	} else {
-		writeCmdBlocked("led1-off");
-        switch1.getElementsByTagName("i")[0].classList.remove("on");
-        switch1.getElementsByTagName("i")[0].classList.add("off");
-	}
+	document.getElementById('armController').style.display = 'none';
+	document.getElementById('speedController').style.display = 'flex';
 }
 
 function toggleLED2() {
-    led2=!led2;
-	if(led2) {
-		writeCmdBlocked("led2-on");
-        switch2.getElementsByTagName("i")[0].classList.remove("off");
-        switch2.getElementsByTagName("i")[0].classList.add("on");
-	} else {
-		writeCmdBlocked("led2-off");
-        switch2.getElementsByTagName("i")[0].classList.remove("on");
-        switch2.getElementsByTagName("i")[0].classList.add("off");
-	}
+    document.getElementById('armController').style.display = 'block';
+	document.getElementById('speedController').style.display = 'none';
 }
 
 function toggleStart() {

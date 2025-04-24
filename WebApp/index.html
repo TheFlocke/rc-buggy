@@ -57,11 +57,29 @@
 </div>
 <div id="main">
     <div class="stopped" id="orientation_frame">
+        <div id="sliderContainer">
+
+            <div id="speedController">
+
+
+                <label for="speedDial1"></label>
+                <input id="speedDial1" max="255" min="-255" onchange="handleSpeedRelease(1)" oninput="handleSpeedInput(1)"
+                       orient="vertical" type="range"
+                       value="0">
+
+                <label for="speedDial2"></label>
+                <input id="speedDial2" max="255" min="-255" onchange="handleSpeedRelease(2)" oninput="handleSpeedInput(2)"
+                       orient="vertical" type="range"
+                       value="0">
+            </div>
+
+        </div>
         <div id="orientation_center"></div>
         <div style="font-size: 80%; text-align:right; color:white; padding-right:1em"><span id="orientation_info">orientation</span>
         </div>
         <div style="font-size: 80%; text-align:right; color:white; padding-right:1em"><span
                 id="orientation_info_device">device info</span></div>
+
     </div>
 
     <div id="armController">
@@ -88,6 +106,7 @@
         </div>
         </div>
     </div>
+
 
 
 
@@ -133,11 +152,6 @@
             <p><span class="info" id="bleServiceList"></span></p>
         </div>
     </div>
-
-    <label for="speedDial"></label>
-    <input id="speedDial" max="255" min="-255" onchange="handleSpeedRelease()" oninput="handleSpeedInput()"
-           orient="vertical" type="range"
-           value="0">
 
 </div>
 
