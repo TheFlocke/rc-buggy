@@ -173,7 +173,7 @@ h1 {
   background-color: rgba(200,200,200,0.9);
   margin: 0.5em;
   margin-top: 1.5em;
-  height:100%;
+  height:90%;
     width: 70%;
   flex-direction: column;
 }
@@ -202,6 +202,48 @@ h1 {
     color: rgb(194, 59, 51); 
 }
 
+/* Update the sliderContainer to be positioned absolutely */
+#sliderContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0; /* Ensure it's above other elements */
+}
+
+#armController {
+    position: absolute;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column; /* Change to column layout */
+    justify-content: flex-end; /* Align to bottom */
+    align-items: center; /* Center horizontally */
+    z-index: 5;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height of container */
+    bottom: 0; /* Anchor to bottom */
+}
+
+.arm-controlls {
+    order: 2; /* Controls below the arm view */
+    width: 100% !important; /* Full width */
+    height: 150px; /* Reduced height */
+    display: flex;
+    justify-content: space-around; /* Evenly space the dot containers */
+    align-items: center;
+    margin-bottom: 20px; /* Space from bottom */
+}
+
+.arm-view {
+    order: 1; /* Arm view above controls */
+    width: 90% !important;
+    height: 600px !important;
+    margin-bottom: 20px; /* Space between arm view and controls */
+}
+
+
+/* Adjust the speedController to be centered better */
 #speedController {
     position: absolute;
     top: 0;
@@ -211,28 +253,23 @@ h1 {
     display: flex;
     justify-content: space-between;
     padding: 0 20px;
-    pointer-events: none; /* Allow interaction with underlying elements */
+    pointer-events: none;
+    z-index: 15; /* Ensure sliders are on top */
 }
 
-/* Add this new container for proper positioning */
-#sliderContainer {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-
+/* Adjust the vertical sliders to be more proportional to the screen */
 input[type=range][orient=vertical] {
     writing-mode: bt-lr;
     -webkit-appearance: slider-vertical;
     appearance: slider-vertical;
     width: 8vw;
-    height: 90vh;
-    margin: 5vh 0;
+    height: 70vh; /* Reduced from 90vh */
+    margin: 15vh 0; /* Increased from 5vh to center vertically */
     position: absolute;
     top: 0;
     pointer-events: auto;
 }
+
 
 #speedDial1 {
     left: 10px;
@@ -242,18 +279,6 @@ input[type=range][orient=vertical] {
     right: 10px;
 }
 
-
-
-#armController {
-    position: relative;
-    width: 400px;   /* Set to your desired image/container size */
-    height: 400px;  /* Set to your desired image/container size */
-    transform: rotate(-12deg);
-    display: block;
-    visibility: hidden;
-    top: -1000px;
-    left: 1300px;
-}
 
 .arm {
     position: relative;
@@ -268,15 +293,21 @@ input[type=range][orient=vertical] {
 /* Example: Custom positions for each layer */
 .arm1 {
     z-index: 1;
+
+    transform: rotate(-6deg);
 }
 
 .arm1-rotate {
     position: relative;
-    top: 300px;
-    left: -1200px;
 
-    transform-origin: 280px 100px; /* Using standard transform-origin with x-offset */
-    transform: rotate(12deg);
+    height: 300px;
+    width: 300px;
+
+    top: 250px;
+
+    bottom: auto;
+    transform-origin: 270px 82px; /* Using standard transform-origin with x-offset */
+    transform: rotate(0deg);
     /* top: 0; left: 0; default, adjust if needed */
 }
 
@@ -287,20 +318,18 @@ input[type=range][orient=vertical] {
 .arm2-rotate {
     position: relative; /* Creates a positioning context */
     z-index: 2;
-    top: -180px;
+    top: -105px;
 
-
-    transform-origin: 35px 30px; /* Using standard transform-origin with x and y offsets */
-    transform: rotate(-12deg);
+    transform-origin: 26px 22px; /* Using standard transform-origin with x and y offsets */
+    transform: rotate(-6deg);
 }
 
 .arm3-rotate {
     position: relative;
     z-index: 2;
-
-    top: -60px;
-    left: 340px;
-    transform-origin: 30px 30px; /* Using standard transform-origin with x-offset */
+    left: 255px;
+    top: -52px;
+    transform-origin: 22px 22px; /* Using standard transform-origin with x-offset */
     transform: rotate(-90deg);
 }
 
@@ -312,15 +341,19 @@ input[type=range][orient=vertical] {
 }
 
 
+/* Reposition dot containers to be in a row at the bottom */
 .dot-container {
-    position: absolute;
-    width: 100px; /* Adjust based on your desired circle size */
-    height: 100px;
-    border: 1px dashed #ccc; /* Optional: to visualize the circular path */
+    position: relative; /* Change from absolute */
+    width: 80px; /* Slightly smaller */
+    height: 80px;
+    border: 1px dashed #ccc;
     border-radius: 50%;
-    pointer-events: none; /* Allow clicks to pass through to the dot */
+    pointer-events: none;
+    display: inline-block; /* Allow horizontal arrangement */
+    margin: 0 10px; /* Add spacing between dots */
 }
 
+/* Ensure the draggable dots are centered in their containers */
 .draggable-dot {
     position: absolute;
     width: 15px;
@@ -331,23 +364,30 @@ input[type=range][orient=vertical] {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    pointer-events: auto; /* Make sure the dot receives events */
+    pointer-events: auto;
 }
 
 /* Position each dot container relative to its arm */
-.arm1-dot-container {
-    top: 150px; /* Adjust based on your arm positions */
-    left: 160px;
+/* Reset individual dot container positioning */
+.arm1-dot-container, .arm2-dot-container, .arm3-dot-container {
+    top: auto; /* Remove top positioning */
 }
 
-.arm2-dot-container {
-    top: 270px; /* Adjust based on your arm positions */
-    left: 160px;
+
+.status_history {
+    display: flex;
 }
 
-.arm3-dot-container {
-    top: 400px; /* Adjust based on your arm positions */
-    left: 160px;
+.historyReceived, .historySent {
+    width: 50%;
 }
 
+.entry {
+    width: 90%;
+    background-color: black;
+    padding: 1px 5px 5px 20px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    margin-top: 10px
+}
 

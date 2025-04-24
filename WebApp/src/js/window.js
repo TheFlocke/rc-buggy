@@ -1,14 +1,24 @@
-import { writeArmCmd } from './main.js'
+import { writeArmCmd, writeCmd } from './main.js'
+
+
+let currentSpeed = {
+    1: 0,
+    2: 0,
+}
 
 window.handleSpeedInput = function(motor) {
     // noinspection JSDeprecatedSymbols
     const speed = event.target.value;
+    currentSpeed[motor] = speed
     console.log("Motor: "+motor+" -- Current speed:", speed);
+    writeCmd(currentSpeed[1]+':'+currentSpeed[2]+':0:0')
 };
 
 window.handleSpeedRelease = function(motor) {
     // noinspection JSDeprecatedSymbols
     event.target.value = 0;  // Snap back to 0
+    currentSpeed[motor] = 0
+    writeCmd(currentSpeed[1]+':'+currentSpeed[2]+':0:0')
     console.log("Motor: "+ motor +" -- Speed reset to 0");
 };
 
@@ -38,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
             arm4: 90
         }
 
-
         // Center coordinates of the circle
         const center = {
             x: container.offsetWidth / 2,
@@ -55,14 +64,24 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initial position (top of the circle)
         positionDotOnCircle(0);
 
-        // Event listeners
-        dot.addEventListener('mousedown', onMouseDown);
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
+        // Mouse event listeners
+        dot.addEventListener('mousedown', onStart);
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onEnd);
 
-        function onMouseDown(e) {
+        // Touch event listeners
+        dot.addEventListener('touchstart', onStart);
+        document.addEventListener('touchmove', onMove);
+        document.addEventListener('touchend', onEnd);
+        document.addEventListener('touchcancel', onEnd);
+
+        function onStart(e) {
             e.preventDefault();
             isDragging = true;
+
+            // Get clientX and clientY regardless of event type
+            const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+            const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
 
             // Calculate the current angle based on dot position
             const rect = dot.getBoundingClientRect();
@@ -79,78 +98,82 @@ document.addEventListener('DOMContentLoaded', function() {
             );
         }
 
-        function onMouseMove(e) {
+        function onMove(e) {
             if (!isDragging) return;
+
+            // Prevent default to stop scrolling on touch devices
+            e.preventDefault();
+
+            // Get clientX and clientY regardless of event type
+            const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+            const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
 
             const containerRect = container.getBoundingClientRect();
             const containerCenterX = containerRect.left + containerRect.width / 2;
             const containerCenterY = containerRect.top + containerRect.height / 2;
 
-            // Calculate angle based on mouse position relative to circle center
+            // Calculate angle based on pointer position relative to circle center
             const angle = Math.atan2(
-                e.clientY - containerCenterY,
-                e.clientX - containerCenterX
+                clientY - containerCenterY,
+                clientX - containerCenterX
             );
 
-            console.log(parseInt(angle * (180 / Math.PI) + 12))
+            console.log(parseInt(angle * (180 / Math.PI) + 12));
 
             positionDotOnCircle(angle);
 
             // Rotate the arm based on the angle
             if (armClass === 'arm1') {
                 document.querySelector('.arm1-rotate').style.transform = `rotate(${calculateDegrees(angle, 'arm1')}deg)`;
-                current.arm1 = calculateDegrees(angle, 'arm1')
+                current.arm1 = calculateDegrees(angle, 'arm1');
                 writeArmCmd(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
             } else if (armClass === 'arm2') {
                 document.querySelector('.arm2-rotate').style.transform = `rotate(${(calculateDegrees(angle, 'arm2')) * -1}deg)`;
-                current.arm2 = calculateDegrees(angle, 'arm2')
+                current.arm2 = calculateDegrees(angle, 'arm2');
                 writeArmCmd(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
             } else if (armClass === 'arm3') {
                 document.querySelector('.arm3-rotate').style.transform = `rotate(${calculateDegrees(angle, 'arm3') - 90}deg)`;
-                current.arm3 = calculateDegrees(angle, 'arm3')
-
+                current.arm3 = calculateDegrees(angle, 'arm3');
                 writeArmCmd(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
             }
         }
 
-        function onMouseUp() {
+        function onEnd(e) {
             isDragging = false;
         }
 
         function calculateDegrees(angle, arm) {
-            let degree = angle * (180 / Math.PI)
+            let degree = angle * (180 / Math.PI);
 
             if (safeArea[arm].min < degree && safeArea[arm].max > degree) {
-                console.log(degree)
-                return parseInt(degree)
+                console.log(degree);
+                return parseInt(degree);
             }
 
             if (safeArea[arm].min > degree && -100 < degree) {
-                console.log(safeArea[arm].min)
-                return safeArea[arm].min
+                console.log(safeArea[arm].min);
+                return safeArea[arm].min;
             }
             if (safeArea[arm].max < degree || 0 > degree) {
-                console.log(safeArea[arm].max)
-                return safeArea[arm].max
+                console.log(safeArea[arm].max);
+                return safeArea[arm].max;
             }
         }
 
         function positionDotOnCircle(angle) {
-            console.log(dotClass)
-
             if (setup) {
                 angle = (safeArea[armClass].min)/ (180 * Math.PI);
                 setup = false;
             }
 
-            console.log(center.x, radius, angle)
+            console.log(center.x, radius, angle);
 
             // Calculate position on the circle based on angle
             const x = center.x + radius * Math.cos(angle);
             const y = center.y + radius * Math.sin(angle);
 
             console.log(x);
-            console.log(y)
+            console.log(y);
 
             // Position the dot
             dot.style.left = `${x}px`;
