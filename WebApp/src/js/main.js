@@ -295,7 +295,7 @@ function handleCharacteristicChange(event){
 	const header = document.createElement('h1');
 	const text = document.createElement('p');
 	header.innerHTML = 'RECEIVE';
-	text.innerHTML = value;
+	text.innerHTML = newValueReceived;
 	div.appendChild(header)
 	div.appendChild(text)
 	div.classList.add('entry')
@@ -317,7 +317,7 @@ export async function writeCmd(value) {
 		const uint8Array = textEncoder.encode(value);
 		sentTimestamp.innerHTML = getDateTime();
 		try {
-			await cmdCharacteristic.writeValueWithoutResponse(uint8Array);
+			await cmdCharacteristic.writeValue(uint8Array);
 			latestValueSent.innerHTML = value;
 			const div = document.createElement('div');
 			const header = document.createElement('h1');
@@ -354,7 +354,7 @@ export async function writeArmCmd(value) {
 		const uint8Array = textEncoder.encode(value);
 		sentTimestamp.innerHTML = getDateTime();
 		try {
-			armCharacteristic.writeValueWithoutResponse(uint8Array);
+			armCharacteristic.writeValue(uint8Array);
 			latestValueSent.innerHTML = value;
 			const div = document.createElement('div');
 			const header = document.createElement('h1');
