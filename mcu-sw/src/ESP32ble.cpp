@@ -115,7 +115,7 @@ void ESP32ble::setArm(String value) {
 
     // sonst soll er die Values so lassen ==> daher nichts hingeschrieben
     if (_pStateArmCharacteristic) {
-        _pStateArmCharacteristic->setValue(setCmd());
+        _pStateArmCharacteristic->setValue(getArm());
         _pStateArmCharacteristic->notify();
     }
 }
@@ -158,15 +158,15 @@ void ESP32ble::setup(String name) {
     }
 
     // Create a BLE STATE_CMD Characteristic
-    _pCmdStateCharacteristic = pService->createCharacteristic(
+    _pStateCmdCharacteristic = pService->createCharacteristic(
         CHARACTERISTIC_STATE_CMD,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCmdStateCharacteristic->setCallbacks(new StateCmdCallbacks()); {
+    _pStateCmdCharacteristic->setCallbacks(new StateCmdCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
         NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
         descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-        _pCmdStateCharacteristic->addDescriptor(descriptor_2904);
+        _pStateCmdCharacteristic->addDescriptor(descriptor_2904);
     }
 
     // Create a BLE SENSOR Characteristic
