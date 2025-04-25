@@ -45,28 +45,20 @@ const long SERIAL_BAUD_RATE = 115200;
 
 
 void setup() {
+  // for debbuging
+  Serial.begin(9600);
   // Giving ESP32 a BLE name
   esp32ble.setup("rc-rover");
   // Initalazing I2C with predefined Ports
   I2CBUS.begin(I2C_SDA, I2C_SCL, 100000);
   // Loading Servo Setup and executing it ==> to see more go to ../src/servo.cpp
   servo.setup();
-  // setting up serial connection for communication with motordriver(s)
-  stepper_driver_left.setup(Serial1,SERIAL_BAUD_RATE,SERIAL_ADDRESS_left,UART_RX,UART_TX);
-  stepper_driver_left.setReplyDelay(REPLY_DELAY);
-  stepper_driver_right.setup(Serial1,SERIAL_BAUD_RATE,SERIAL_ADDRESS_right,UART_RX,UART_TX);
-  stepper_driver_right.setReplyDelay(REPLY_DELAY);
-  // Setting pinMode for motor-control
-  pinMode(STEP1_DIR, OUTPUT);
-  pinMode(STEP2_DIR, OUTPUT);
-  pinMode(STEP1_STEP, OUTPUT);
-  pinMode(STEP2_STEP, OUTPUT);
-  Serial.begin(9600);
-  sensor.setup();
+  // Loading and setting Sensor up with LED set to ACT_LED
+  sensor.setup(ACT_LED);
 }
 
 void loop() {
-  esp32ble.handle();
+  // esp32ble.handle();
 
   // Pull all the Int for later use from the Webinterface
   // Left Wheel
@@ -81,14 +73,14 @@ void loop() {
   int arm3 = esp32ble.getArm3();
   int grabber = esp32ble.getArm4();
 
-  servo.set(1, arm1);
-  servo.set(2, arm2);
-  servo.set(3, arm3);
-  servo.set(4, grabber);
+  servo.set(0, arm1);
+  servo.set(1, arm2);
+  servo.set(2, arm3);
+  servo.set(3, grabber);
 
   // Put here the Control Mechanism for the Speed
 
-/*   float temp = sensor.getTemp();
+  float temp = sensor.getTemp();
   float pressure = sensor.getPressure();
   float humidity = sensor.getHumidity();
   float gas = sensor.getGas();
@@ -103,6 +95,4 @@ void loop() {
   Serial.print("gas: ");
   Serial.println(gas);
   delay(500);
-  */
-
 }
