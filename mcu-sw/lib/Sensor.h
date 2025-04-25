@@ -2,18 +2,16 @@
 #define SENSOR_H
 
 #include <Arduino.h>
-#include <Wire.h>
-#include <SPI.h>
 #include <Adafruit_Sensor.h>
 #include "Adafruit_BME680.h"
+#include "../lib/i2c_bus.h"
 
-#define SEALEVELPRESSURE_HPA (1013.25)
 
 class Sensor {
-    float _temp;
-    float _pressure;
-    float _humidity;
-    float _gas;
+    float _temp = -1;
+    float _pressure = -1;
+    float _humidity = -1;
+    float _gas = -1;
 
     public:
 

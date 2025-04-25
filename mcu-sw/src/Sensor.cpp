@@ -2,7 +2,7 @@
 
 Sensor sensor;
 
-Adafruit_BME680 bme680;
+Adafruit_BME680 bme680(&I2CBUS);
 
 void Sensor::setup() {
     bme680.begin();
@@ -17,9 +17,11 @@ void Sensor::setup() {
 void Sensor::read() {
     unsigned long endTime = bme680.beginReading();
     if (endTime == 0) {
+        Serial.println("BME680 read failed - Check Wiring");
         return;
     }
     if (!bme680.endReading()) {
+        Serial.println("BME680 read failed - Check Wiring");
         return;
     }
     _temp = bme680.readTemperature();
