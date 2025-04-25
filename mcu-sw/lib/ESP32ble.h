@@ -31,7 +31,7 @@ class ESP32ble {
     int _gas = 0;
 
     NimBLEServer *_pServer = nullptr;
-    NimBLECharacteristic *_pCmdStateCharacteristic = nullptr;
+    NimBLECharacteristic *_pStateCmdCharacteristic = nullptr;
     NimBLECharacteristic *_pSensorCharacteristic = nullptr;
     NimBLECharacteristic *_pArmCharacteristic = nullptr;
     NimBLECharacteristic *_pStateArmCharacteristic = nullptr;
