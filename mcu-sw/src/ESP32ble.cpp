@@ -92,8 +92,6 @@ String ESP32ble::getArm() const {
 }
 
 void ESP32ble::setArm(String value) {
-    String cmd = value;
-
     // prüfen auf kombinierte anweisung: // `${arm1}:${arm2}:${arm3}:${arm4}`
     int t1 = value.indexOf(":");
     int t2 = value.indexOf(":", t1 + 1);

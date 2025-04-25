@@ -3,21 +3,21 @@
 
 Servo servo;
 
-Adafruit_PWMServoDriver pwm_servo = Adafruit_PWMServoDriver(0x40,(TwoWire&)I2CBUS);
+Adafruit_PWMServoDriver pwm_servo(0x40, I2CBUS);
 
-#define SERVOMIN 150
-#define SERVOMAX 600
-#define SERVO_FREQ 50
+constexpr int servo_min = 150;
+constexpr int servo_max = 650;
+constexpr int servo_freq = 60;
+
 
 
 void Servo::set(int pin, int angle){
-    int duty=(map(angle,0,180,SERVOMIN,SERVOMAX));
-
+    int duty = map(angle,0,180,servo_min,servo_max);
     pwm_servo.setPWM(pin, 0, duty);
 }
 
 void Servo::setup() {
     pwm_servo.begin();
-    pwm_servo.setPWMFreq(SERVO_FREQ);
+    pwm_servo.setPWMFreq(servo_freq);
 }
 

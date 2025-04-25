@@ -4,7 +4,7 @@ Sensor sensor;
 
 Adafruit_BME680 bme680(&I2CBUS);
 
-void Sensor::setup() {
+void Sensor::setup(int LED) {
     bme680.begin();
     // Set up oversampling and filter initialization
     bme680.setTemperatureOversampling(BME680_OS_8X);
@@ -12,6 +12,7 @@ void Sensor::setup() {
     bme680.setPressureOversampling(BME680_OS_4X);
     bme680.setIIRFilterSize(BME680_FILTER_SIZE_3);
     bme680.setGasHeater(320, 150); // 320*C for 150 ms
+    pinMode(LED, OUTPUT);
 }
 
 void Sensor::read() {
