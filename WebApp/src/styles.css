@@ -369,7 +369,7 @@ input[type=range][orient=vertical] {
 
 /* Position each dot container relative to its arm */
 /* Reset individual dot container positioning */
-.arm1-dot-container, .arm2-dot-container, .arm3-dot-container {
+.arm1-dot-container, .arm2-dot-container, .arm3-dot-container, .arm4-dot-container {
     top: auto; /* Remove top positioning */
 }
 

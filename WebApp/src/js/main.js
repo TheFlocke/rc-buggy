@@ -348,13 +348,15 @@ export async function writeCmd(value) {
 }
 
 export async function writeArmCmd(value) {
+	if(sending) return "busy";
+	sending=true;
 	let sent = "failed";
 	if (bleServer && bleServer.connected) {
 		const textEncoder = new TextEncoder();
 		const uint8Array = textEncoder.encode(value);
 		sentTimestamp.innerHTML = getDateTime();
 		try {
-			armCharacteristic.writeValue(uint8Array);
+			await armCharacteristic.writeValue(uint8Array);
 			latestValueSent.innerHTML = value;
 			const div = document.createElement('div');
 			const header = document.createElement('h1');

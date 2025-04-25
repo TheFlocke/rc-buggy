@@ -26,10 +26,19 @@ window.handleSpeedRelease = function(motor) {
 
 
 document.addEventListener('DOMContentLoaded', function() {
+
+    const current = {
+        arm1: 12,
+        arm2: 12,
+        arm3: 0,
+        arm4: 90
+    }
+
     // Set up each draggable dot
     setupDraggableDot('arm1-dot', 'arm1');
     setupDraggableDot('arm2-dot', 'arm2');
     setupDraggableDot('arm3-dot', 'arm3');
+    setupDraggableDot('arm4-dot', 'arm4')
 
     function setupDraggableDot(dotClass, armClass) {
         let setup = true;
@@ -42,13 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
             arm3: { min: 0, max: 180},
             arm4: { min: 90, max: 180}
         };
-
-        const current = {
-            arm1: 12,
-            arm2: 12,
-            arm3: 0,
-            arm4: 90
-        }
 
         // Center coordinates of the circle
         const center = {
@@ -136,6 +138,9 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (armClass === 'arm3') {
                 document.querySelector('.arm3-rotate').style.transform = `rotate(${calculateDegrees(angle, 'arm3') - 90}deg)`;
                 current.arm3 = calculateDegrees(angle, 'arm3');
+                writeArmCmd(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
+            } else if (armClass === 'arm4') {
+                current.arm4 = calculateDegrees(angle, 'arm4', 'notmain');
                 writeArmCmd(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
             }
         }
