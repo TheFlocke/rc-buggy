@@ -286,6 +286,7 @@ function onDisconnected(event){
 }
 
 function handleCharacteristicChange(event){
+	console.log(event.target.value)
 	const newValueReceived = new TextDecoder().decode(event.target.value);
 	retrievedValue.innerHTML = newValueReceived;
 	retrievedTimestamp.innerHTML = getDateTime();
