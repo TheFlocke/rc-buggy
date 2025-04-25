@@ -122,8 +122,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 clientX - containerCenterX
             );
 
-            console.log(parseInt(angle * (180 / Math.PI) + 12));
-
             positionDotOnCircle(angle);
 
             // Rotate the arm based on the angle
@@ -153,16 +151,13 @@ document.addEventListener('DOMContentLoaded', function() {
             let degree = angle * (180 / Math.PI);
 
             if (safeArea[arm].min < degree && safeArea[arm].max > degree) {
-                console.log(degree);
                 return parseInt(degree);
             }
 
             if (safeArea[arm].min > degree && -100 < degree) {
-                console.log(safeArea[arm].min);
                 return safeArea[arm].min;
             }
             if (safeArea[arm].max < degree || 0 > degree) {
-                console.log(safeArea[arm].max);
                 return safeArea[arm].max;
             }
         }
@@ -173,14 +168,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 setup = false;
             }
 
-            console.log(center.x, radius, angle);
-
             // Calculate position on the circle based on angle
             const x = center.x + radius * Math.cos(angle);
             const y = center.y + radius * Math.sin(angle);
-
-            console.log(x);
-            console.log(y);
 
             // Position the dot
             dot.style.left = `${x}px`;
