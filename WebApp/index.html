@@ -61,64 +61,27 @@
 
             <div id="speedController">
                 <div>
-                <label for="speedDial1"></label>
-                <input id="speedDial1" max="255" min="-255" onchange="handleSpeedRelease('speed1')" oninput="handleSpeedInput('speed1')"
-                       orient="vertical" type="range"
-                       value="0">
-                <label for="wheel1"></label>
-                <input id="wheel1" max="180" min="0"
-                       oninput="handleSpeedInput('wheel1')"
-                       type="range"
-                       value="0">
+                    <label for="speedDial1"></label>
+                    <input id="speedDial1" max="255" min="-255" onchange="handleSpeedRelease('speed1')"
+                           oninput="handleSpeedInput('speed1')"
+                           orient="vertical" type="range"
+                           value="0">
+                    <label for="wheel1"></label>
+                    <input id="wheel1" max="180" min="0"
+                           oninput="handleSpeedInput('wheel1')"
+                           type="range"
+                           value="0">
                 </div>
-                    <div id="status">
-                    <div id="status_static">
-                        <table>
-                            <tr>
-                                <td><i class="fa-solid fa-arrow-right"></i>&nbsp;<i class="fa-solid fa-car-side"></i></td>
-                                <td id="sent_timestamp">-</td>
-                                <td id="valueSent">-</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fa-solid fa-car-side"></i>&nbsp;<i class="fa-solid fa-arrow-right"></i></td>
-                                <td id="retrieved_timestamp">-</td>
-                                <td id="retrievedValue">-</td>
-                            </tr>
-                        </table>
-                        <p><span class="info" id="info"></span></p>
-                        <p><span class="info" id="update"></span></p>
-                        <p><span class="error" id="errors"></span></p>
-                    </div>
-                    <div id="status_scroll">
-                        <p><span class="error" id="bleState"></span></p>
-                        <p><span class="error" id="bleService"></span></p>
-                        <p><span class="error" id="bleCharCmd"></span></p>
-                        <p><span class="error" id="bleCharState"></span></p>
-                        <p><span class="error" id="bleSensorState"></span></p>
-                        <p><span class="error" id="bleArm"></span></p>
-                        <p><span class="error" id="bleArmState"></span></p>
-                        <p><span class="info" id="bleServiceList"></span></p>
-                    </div>
-                    <div class="status_history">
-                        <div class="historySent">
-                            /// Sent
-                            <div  id="sendHistory"></div>
-                        </div>
-                        <div class="historyReceived">
-                            // Received
-                            <div id="receiveHistory">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
                 <div>
-                <label for="speedDial2"></label>
-                <input id="speedDial2" max="255" min="-255" onchange="handleSpeedRelease('speed2')" oninput="handleSpeedInput('speed2')"
-                       orient="vertical" type="range"
-                       value="0">
+                    <label for="speedDial2"></label>
+                    <input id="speedDial2" max="255" min="-255" onchange="handleSpeedRelease('speed2')"
+                           oninput="handleSpeedInput('speed2')"
+                           orient="vertical" type="range"
+                           value="0">
 
                     <label for="wheel2"></label>
-                    <input id="wheel2" max="180" min="0"  oninput="handleSpeedInput('wheel2')"
+                    <input id="wheel2" max="180" min="0" oninput="handleSpeedInput('wheel2')"
                            type="range"
                            value="0">
                 </div>
@@ -135,6 +98,9 @@
                 </div>
                 <div class="dot-container arm3-dot-container">
                     <div class="draggable-dot arm3-dot"></div>
+                </div>
+                <div class="dot-container arm4-dot-container">
+                    <div class="draggable-dot arm4-dot"></div>
                 </div>
             </div>
             <div class="arm-view">
@@ -173,6 +139,50 @@
     </div>
 
 
+</div>
+
+
+<div id="status">
+    <div id="status_static">
+        <table>
+            <tr>
+                <td><i class="fa-solid fa-arrow-right"></i>&nbsp;<i class="fa-solid fa-car-side"></i>
+                </td>
+                <td id="sent_timestamp">-</td>
+                <td id="valueSent">-</td>
+            </tr>
+            <tr>
+                <td><i class="fa-solid fa-car-side"></i>&nbsp;<i class="fa-solid fa-arrow-right"></i>
+                </td>
+                <td id="retrieved_timestamp">-</td>
+                <td id="retrievedValue">-</td>
+            </tr>
+        </table>
+        <p><span class="info" id="info"></span></p>
+        <p><span class="info" id="update"></span></p>
+        <p><span class="error" id="errors"></span></p>
+    </div>
+    <div id="status_scroll">
+        <p><span class="error" id="bleState"></span></p>
+        <p><span class="error" id="bleService"></span></p>
+        <p><span class="error" id="bleCharCmd"></span></p>
+        <p><span class="error" id="bleCharState"></span></p>
+        <p><span class="error" id="bleSensorState"></span></p>
+        <p><span class="error" id="bleArm"></span></p>
+        <p><span class="error" id="bleArmState"></span></p>
+        <p><span class="info" id="bleServiceList"></span></p>
+    </div>
+    <div class="status_history">
+        <div class="historySent">
+            /// Sent
+            <div id="sendHistory"></div>
+        </div>
+        <div class="historyReceived">
+            // Received
+            <div id="receiveHistory">
+            </div>
+        </div>
+    </div>
 </div>
 
 </body>
