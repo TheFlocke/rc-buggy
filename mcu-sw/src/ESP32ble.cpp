@@ -80,9 +80,9 @@ void ESP32ble::setCmd(String value) {
     }
 
 
-    if (_pCmdStateCharacteristic) {
-        _pCmdStateCharacteristic->setValue(getCmd());
-        _pCmdStateCharacteristic->notify();
+    if (_pStateCmdCharacteristic) {
+        _pStateCmdCharacteristic->setValue(getCmd());
+        _pStateCmdCharacteristic->notify();
     }
 }
 
@@ -114,6 +114,10 @@ void ESP32ble::setArm(String value) {
     }
 
     // sonst soll er die Values so lassen ==> daher nichts hingeschrieben
+    if (_pStateArmCharacteristic) {
+        _pStateArmCharacteristic->setValue(setCmd());
+        _pStateArmCharacteristic->notify();
+    }
 }
 
 String ESP32ble::getSensor() const {
