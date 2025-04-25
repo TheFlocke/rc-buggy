@@ -814,6 +814,18 @@
 		)
 		(uuid "a6b22ed8-d8dd-440c-99af-5e986e684f70")
 	)
+	(text "AUTHOR: @THEFLOCKE"
+		(exclude_from_sim no)
+		(at 249.936 196.596 0)
+		(effects
+			(font
+				(face "KiCad Font")
+				(size 1.27 1.27)
+				(color 194 0 194 1)
+			)
+		)
+		(uuid "b2771492-d65a-4483-9525-bc6522dd1c13")
+	)
 	(text "3V3 3A"
 		(exclude_from_sim no)
 		(at 72.644 48.514 0)

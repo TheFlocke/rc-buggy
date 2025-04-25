@@ -689,6 +689,18 @@
 			(embedded_fonts no)
 		)
 	)
+	(text "AUTHOR: @THEFLOCKE"
+		(exclude_from_sim no)
+		(at 249.936 196.596 0)
+		(effects
+			(font
+				(face "KiCad Font")
+				(size 1.27 1.27)
+				(color 194 0 194 1)
+			)
+		)
+		(uuid "72415a19-eb37-409e-8c9a-d9a3ce5f85fa")
+	)
 	(text "Nicht läner als 16.7ns"
 		(exclude_from_sim no)
 		(at 51.562 86.614 0)

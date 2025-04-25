@@ -3015,6 +3015,18 @@
 		)
 		(uuid "2bd339b7-6f29-46b3-8ab4-ef83b9ec0589")
 	)
+	(text "AUTHOR: @THEFLOCKE"
+		(exclude_from_sim no)
+		(at 249.936 196.596 0)
+		(effects
+			(font
+				(face "KiCad Font")
+				(size 1.27 1.27)
+				(color 194 0 194 1)
+			)
+		)
+		(uuid "3648f716-81e0-4bd2-a8ea-d4c78dad00da")
+	)
 	(text "I2C ADRESS: 0x51"
 		(exclude_from_sim no)
 		(at 50.292 109.474 0)

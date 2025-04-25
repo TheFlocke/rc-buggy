@@ -1564,6 +1564,18 @@
 		)
 		(uuid "35917924-29c7-4d2e-aba1-c23eef5c2626")
 	)
+	(text "AUTHOR: @THEFLOCKE"
+		(exclude_from_sim no)
+		(at 249.936 196.596 0)
+		(effects
+			(font
+				(face "KiCad Font")
+				(size 1.27 1.27)
+				(color 194 0 194 1)
+			)
+		)
+		(uuid "b11acad6-68bf-493d-8e29-504185b8e1c3")
+	)
 	(text "We won't need that many PWM Outputs\nPWM Output at 3V3 with 15mA"
 		(exclude_from_sim no)
 		(at 127.254 169.672 0)

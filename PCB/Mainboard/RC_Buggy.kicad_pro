@@ -517,7 +517,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "",
+      "plot": "/Users/philipp/Downloads/KiCAD/",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "RC_Buggy.stl",
@@ -774,7 +774,7 @@
       "workbook_filename": ""
     },
     "page_layout_descr_file": "",
-    "plot_directory": "",
+    "plot_directory": "/Users/philipp/Downloads/Plot/",
     "space_save_all_events": true,
     "spice_current_sheet_as_root": false,
     "spice_external_command": "spice \"%I\"",

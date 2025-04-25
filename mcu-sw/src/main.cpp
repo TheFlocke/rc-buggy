@@ -2,6 +2,7 @@
 #include "../lib/ESP32ble.h"
 #include "../lib/i2c_bus.h"
 #include "../lib/Servo.h"
+#include "../lib/Sensor.h"
 #include <TMC2209.h>
 #include "Wire.h"
 
@@ -60,6 +61,8 @@ void setup() {
   pinMode(STEP2_DIR, OUTPUT);
   pinMode(STEP1_STEP, OUTPUT);
   pinMode(STEP2_STEP, OUTPUT);
+  Serial.begin(9600);
+  sensor.setup();
 }
 
 void loop() {
@@ -78,8 +81,28 @@ void loop() {
   int arm3 = esp32ble.getArm3();
   int grabber = esp32ble.getArm4();
 
+  servo.set(1, arm1);
+  servo.set(2, arm2);
+  servo.set(3, arm3);
+  servo.set(4, grabber);
+
   // Put here the Control Mechanism for the Speed
 
+/*   float temp = sensor.getTemp();
+  float pressure = sensor.getPressure();
+  float humidity = sensor.getHumidity();
+  float gas = sensor.getGas();
 
+  sensor.read();
+  Serial.print("temp: ");
+  Serial.println(temp);
+  Serial.print("pressure: ");
+  Serial.println(pressure);
+  Serial.print("humidity: ");
+  Serial.println(humidity);
+  Serial.print("gas: ");
+  Serial.println(gas);
+  delay(500);
+  */
 
 }
