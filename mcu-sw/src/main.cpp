@@ -17,10 +17,10 @@ constexpr int PD_INT = 16;
 // GPIO Ports used to control the TMC2209
 constexpr int UART_TX = 1;
 constexpr int UART_RX = 2;
-constexpr int STEP1_DIR = 4;
-constexpr int STEP2_DIR  = 5;
-constexpr int STEP1_STEP = 6;
-constexpr int STEP2_STEP = 7;
+constexpr int STEP0_DIR = 4;
+constexpr int STEP1_DIR  = 5;
+constexpr int STEP0_STEP = 6;
+constexpr int STEP1_STEP = 7;
 // GPIO Ports that are not reserved by any devices
 [[maybe_unused]] constexpr int GPIO_17 = 17;
 [[maybe_unused]] constexpr int GPIO_18 = 18;
@@ -33,8 +33,8 @@ constexpr int STEP2_STEP = 7;
 TwoWire I2CBUS = TwoWire(0);
 
 void setup() {
-  // Loading and setting Serial for communiction for Motordriver up
-  stepper.setup();
+  // Loading and setting Serial for communiction for Motordriver up. Also setting Pins for STEP and DIR
+  stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, UART_RX, UART_TX);
   // for debbuging
   Serial.begin(9600);
   // Giving ESP32 a BLE name
