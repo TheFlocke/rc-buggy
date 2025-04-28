@@ -17,18 +17,18 @@ class ESP32ble {
     // everything for the movement of the rover
     int _speed1 = 0;
     int _speed2 = 0;
-    int _wheel1 = 0;
-    int _wheel2 = 0;
+    int _wheel1 = 55;
+    int _wheel2 = 60;
     // everything for the movement of the arm (default set to home)
     int _arm1 = 12;
     int _arm2 = 12;
     int _arm3 = 100;
     int _arm4 = 175;
     // everything from the sensor
-    int _temp = 0;
-    int _humidity = 0;
-    int _pressure = 0;
-    int _gas = 0;
+    int _temp = -1;
+    int _humidity = -1;
+    int _pressure = -1;
+    int _gas = -1;
 
     NimBLEServer *_pServer = nullptr;
     NimBLECharacteristic *_pStateCmdCharacteristic = nullptr;

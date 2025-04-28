@@ -36,7 +36,7 @@ void setup() {
   // Loading and setting Serial for communiction for Motordriver up
   stepper.setup();
   // for debbuging
-  // Serial.begin(9600);
+  Serial.begin(9600);
   // Giving ESP32 a BLE name
   esp32ble.setup("rc-rover");
   // Initalazing I2C with predefined Ports
@@ -57,25 +57,24 @@ void loop() {
   // Right Wheel
   int speed2 = esp32ble.getSpeed2();
   int wheel2 = esp32ble.getWheel2();
-/*
-  servo.set(5, wheel1);
-  servo.set(6, wheel2);
-  */
+
+  servo.set(4, wheel1);
+  Serial.println(wheel1);
+  servo.set(5, wheel2);
   stepper.stepper_0(speed1);
- // stepper.stepper_1(speed2);
-  Serial.print(speed1);
+  stepper.stepper_1(speed2);
 
   // Arm
   int arm1 = esp32ble.getArm1();
   int arm2 = esp32ble.getArm2();
   int arm3 = esp32ble.getArm3();
   int grabber = esp32ble.getArm4();
-/*
+
   servo.set(0, arm1);
   servo.set(1, arm2);
   servo.set(2, arm3);
   servo.set(3, grabber);
-*/
+
   // Put here the Control Mechanism for the Speed
 
   float temp = sensor.getTemp();

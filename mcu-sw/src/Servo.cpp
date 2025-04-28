@@ -7,7 +7,7 @@ Adafruit_PWMServoDriver pwm_servo(0x40, I2CBUS);
 
 constexpr int servo_min = 150;
 constexpr int servo_max = 650;
-constexpr int servo_freq = 60;
+constexpr int servo_freq = 50;
 
 
 

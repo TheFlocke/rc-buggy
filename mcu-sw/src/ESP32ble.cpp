@@ -47,13 +47,11 @@ class ServerCallbacks : public NimBLEServerCallbacks {
 };
 
 String ESP32ble::getCmd() const {
-    return "Speed_1: " + String(_speed1) + ", Speed_2: " + String(_speed2) + "Wheel_1: " + String(_wheel1) +
+    return "Speed_1: " + String(_speed1) + ", Speed_2: " + String(_speed2) + ",Wheel_1: " + String(_wheel1) +
            ", Wheel_2: " + String(_wheel2);
 }
 
 void ESP32ble::setCmd(String value) {
-    String cmd = value;
-
     // prüfen auf kombinierte anweisung: // `${speed1}:${speed2}:${wheel1}:${wheel2}`
     int t1 = value.indexOf(":");
     int t2 = value.indexOf(":", t1 + 1);
@@ -69,10 +67,10 @@ void ESP32ble::setCmd(String value) {
         if (_speed1 < -255) _speed1 = -255;
         if (_speed2 > 255) _speed2 = 255;
         if (_speed2 < -255) _speed2 = -255;
-        if (_wheel1 > 180) _wheel1 = 180;
-        if (_wheel1 < 0) _wheel1 = 0;
-        if (_wheel2 > 180) _wheel2 = 180;
-        if (_wheel2 < 0) _wheel2 = 0;
+        if (_wheel1 > 130) _wheel1 = 130;
+        if (_wheel1 < 55) _wheel1 = 55;
+        if (_wheel2 > 120) _wheel2 = 120;
+        if (_wheel2 < 60) _wheel2 = 60;
     } else {
         _speed1 = 0;
         _speed2 = 0;
