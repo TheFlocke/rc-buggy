@@ -23,16 +23,13 @@ Stepper stepper;
 
 TMC2209Stepper driver0(&SERIAL_PORT, R_SENSE, DRIVER_ADDRESS_0);
 TMC2209Stepper driver1(&SERIAL_PORT, R_SENSE, DRIVER_ADDRESS_1);
-AccelStepper stepper0(AccelStepper::DRIVER, 6, 4);
-AccelStepper stepper1(AccelStepper::DRIVER, 7, 5);
-
+FastAccelStepperEngine engine = FastAccelStepperEngine();
 
 void Stepper::setup() {
     // Serial connection for up to 4 Drivers
     Serial1.begin(115200, SERIAL_8N1, RX_PIN, TX_PIN);
     // Setting up Driver
-    driver0.begin(); //  SPI: Init CS pins and possible SW SPI pins
-    driver1.begin();
+    engine.init();
     // UART: Init SW UART (if selected) with default 115200 baudrate
     driver0.toff(5); // Enables driver in software
     driver1.toff(5);
@@ -40,28 +37,41 @@ void Stepper::setup() {
     driver1.vsense(true);
     driver0.rms_current(RMS_CURRENT); // Dieser liegt bei 1,2A und Vref muss daher auch auf 1,2V
     driver1.rms_current(RMS_CURRENT);
-    driver0.microsteps(MICROSTEPS); // Bei Microstepping hat man zwar eine Smoothere Drehung, aber
-    driver1.microsteps(MICROSTEPS);
+    //Microstep resolution selected by MSTEP register and NOT from the legacy pins.
+    driver0.mstep_reg_select(true);
+    driver1.mstep_reg_select(true);
+    // Bei Microstepping hat man zwar eine Smoothere Drehung, aber
     // nut 70% des Drehmoments. Durch 1/3 Übersetzung haben wir dennoch 600 statt 200 Steps
+    driver0.microsteps(MICROSTEPS);
+    driver1.microsteps(MICROSTEPS);
     driver0.en_spreadCycle(true);
     driver1.en_spreadCycle(true);
     // Setting up Libary that helps to control the Speed and Acceleration
-    stepper0.setMaxSpeed(5000); // max Steps where to Driver and motor are working (tested) because of the libary used
-    stepper1.setMaxSpeed(5000); // max Steps where to Driver and motor are working (tested)
-    stepper0.setAcceleration(2000); // 2000mm/s^2
-    stepper1.setAcceleration(2000); // 2000mm/s^2
-    stepper0.setPinsInverted(false, false, true);
-    stepper1.setPinsInverted(false, false, true);
-    stepper0.enableOutputs();
-    stepper1.enableOutputs();
+    stepper0 = engine.stepperConnectToPin(6,2); // First is the Pin and second is the driver Type: 0 -> MCPWM, 1 -> RMT, 2 -> both ; creates a Stepper
+    if (stepper0) {
+        stepper0->setDirectionPin(4);
+        stepper0->setAutoEnable(true);
+        stepper0->setAcceleration(5000); // steps/s^2
+    } else {
+        Serial.println("Failed to initialize stepper!");
+    }
+
 }
 
 void Stepper::stepper_0(int speed) {
-    stepper0.setSpeed(map(speed, -255, 255, -1 * REV_STEPS * 5, REV_STEPS * 5));
-    stepper0.run();
+    if (speed == 0) {
+        stepper0->forceStop();
+    } else {
+        if (speed > 0) {
+            stepper0->setSpeedInHz(map(speed, 0, 255, 0, REV_STEPS * 3));  // the last two speeds set the maximum speed
+            stepper0->runForward();
+        }
+        if (speed < 0) {
+            stepper0->setSpeedInHz(map(speed, 0, -255, 0, REV_STEPS * 3));  // the last two speeds set the maximum speed
+            stepper0->runBackward();
+        }
+    }
 }
 
 void Stepper::stepper_1(int speed) {
-    stepper1.setSpeed(map(speed, -255, 255, -1 * REV_STEPS , REV_STEPS));
-    stepper1.run();
 }

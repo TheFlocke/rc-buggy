@@ -7,7 +7,8 @@
 
 #include <Arduino.h>
 #include <TMCStepper.h>
-#include <AccelStepper.h>
+#include <FastAccelStepper.h>
+
 
 
 
@@ -16,6 +17,9 @@ class Stepper {
     int _PSTEP1_STEP = 6;
     int _PSTEP2_Dir = 5;
     int _PSTEP2_STEP = 7;
+
+    FastAccelStepper *stepper0 = NULL; // Pointers of all Steppers who are connected
+    FastAccelStepper *stepper1 = NULL;
 
 
 public:
