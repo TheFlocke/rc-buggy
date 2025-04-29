@@ -1,14 +1,14 @@
 {
   "background_color": "#c23b33",
-  "description": "CRBK-RC-Car",
+  "description": "RC-Rover",
   "dir": "ltr",
   "display": "standalone",
-  "name": "crbk | RC-Car",
-  "short_name": "RC-Car",
+  "name": "RC-Rover",
+  "short_name": "RC-Rover",
   "scope": "./",
   "start_url": "./",
   "theme_color": "#d35c52",
-  "id":"/RC-Car/",
+  "id":"/RC-Rover/",
   "categories": [],
   "screenshots": [],
   "icons": [
