@@ -10,7 +10,7 @@
 
 // Your motor parts:
 #define FULL_STEPS 200.0   // 1.8 degrees per whole step
-#define MICROSTEPS 1     // Usually 16.0 but at 1 ==> Fullstep
+#define MICROSTEPS 8     // Usually 16.0 but at 1 ==> Fullstep
 #define GEAR_REDUCTION 3.0       // Gearbox translation
 #define RMS_CURRENT 1200  // in mA max 2.1A
 
@@ -76,11 +76,11 @@ void Stepper::stepper_0(int speed) {
     } else {
         if (speed > 0) {
             stepper0->setSpeedInHz(map(speed, 0, 255, 0, REV_STEPS));  // the last two speeds set the maximum speed
-            stepper0->runForward();
+            stepper0->runBackward();
         }
         if (speed < 0) {
             stepper0->setSpeedInHz(map(speed, 0, -255, 0, REV_STEPS));  // the last two speeds set the maximum speed
-            stepper0->runBackward();
+            stepper0->runForward();
         }
     }
 }
