@@ -15,8 +15,8 @@ constexpr int I2C_SDA = 14;
 constexpr int I2C_SCL = 15;
 constexpr int PD_INT = 16;
 // GPIO Ports used to control the TMC2209
-constexpr int UART_TX = 1;
-constexpr int UART_RX = 2;
+constexpr int UART_TX = 2;
+constexpr int UART_RX = 1;
 constexpr int STEP0_DIR = 4;
 constexpr int STEP1_DIR  = 5;
 constexpr int STEP0_STEP = 6;
@@ -33,13 +33,13 @@ constexpr int STEP1_STEP = 7;
 TwoWire I2CBUS = TwoWire(0);
 
 void setup() {
-  // Loading and setting Serial for communiction for Motordriver up. Also setting Pins for STEP and DIR
+  // Loading and setting Serial for communication for Motordriver up. Also setting Pins for STEP and DIR
   stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, UART_RX, UART_TX);
-  // for debbuging
+  // for debugging
   Serial.begin(9600);
   // Giving ESP32 a BLE name
   esp32ble.setup("rc-rover");
-  // Initalazing I2C with predefined Ports
+  // Initializing I2C with predefined Ports
   I2CBUS.begin(I2C_SDA, I2C_SCL, 100000);
   // Loading Servo Setup and executing it ==> to see more go to ../src/servo.cpp
   servo.setup();

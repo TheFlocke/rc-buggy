@@ -20,8 +20,8 @@ class Stepper {
     int _RX_PIN = -1;
     int _TX_PIN = -1;
 
-    FastAccelStepper *stepper0 = NULL; // Pointers of all Steppers who are connected
-    FastAccelStepper *stepper1 = NULL;
+    FastAccelStepper *stepper0 = nullptr; // Pointers of all Steppers who are connected
+    FastAccelStepper *stepper1 = nullptr;
 
 
 public:

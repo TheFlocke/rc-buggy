@@ -6,16 +6,16 @@
 #define SERIAL_PORT Serial1 // TMC2208/TMC2224 HardwareSerial port
 #define DRIVER_ADDRESS_0 0b00 // TMC2209 Driver address according to MS1 and MS2
 #define DRIVER_ADDRESS_1 0b01 // TMC2209 Driver address according to MS1 and MS2
-#define R_SENSE 0.12f // for 1.2A see online on how to calc https://all3dp.com/2/vref-calculator-tmc2209-tmc2208-a4988/
+#define R_SENSE 0.17f // for 1.2A see online on how to calc https://learn.watterott.com/silentstepstick/faq/#calculator-tmc21xx-and-tmc2209
 
 // Your motor parts:
 #define FULL_STEPS 200.0   // 1.8 degrees per whole step
-#define MICROSTEPS 0     // Usually 16.0
+#define MICROSTEPS 1     // Usually 16.0 but at 1 ==> Fullstep
 #define GEAR_REDUCTION 3.0       // Gearbox translation
 #define RMS_CURRENT 1200  // in mA max 2.1A
 
 // Don't edit these:
-#define REV_STEPS            (FULL_STEPS /* * MICROSTEPS */ * GEAR_REDUCTION) // How many Steps are needed for one Revolution
+#define REV_STEPS            (FULL_STEPS * MICROSTEPS * GEAR_REDUCTION) // How many Steps are needed for one Revolution
 
 Stepper stepper;
 
@@ -33,7 +33,7 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX
     _TX_PIN = TX_PIN;
 
     // Serial connection for up to 4 Drivers
-    Serial1.begin(115200, SERIAL_8N1, _RX_PIN, _TX_PIN);
+    Serial2.begin(115200, SERIAL_8N1, _RX_PIN, _TX_PIN);
     // Setting up Driver
     engine.init();
     // UART: Init SW UART (if selected) with default 115200 baudrate
@@ -56,7 +56,6 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX
     stepper0 = engine.stepperConnectToPin(_PSTEP0_STEP,2); // First is the Pin and second is the driver Type: 0 -> MCPWM, 1 -> RMT, 2 -> both ; creates a Stepper
     if (stepper0) {
         stepper0->setDirectionPin(_PSTEP0_Dir);
-        stepper0->setAutoEnable(true);
         stepper0->setAcceleration(5000); // steps/s^2
     } else {
         Serial.println("Failed to initialize stepper!");
@@ -65,7 +64,6 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX
     stepper1 = engine.stepperConnectToPin(_PSTEP1_STEP,2); // First is the Pin and second is the driver Type: 0 -> MCPWM, 1 -> RMT, 2 -> both ; creates a Stepper
     if (stepper1) {
         stepper1->setDirectionPin(_PSTEP1_Dir);
-        stepper1->setAutoEnable(true);
         stepper1->setAcceleration(5000); // steps/s^2
     } else {
         Serial.println("Failed to initialize stepper!");
@@ -77,11 +75,11 @@ void Stepper::stepper_0(int speed) {
         stepper0->forceStop();
     } else {
         if (speed > 0) {
-            stepper0->setSpeedInHz(map(speed, 0, 255, 0, REV_STEPS * 3));  // the last two speeds set the maximum speed
+            stepper0->setSpeedInHz(map(speed, 0, 255, 0, REV_STEPS));  // the last two speeds set the maximum speed
             stepper0->runForward();
         }
         if (speed < 0) {
-            stepper0->setSpeedInHz(map(speed, 0, -255, 0, REV_STEPS * 3));  // the last two speeds set the maximum speed
+            stepper0->setSpeedInHz(map(speed, 0, -255, 0, REV_STEPS));  // the last two speeds set the maximum speed
             stepper0->runBackward();
         }
     }
@@ -92,11 +90,11 @@ void Stepper::stepper_1(int speed) {
         stepper1->forceStop();
     } else {
         if (speed > 0) {
-            stepper1->setSpeedInHz(map(speed, 0, 255, 0, REV_STEPS * 3));  // the last two speeds set the maximum speed
+            stepper1->setSpeedInHz(map(speed, 0, 255, 0, REV_STEPS));  // the last two speeds set the maximum speed
             stepper1->runForward();
         }
         if (speed < 0) {
-            stepper1->setSpeedInHz(map(speed, 0, -255, 0, REV_STEPS * 3));  // the last two speeds set the maximum speed
+            stepper1->setSpeedInHz(map(speed, 0, -255, 0, REV_STEPS));  // the last two speeds set the maximum speed
             stepper1->runBackward();
         }
     }
