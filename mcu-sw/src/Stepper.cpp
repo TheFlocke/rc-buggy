@@ -8,9 +8,10 @@
 #define DRIVER_ADDRESS_1 0b01 // TMC2209 Driver address according to MS1 and MS2
 #define R_SENSE 0.17f // for 1.2A see online on how to calc https://learn.watterott.com/silentstepstick/faq/#calculator-tmc21xx-and-tmc2209
 
+
 // Your motor parts:
 #define FULL_STEPS 200.0   // 1.8 degrees per whole step
-#define MICROSTEPS 8     // Usually 16.0 but at 1 ==> Fullstep
+#define MICROSTEPS 8     // 8, 16, 32, 64, 128, 256
 #define GEAR_REDUCTION 3.0       // Gearbox translation
 #define RMS_CURRENT 1200  // in mA max 2.1A
 
@@ -33,10 +34,13 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX
     _TX_PIN = TX_PIN;
 
     // Serial connection for up to 4 Drivers
-    Serial2.begin(115200, SERIAL_8N1, _RX_PIN, _TX_PIN);
+    SERIAL_PORT.begin(115200, SERIAL_8N1, _RX_PIN, _TX_PIN);
     // Setting up Driver
     engine.init();
-    // UART: Init SW UART (if selected) with default 115200 baudrate
+    driver0.begin();
+    driver1.begin();
+    if (!driver0.test_connection()) Serial.println("Driver 0 UART error!");
+    if (!driver1.test_connection()) Serial.println("Driver 1 UART error!");
     driver0.toff(5); // Enables driver in software
     driver1.toff(5);
     driver0.vsense(true); // Enable UART current control
@@ -52,8 +56,11 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX
     driver1.microsteps(MICROSTEPS);
     driver0.en_spreadCycle(true);
     driver1.en_spreadCycle(true);
+    driver0.irun(31); // maximales Moment wenn die Motoren drehen
+    driver1.irun(31);
     // Setting up Library that helps to control the Speed and Acceleration
-    stepper0 = engine.stepperConnectToPin(_PSTEP0_STEP,2); // First is the Pin and second is the driver Type: 0 -> MCPWM, 1 -> RMT, 2 -> both ; creates a Stepper
+    stepper0 = engine.stepperConnectToPin(_PSTEP0_STEP, 2);
+    // First is the Pin and second is the driver Type: 0 -> MCPWM, 1 -> RMT, 2 -> both ; creates a Stepper
     if (stepper0) {
         stepper0->setDirectionPin(_PSTEP0_Dir);
         stepper0->setAcceleration(5000); // steps/s^2
@@ -61,7 +68,8 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX
         Serial.println("Failed to initialize stepper!");
     }
     // Setting up Library that helps to control the Speed and Acceleration
-    stepper1 = engine.stepperConnectToPin(_PSTEP1_STEP,2); // First is the Pin and second is the driver Type: 0 -> MCPWM, 1 -> RMT, 2 -> both ; creates a Stepper
+    stepper1 = engine.stepperConnectToPin(_PSTEP1_STEP, 2);
+    // First is the Pin and second is the driver Type: 0 -> MCPWM, 1 -> RMT, 2 -> both ; creates a Stepper
     if (stepper1) {
         stepper1->setDirectionPin(_PSTEP1_Dir);
         stepper1->setAcceleration(5000); // steps/s^2
@@ -71,31 +79,33 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX
 }
 
 void Stepper::stepper_0(int speed) {
+    if (!stepper0) return;
+
     if (speed == 0) {
-        stepper0->forceStop();
-    } else {
-        if (speed > 0) {
-            stepper0->setSpeedInHz(map(speed, 0, 255, 0, REV_STEPS));  // the last two speeds set the maximum speed
-            stepper0->runBackward();
-        }
-        if (speed < 0) {
-            stepper0->setSpeedInHz(map(speed, 0, -255, 0, REV_STEPS));  // the last two speeds set the maximum speed
-            stepper0->runForward();
-        }
+        stepper0->stopMove();
+        return;
     }
+
+    bool direction = speed > 0;
+    speed = abs(speed);
+    uint32_t mapped_speed = map(speed, 0, 255, 0, REV_STEPS);
+
+    stepper0->setSpeedInHz(mapped_speed);
+    direction ? stepper0->runForward() : stepper0->runBackward();
 }
 
 void Stepper::stepper_1(int speed) {
+    if (!stepper1) return;
+
     if (speed == 0) {
-        stepper1->forceStop();
-    } else {
-        if (speed > 0) {
-            stepper1->setSpeedInHz(map(speed, 0, 255, 0, REV_STEPS));  // the last two speeds set the maximum speed
-            stepper1->runForward();
-        }
-        if (speed < 0) {
-            stepper1->setSpeedInHz(map(speed, 0, -255, 0, REV_STEPS));  // the last two speeds set the maximum speed
-            stepper1->runBackward();
-        }
+        stepper1->stopMove();
+        return;
     }
+
+    bool direction = speed > 0;
+    speed = abs(speed);
+    uint32_t mapped_speed = map(speed, 0, 255, 0, REV_STEPS);
+
+    stepper1->setSpeedInHz(mapped_speed);
+    direction ? stepper1->runForward() : stepper1->runBackward();
 }

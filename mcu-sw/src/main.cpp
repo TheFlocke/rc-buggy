@@ -4,7 +4,7 @@
 #include "../lib/Servo.h"
 #include "../lib/Sensor.h"
 #include "../lib/Stepper.h"
-
+/*
 constexpr int ACT_LED = 8; // Activitiy LED for the Sensor PCB
 constexpr int SD_CSB = 9;
 constexpr int BME680_CSB = 10;
@@ -28,6 +28,21 @@ constexpr int STEP1_STEP = 7;
 [[maybe_unused]] constexpr int GPIO_38 = 38;
 [[maybe_unused]] constexpr int GPIO_47 = 47;
 [[maybe_unused]] constexpr int GPIO_48 = 48;
+*/
+
+constexpr int ACT_LED = 20; // Activitiy LED for the Sensor PCB
+constexpr int I2C_SDA = 1;
+constexpr int I2C_SCL = 2;
+// GPIO Ports used to control the TMC2209
+constexpr int UART_TX = 16;
+constexpr int UART_RX = 15;
+constexpr int STEP0_DIR = 4;
+constexpr int STEP1_DIR  = 6;
+constexpr int STEP0_STEP = 5;
+constexpr int STEP1_STEP = 7;
+
+
+
 
 // Using I2C 0 bus of 2 on the esp32
 TwoWire I2CBUS = TwoWire(0);
@@ -36,7 +51,7 @@ void setup() {
   // Loading and setting Serial for communication for Motordriver up. Also setting Pins for STEP and DIR
   stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, UART_RX, UART_TX);
   // for debugging
-  Serial.begin(9600);
+  // Serial.begin(9600);
   // Giving ESP32 a BLE name
   esp32ble.setup("rc-rover");
   // Initializing I2C with predefined Ports
@@ -52,17 +67,15 @@ void loop() {
 
   // Pull all the Int for later use from the Webinterface
   // Left Wheel
-  int speed1 = esp32ble.getSpeed1();
   int wheel1 = esp32ble.getWheel1();
   // Right Wheel
-  int speed2 = esp32ble.getSpeed2();
+
   int wheel2 = esp32ble.getWheel2();
 
   servo.set(4, wheel1);
-  Serial.println(wheel1);
   servo.set(5, wheel2);
-  stepper.stepper_0(speed1);
-  stepper.stepper_1(speed2);
+  stepper.stepper_0(esp32ble.getSpeed1());
+  stepper.stepper_1(esp32ble.getSpeed2());
 
   // Arm
   int arm1 = esp32ble.getArm1();
