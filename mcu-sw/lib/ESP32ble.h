@@ -49,6 +49,11 @@ public:
 
     String getCmd() const;
 
+    String getArm() const;
+
+    void setArm(String value);
+
+    String getSensor() const;
 
     //-255 ... 255
     int getSpeed1() const { return _speed1; }
@@ -64,21 +69,6 @@ public:
     int getArm4() const { return _arm4; }
 
 
-    enum {
-        STOPPED,
-        FORWARD,
-        LEFTFORWARD,
-        RIGHTFORWARD,
-        BACKWARD,
-        LEFTBACKWARD,
-        RIGHTBACKWARD
-    };
-
-    String getArm() const;
-
-    void setArm(String value);
-
-    String getSensor() const;
 };
 
 extern ESP32ble esp32ble;
