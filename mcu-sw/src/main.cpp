@@ -48,8 +48,6 @@ constexpr int STEP1_STEP = 7;
 TwoWire I2CBUS = TwoWire(0);
 
 void setup() {
-  // Loading and setting Serial for communication for Motordriver up. Also setting Pins for STEP and DIR
-  stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, UART_RX, UART_TX);
   // for debugging
   // Serial.begin(9600);
   // Giving ESP32 a BLE name
@@ -58,6 +56,8 @@ void setup() {
   I2CBUS.begin(I2C_SDA, I2C_SCL, 100000);
   // Loading Servo Setup and executing it ==> to see more go to ../src/servo.cpp
   servo.setup();
+  // Loading and setting Serial for communication for Motordriver up. Also setting Pins for STEP and DIR
+  stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, UART_RX, UART_TX);
   // Loading and setting Sensor up with LED set to ACT_LED
   sensor.setup(ACT_LED);
 }
