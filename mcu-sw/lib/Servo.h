@@ -9,9 +9,9 @@
 class Servo {
 
 public:
-    void set(int pin, int angle);
+    static void set(int pin, int angle);
 
-    void setup();
+    static void setup();
 };
 
 extern Servo servo;
