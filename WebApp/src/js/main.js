@@ -2,11 +2,6 @@ export const version="0.0.4412";
 
 let connectButton;
 let disconnectButton;
-let buttonLeft;
-let buttonRight;
-let buttonUp;
-let buttonStop;
-let buttonDown;
 let versionDisplay;
 let bleStateContainer;
 let bleCharState;
@@ -58,11 +53,6 @@ window.onload = () => {
 
     connectButton = document.getElementById('connectBleButton');
     disconnectButton = document.getElementById('disconnectBleButton');
-    buttonLeft = document.getElementById('buttonLeft');
-    buttonRight = document.getElementById('buttonRight');
-    buttonUp = document.getElementById('buttonSpeedUp');
-    buttonStop = document.getElementById('buttonSpeedStop');
-    buttonDown = document.getElementById('buttonSpeedDown');
     retrievedValue = document.getElementById('retrievedValue');
     latestValueSent = document.getElementById('valueSent');
     bleStateContainer = document.getElementById('bleState');
