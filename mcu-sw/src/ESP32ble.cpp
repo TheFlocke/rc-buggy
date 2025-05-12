@@ -12,7 +12,6 @@ class CmdCallbacks : public NimBLECharacteristicCallbacks {
 class StateCmdCallbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
         pCharacteristic->setValue(esp32ble.getCmd());
-        pCharacteristic->notify();
     }
 };
 
@@ -25,14 +24,12 @@ class ArmCallbacks : public NimBLECharacteristicCallbacks {
 class StateArmCallbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
         pCharacteristic->setValue(esp32ble.getArm());
-        pCharacteristic->notify();
     }
 };
 
 class SensorCallbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
         pCharacteristic->setValue(esp32ble.getSensor());
-        pCharacteristic->notify();
     }
 };
 
@@ -69,7 +66,6 @@ void ESP32ble::setCmd(String value) {
 
     if (_pStateCmdCharacteristic) {
         _pStateCmdCharacteristic->setValue(getCmd());
-        _pStateCmdCharacteristic->notify();
     }
 }
 
@@ -92,7 +88,6 @@ void ESP32ble::setArm(String value) {
     // sonst soll er die Values so lassen ==> daher nichts hingeschrieben
     if (_pStateArmCharacteristic) {
         _pStateArmCharacteristic->setValue(getArm());
-        _pStateArmCharacteristic->notify();
     }
 }
 
@@ -123,7 +118,7 @@ void ESP32ble::setup(String name) {
     // Create a BLE CMD Characteristic
     NimBLECharacteristic *pCmdCharacteristic = pService->createCharacteristic(
         CHARACTERISTIC_CMD,
-        NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+        NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::INDICATE
     );
     pCmdCharacteristic->setCallbacks(new CmdCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
@@ -135,7 +130,7 @@ void ESP32ble::setup(String name) {
     // Create a BLE STATE_CMD Characteristic
     _pStateCmdCharacteristic = pService->createCharacteristic(
         CHARACTERISTIC_STATE_CMD,
-        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::INDICATE
     );
     _pStateCmdCharacteristic->setCallbacks(new StateCmdCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
@@ -147,7 +142,7 @@ void ESP32ble::setup(String name) {
     // Create a BLE SENSOR Characteristic
     _pSensorCharacteristic = pService->createCharacteristic(
         CHARACTERISTIC_SENSOR,
-        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::INDICATE
     );
     _pSensorCharacteristic->setCallbacks(new SensorCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
@@ -159,7 +154,7 @@ void ESP32ble::setup(String name) {
     // Create a BLE ARM Characteristic
     _pArmCharacteristic = pService->createCharacteristic(
         CHARACTERISTIC_ARM,
-        NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+        NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::INDICATE
     );
     _pArmCharacteristic->setCallbacks(new ArmCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
@@ -171,7 +166,7 @@ void ESP32ble::setup(String name) {
     // Create a BLE ARM_STATE Characteristic
     _pStateArmCharacteristic = pService->createCharacteristic(
         CHARACTERISTIC_STATE_ARM,
-        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::INDICATE
     );
     _pStateArmCharacteristic->setCallbacks(new StateArmCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
