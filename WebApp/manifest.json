@@ -1,27 +1,15 @@
 {
   "background_color": "#c23b33",
-  "description": "RC-Rover",
+  "description": "RCRover",
   "dir": "ltr",
   "display": "standalone",
-  "name": "RC-Rover",
-  "short_name": "RC-Rover",
+  "name": "RCRover",
+  "short_name": "RCRover",
   "scope": "./",
   "start_url": "./",
   "theme_color": "#d35c52",
-  "id":"/RC-Rover/",
+  "id":"/RCRover/",
   "categories": [],
   "screenshots": [],
-  "icons": [
-    {
-      "src": "./icons-192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "./icons-512.png",
-      "type": "image/png",
-      "sizes": "512x512"
-    }
-  ],
   "shortcuts": []
 }

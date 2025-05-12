@@ -3,16 +3,12 @@
         // version muss nur geändert werden, wenn sich die Struktur des Caches ändert,
         // ansonsten werden die aktuellen Dateien immer aus dem Netzwerk geladen!
         // Offline first, network second
-        name:'rccar-cache-v1', 
+        name:'rccar-cache-v1',
         urls: [
             'index.html',
-            'styles.css',
-            'main.js',
-            'icons-192.png',
-            'back.jpg',
-            'logo.png',
-            'icons-512.png',
-            'apple-touch-icon.png'
+            '/src/styles.css',
+            '/src/js/main.js',
+            '/img/logo-inverted.png',
         ]
     };
 
@@ -82,7 +78,7 @@ self.addEventListener('fetch', event => {
 // get file from cache
 async function fromCache(request) {
     var url=request.url;
-    if(url=="https://apps.abitur-am-berufskolleg.info/rccar/") // wurzel kann auch ohne Dateiname angefragt werden
+    if(url=="https://rc.theflocke.de") // wurzel kann auch ohne Dateiname angefragt werden
         url+="index.html";
 
     url = url + ((url.indexOf('?')>=0 ? "&" : "?") + "c="+_cache.name);

@@ -1,4 +1,4 @@
-export const version="0.0.4412";
+export const version="0.5";
 
 let connectButton;
 let disconnectButton;
