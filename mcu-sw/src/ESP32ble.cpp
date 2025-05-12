@@ -61,16 +61,6 @@ void ESP32ble::setCmd(String value) {
         _speed2 = value.substring(t1 + 1, t2).toInt();
         _wheel1 = value.substring(t2 + 1, t3).toInt();
         _wheel2 = value.substring(t3 + 1).toInt();
-
-        // Frontend schickt zu große Werte ==> werden von dem Backend korrigiert
-        if (_speed1 > 255) _speed1 = 255;
-        if (_speed1 < -255) _speed1 = -255;
-        if (_speed2 > 255) _speed2 = 255;
-        if (_speed2 < -255) _speed2 = -255;
-        if (_wheel1 > 130) _wheel1 = 130;
-        if (_wheel1 < 55) _wheel1 = 55;
-        if (_wheel2 > 120) _wheel2 = 120;
-        if (_wheel2 < 60) _wheel2 = 60;
     } else {
         _speed1 = 0;
         _speed2 = 0;
@@ -85,8 +75,7 @@ void ESP32ble::setCmd(String value) {
 }
 
 String ESP32ble::getArm() const {
-    return "Servo_1: " + String(_arm1) + ", Servo_2: " + String(_arm2) + ", Servo_3: " + String(_arm3) + ", Gripper: " +
-           String(_arm4);
+    return  String(_arm1) + "," + String(_arm2) + "," + String(_arm3) + "," + String(_arm4);
 }
 
 void ESP32ble::setArm(String value) {
@@ -119,8 +108,7 @@ void ESP32ble::setArm(String value) {
 }
 
 String ESP32ble::getSensor() const {
-    return "Temp: " + String(_temp) + ", Humidity: " + String(_humidity) + ", Pressure: " + String(_pressure) +
-           ", Gas: " + String(_gas);
+    return String(_temp) + "," + String(_humidity) + "," + String(_pressure) + "," + String(_gas);
 }
 
 void ESP32ble::onConnect() {

@@ -17,13 +17,13 @@ class ESP32ble {
     // everything for the movement of the rover
     int _speed1 = 0;
     int _speed2 = 0;
-    int _wheel1 = 55;
-    int _wheel2 = 60;
+    int _wheel1 = 45;
+    int _wheel2 = 45;
     // everything for the movement of the arm (default set to home)
-    int _arm1 = 12;
-    int _arm2 = 12;
-    int _arm3 = 100;
-    int _arm4 = 175;
+    int _arm1 = 45;
+    int _arm2 = 45;
+    int _arm3 = 45;
+    int _arm4 = 45;
     // everything from the sensor
     int _temp = -1;
     int _humidity = -1;
