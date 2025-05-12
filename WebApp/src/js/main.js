@@ -321,8 +321,8 @@ export async function writeCmd(value) {
 		onDisconnected();
         sent="disconnected"
 	}
-    // 100ms verzögerung einbauen, um nicht zu häufig zu schicken!
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    // 10ms verzögerung einbauen, um nicht zu häufig zu schicken!
+    await new Promise((resolve) => setTimeout(resolve, 10));
     sending=false;
     return sent;
 }
@@ -360,8 +360,8 @@ export async function writeArmCmd(value) {
 		onDisconnected();
 		sent="disconnected"
 	}
-	// 100ms verzögerung einbauen, um nicht zu häufig zu schicken!
-	await new Promise((resolve) => setTimeout(resolve, 100));
+	// 10ms verzögerung einbauen, um nicht zu häufig zu schicken!
+	await new Promise((resolve) => setTimeout(resolve, 10));
 	sending=false;
 	return sent;
 }
