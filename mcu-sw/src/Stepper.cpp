@@ -78,7 +78,7 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX
     }
 }
 
-void Stepper::stepper_0(int speed) {
+void Stepper::stepper_0(int speed) const {
     if (!stepper0) return;
 
     if (speed == 0) {
@@ -94,7 +94,7 @@ void Stepper::stepper_0(int speed) {
     direction ? stepper0->runForward() : stepper0->runBackward();
 }
 
-void Stepper::stepper_1(int speed) {
+void Stepper::stepper_1(int speed) const {
     if (!stepper1) return;
 
     if (speed == 0) {

@@ -58,12 +58,10 @@ void ESP32ble::setCmd(const String &value) {
         _wheel1 = value.substring(t2 + 1, t3).toInt();
         _wheel2 = value.substring(t3 + 1).toInt();
     } else {
+        // Wheel wird einfach auf der letzten Position gelassen
         _speed1 = 0;
         _speed2 = 0;
-        // Wheel wird einfach auf der letzten Position gelassen
     }
-
-
     if (_pStateCmdCharacteristic) {
         _pStateCmdCharacteristic->setValue(getCmd());
     }

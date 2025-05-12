@@ -27,9 +27,9 @@ class Stepper {
 public:
     void setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX_PIN);
 
-    void stepper_0(int speed);
+    void stepper_0(int speed) const;
 
-    void stepper_1(int speed);
+    void stepper_1(int speed) const;
 
 };
 
