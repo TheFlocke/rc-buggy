@@ -15,7 +15,7 @@ class Sensor {
 
     public:
 
-    void setup(int LED);
+    static void setup(int LED);
 
     void read();
 

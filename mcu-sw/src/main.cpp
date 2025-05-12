@@ -55,7 +55,7 @@ void setup() {
   // Initializing I2C with predefined Ports
   I2CBUS.begin(I2C_SDA, I2C_SCL, 100000);
   // Loading Servo Setup and executing it ==> to see more go to ../src/servo.cpp
-  servo.setup();
+  Servo::setup();
   // Loading and setting Serial for communication for Motordriver up. Also setting Pins for STEP and DIR
   stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, UART_RX, UART_TX);
   // Loading and setting Sensor up with LED set to ACT_LED
@@ -66,8 +66,8 @@ void loop() {
   esp32ble.handle();
 
   // Wheels
-  servo.set(6, esp32ble.getWheel1());
-  servo.set(7, esp32ble.getWheel2());
+  Servo::set(6, esp32ble.getWheel1());
+  Servo::set(7, esp32ble.getWheel2());
   stepper.stepper_0(esp32ble.getSpeed1());
   stepper.stepper_1(esp32ble.getSpeed2());
 
@@ -77,10 +77,10 @@ void loop() {
   int arm3 = esp32ble.getArm3();
   int grabber = esp32ble.getArm4();
 
-  servo.set(0, arm1);
-  servo.set(1, -1* arm1);
-  servo.set(2, arm2);
-  servo.set(3, -1* arm2);
-  servo.set(4, arm3);
-  servo.set(5, grabber);
+  Servo::set(0, arm1);
+  Servo::set(1, -1* arm1);
+  Servo::set(2, arm2);
+  Servo::set(3, -1* arm2);
+  Servo::set(4, arm3);
+  Servo::set(5, grabber);
 }
