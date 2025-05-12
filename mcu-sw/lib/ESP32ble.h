@@ -40,7 +40,7 @@ class ESP32ble {
     NimBLECharacteristic *_pStateArmCharacteristic = nullptr;
 
 public:
-    void setup(String name);
+    void setup(const String &name);
 
     void handle();
 
@@ -48,13 +48,13 @@ public:
 
     void onDisconnect();
 
-    void setCmd(String value);
+    void setCmd(const String &value);
 
     String getCmd() const;
 
     String getArm() const;
 
-    void setArm(String value);
+    void setArm(const String &value);
 
     String getSensor() const;
 
