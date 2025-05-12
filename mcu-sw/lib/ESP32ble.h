@@ -29,6 +29,9 @@ class ESP32ble {
     int _humidity = -1;
     int _pressure = -1;
     int _gas = -1;
+    // ESP32 handle
+    unsigned long _disconnectTime = 0;
+    bool _waitingToAdvertise = false;
 
     NimBLEServer *_pServer = nullptr;
     NimBLECharacteristic *_pStateCmdCharacteristic = nullptr;

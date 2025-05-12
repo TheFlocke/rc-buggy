@@ -65,15 +65,9 @@ void setup() {
 void loop() {
   esp32ble.handle();
 
-  // Pull all the Int for later use from the Webinterface
-  // Left Wheel
-  int wheel1 = esp32ble.getWheel1();
-  // Right Wheel
-
-  int wheel2 = esp32ble.getWheel2();
-
-  servo.set(4, wheel1);
-  servo.set(5, wheel2);
+  // Wheels
+  servo.set(6, esp32ble.getWheel1());
+  servo.set(7, esp32ble.getWheel2());
   stepper.stepper_0(esp32ble.getSpeed1());
   stepper.stepper_1(esp32ble.getSpeed2());
 
@@ -84,27 +78,9 @@ void loop() {
   int grabber = esp32ble.getArm4();
 
   servo.set(0, arm1);
-  servo.set(1, arm2);
-  servo.set(2, arm3);
-  servo.set(3, grabber);
-
-  // Put here the Control Mechanism for the Speed
-
-  float temp = sensor.getTemp();
-  float pressure = sensor.getPressure();
-  float humidity = sensor.getHumidity();
-  float gas = sensor.getGas();
-
-  /*
-  sensor.read();
-  Serial.print("temp: ");
-  Serial.println(temp);
-  Serial.print("pressure: ");
-  Serial.println(pressure);
-  Serial.print("humidity: ");
-  Serial.println(humidity);
-  Serial.print("gas: ");
-  Serial.println(gas);
-  delay(500);
-  */
+  servo.set(1, -1* arm1);
+  servo.set(2, arm2);
+  servo.set(3, -1* arm2);
+  servo.set(4, arm3);
+  servo.set(5, grabber);
 }
