@@ -20,8 +20,8 @@ let bleSendHistory;
 let bleReceiveHistory;
 let orientation;
 let orientationDevice;
-let switch1;
-let switch2;
+let page0;
+let page1;
 
 let retrievedValue;
 let latestValueSent;
@@ -84,15 +84,15 @@ window.onload = () => {
 	orientationDevice = document.getElementById('orientation_info_device');
 	orientationFrame = document.getElementById('orientation_frame');
 	orientationCenter = document.getElementById('orientation_center');
-    switch1 = document.getElementById("swLED1");
-    switch2 = document.getElementById("swLED2");
+    page0 = document.getElementById("swPage0");
+    page1 = document.getElementById("swPage1");
 
     document.getElementById('version').innerHTML=version;
 	onDisconnected();
 
 
-	switch1.addEventListener('click', () => toggleLED1());
-	switch2.addEventListener('click', () => toggleLED2());
+	swPage0.addEventListener('click', () => togglePage0());
+	swPage1.addEventListener('click', () => togglePage1());
 
 	if (!navigator.bluetooth) {
 		errorMessageContainer.innerHTML = "Web Bluetooth API ist für diesen Browser nicht verfügbar!";
@@ -109,12 +109,12 @@ window.onload = () => {
 	disconnectButton.addEventListener('click', disconnectDevice);
 }
 
-function toggleLED1() {
+function togglePage0() {
 	document.getElementById('armController').style.visibility = 'hidden';
 	document.getElementById('speedController').style.display = 'flex';
 }
 
-function toggleLED2() {
+function togglePage1() {
     document.getElementById('armController').style.visibility = 'visible';
 	document.getElementById('speedController').style.display = 'none';
 }
@@ -162,7 +162,6 @@ async function connectToDevice(){
 		const device = await navigator.bluetooth.requestDevice({
 			filters: [
 						{ services: [SERVICE_UUID] },
-						{ namePrefix: "CRBK" }
 					 ]
 		});
 			
