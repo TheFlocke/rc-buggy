@@ -47,7 +47,7 @@ String ESP32ble::getCmd() const {
     return String(_speed1) + ":" + String(_speed2) + ":" + String(_wheel1) + ":" + String(_wheel2);
 }
 
-void ESP32ble::setCmd(String value) {
+void ESP32ble::setCmd(const String &value) {
     // prüfen auf kombinierte anweisung: // `${speed1}:${speed2}:${wheel1}:${wheel2}`
     int t1 = value.indexOf(":");
     int t2 = value.indexOf(":", t1 + 1);
@@ -73,7 +73,7 @@ String ESP32ble::getArm() const {
     return  String(_arm1) + ":" + String(_arm2) + ":" + String(_arm3) + ":" + String(_arm4);
 }
 
-void ESP32ble::setArm(String value) {
+void ESP32ble::setArm(const String &value) {
     // prüfen auf kombinierte anweisung: // `${arm1}:${arm2}:${arm3}:${arm4}`
     int t1 = value.indexOf(":");
     int t2 = value.indexOf(":", t1 + 1);
@@ -103,7 +103,7 @@ void ESP32ble::onDisconnect() {
     _connected = false;
 }
 
-void ESP32ble::setup(String name) {
+void ESP32ble::setup(const String &name) {
     // Create the BLE Device
     this->_name = name;
     NimBLEDevice::init(name.c_str());
