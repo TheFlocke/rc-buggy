@@ -3,7 +3,7 @@
         // version muss nur geändert werden, wenn sich die Struktur des Caches ändert,
         // ansonsten werden die aktuellen Dateien immer aus dem Netzwerk geladen!
         // Offline first, network second
-        name:'rccar-cache-v1',
+        name:'rcrover-cache-v1',
         urls: [
             'index.html',
             '/src/styles.css',
