@@ -32,7 +32,6 @@ let errorMessageContainer;
 let infoMessageContainer;
 
 //Define BLE Device Specs
-let deviceName ='CRBK';
 let SERVICE_UUID         = "5eaf1079-e806-47a9-a1ec-d815bea94805";
 let CHARACTERISTIC_CMD   = "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3";
 let CHARACTERISTIC_STATE_CMD = "bd6fbfde-385d-480f-b5eb-64d60cc7be9a";
@@ -51,17 +50,8 @@ let armCharacteristic;
 let armStateCharacteristic;
 
 // orientation information
-let T;
-let X;
-let Y;
 let orientationFrame;
 let orientationCenter;
-let direction=0;
-let invertDirection=false;
-let speed=0;
-let running =false;
-let led1=false;
-let led2=false;
 
 window.onload = () => {
     registerServiceWorker();
@@ -336,7 +326,7 @@ export async function writeCmd(value) {
             sent="ok";
 		} catch(error) {
 			console.error("Error writing to the CMD characteristic: ", error);
-		};
+		}
 	} else {
 		console.error ("Bluetooth is not connected. Cannot write to characteristic.")
 		onDisconnected();
@@ -375,7 +365,7 @@ export async function writeArmCmd(value) {
 			sent = "ok";
 		} catch (error) {
 			console.error("Error writing to ARM characteristic: ", error);
-		};
+		}
 	} else  {
 		console.error ("Bluetooth is not connected. Cannot write to characteristic.")
 		onDisconnected();
