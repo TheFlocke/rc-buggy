@@ -400,8 +400,7 @@ function getDateTime() {
 	let minutes = ("00" + currentdate.getMinutes()).slice(-2);
 	let seconds = ("00" + currentdate.getSeconds()).slice(-2);
 
-	let datetime = day + "." + month + "." + year + ", " + hours + ":" + minutes + ":" + seconds;
-	return datetime;
+	return day + "." + month + "." + year + ", " + hours + ":" + minutes + ":" + seconds;
 }
 
 
