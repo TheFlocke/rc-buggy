@@ -9,6 +9,18 @@
   "start_url": "./",
   "theme_color": "#d35c52",
   "id":"/RCRover/",
+  "icons": [
+    {
+      "src": "./icons/web-app-manifest-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "./icons/web-app-manifest-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
   "categories": [],
   "screenshots": [],
   "shortcuts": []
