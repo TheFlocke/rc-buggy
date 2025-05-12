@@ -9,6 +9,8 @@
             '/src/styles.css',
             '/src/js/main.js',
             '/img/logo-inverted.png',
+            '/icons/web-app-manifest-192x192.png',
+            '/icons/web-app-manifest-512x512.png'
         ]
     };
 
