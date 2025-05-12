@@ -241,7 +241,7 @@ async function connectToDevice(){
 	}
 }
 
-function onDisconnected(event){
+function onDisconnected(){
 	disconnectButton.style.display = "none";
 	connectButton.style.display = "block";
 	
@@ -322,7 +322,7 @@ export async function writeCmd(value) {
         sent="disconnected"
 	}
     // 100ms verzögerung einbauen, um nicht zu häufig zu schicken!
-    await new Promise((resolve, reject) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
     sending=false;
     return sent;
 }
@@ -361,7 +361,7 @@ export async function writeArmCmd(value) {
 		sent="disconnected"
 	}
 	// 100ms verzögerung einbauen, um nicht zu häufig zu schicken!
-	await new Promise((resolve, reject) => setTimeout(resolve, 100));
+	await new Promise((resolve) => setTimeout(resolve, 100));
 	sending=false;
 	return sent;
 }
