@@ -23,7 +23,7 @@ class ArmCallbacks : public NimBLECharacteristicCallbacks {
 };
 
 class StateArmCallbacks : public NimBLECharacteristicCallbacks {
-    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) {
+    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
         pCharacteristic->setValue(esp32ble.getArm());
         pCharacteristic->notify();
     }
@@ -191,13 +191,17 @@ void ESP32ble::setup(String name) {
 }
 
 void ESP32ble::handle() {
-    // disconnecting
-    if (!_connected && _lastConnectionState) {
-        delay(500); // give the bluetooth stack the chance to get things ready
-        NimBLEDevice::startAdvertising(); // restart advertising
-        _lastConnectionState = _connected;
+    if (!_connected && _lastConnectionState && !_waitingToAdvertise) {
+        _disconnectTime = millis();
+        _waitingToAdvertise = true;
     }
-    // connecting
+
+    if (_waitingToAdvertise && millis() - _disconnectTime >= 500) {
+        NimBLEDevice::startAdvertising();
+        _lastConnectionState = _connected;
+        _waitingToAdvertise = false;
+    }
+
     if (_connected && !_lastConnectionState) {
         _lastConnectionState = _connected;
     }
