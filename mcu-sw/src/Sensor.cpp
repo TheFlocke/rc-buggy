@@ -28,8 +28,5 @@ String Sensor::read() {
     _pressure = bme680.readPressure();
     _humidity = bme680.readHumidity();
     _gas = bme680.readGas();
-
-    return _temp + ':' + _pressure + ':' + _humidity + ':' + _gas;
 }
-
 

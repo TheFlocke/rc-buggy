@@ -18,6 +18,11 @@ class Sensor {
     static void setup(int LED);
 
     String read();
+
+    int getTemp() const { return _temp; }
+    int getHumidity() const { return _humidity; }
+    int getPressure() const { return _pressure; }
+    int getGas() const { return _gas; }
 };
 
 extern Sensor sensor;
