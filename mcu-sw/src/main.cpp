@@ -59,7 +59,7 @@ void setup() {
   // Loading and setting Serial for communication for Motordriver up. Also setting Pins for STEP and DIR
   stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, UART_RX, UART_TX);
   // Loading and setting Sensor up with LED set to ACT_LED
-  sensor.setup(ACT_LED);
+  Sensor::setup(ACT_LED);
 }
 
 void loop() {
@@ -83,4 +83,6 @@ void loop() {
   Servo::set(3, map(arm2, 0, 180, 180, 0));
   Servo::set(4, arm3);
   Servo::set(5, grabber);
+
+  // Sensor
 }

@@ -17,12 +17,7 @@ class Sensor {
 
     static void setup(int LED);
 
-    void read();
-
-    float getTemp() const { return _temp; }
-    float getPressure() const { return _pressure; }
-    float getHumidity() const { return _humidity; }
-    float getGas() const { return _gas; }
+    String read();
 };
 
 extern Sensor sensor;
