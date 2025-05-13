@@ -300,43 +300,43 @@ void ESP32ble::setup(const String &name) {
     );
     _pCharacteristicSensorTemp->setCallbacks(new SensorTempCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
+        NimBLE2904 *descriptor_2904 = _pCharacteristicSensorTemp->create2904();
         descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
         _pCharacteristicSensorTemp->addDescriptor(descriptor_2904);
     }
 
     // Create a BLE Sensor Humidity Characteristic
     _pCharacteristicSensorHumidity = pSensorService->createCharacteristic(
-        SENSOR_TEMP,
+        SENSOR_HUMIDITY,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     _pCharacteristicSensorHumidity->setCallbacks(new SensorHumidityCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
+        NimBLE2904 *descriptor_2904 = _pCharacteristicSensorHumidity->create2904();
         descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
         _pCharacteristicSensorHumidity->addDescriptor(descriptor_2904);
     }
 
     // Create a BLE Sensor Pressure Characteristic
     _pCharacteristicSensorPressure = pSensorService->createCharacteristic(
-        SENSOR_TEMP,
+        SENSOR_PRESSURE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     _pCharacteristicSensorPressure->setCallbacks(new SensorPressureCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
+        NimBLE2904 *descriptor_2904 = _pCharacteristicSensorPressure->create2904();
         descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
         _pCharacteristicSensorPressure->addDescriptor(descriptor_2904);
     }
 
     // Create a BLE Sensor Temp Characteristic
     _pCharacteristicSensorGas = pSensorService->createCharacteristic(
-        SENSOR_TEMP,
+        SENSOR_GAS,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     _pCharacteristicSensorGas->setCallbacks(new SensorGasCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
+        NimBLE2904 *descriptor_2904 = _pCharacteristicSensorGas->create2904();
         descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
         _pCharacteristicSensorGas->addDescriptor(descriptor_2904);
     }
