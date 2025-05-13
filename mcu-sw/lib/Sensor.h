@@ -8,10 +8,10 @@
 
 
 class Sensor {
-    String _temp = -1;
-    String _pressure = -1;
-    String _humidity = -1;
-    String _gas = -1;
+    String _temp{"-1"};
+    String _pressure{"-1"};
+    String _humidity{"-1"};
+    String _gas{"-1"};
 
     public:
 

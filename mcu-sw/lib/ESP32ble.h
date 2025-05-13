@@ -31,10 +31,10 @@ class ESP32ble {
     int _arm3 = 45;
     int _arm4 = 45;
     // everything from the sensor
-    String _temp = -1;
-    String _humidity = -1;
-    String _pressure = -1;
-    String _gas = -1;
+    String _temp{"-1"};
+    String _pressure{"-1"};
+    String _humidity{"-1"};
+    String _gas{"-1"};
     // ESP32 handle
     unsigned long _disconnectTime = 0;
     bool _waitingToAdvertise = false;
