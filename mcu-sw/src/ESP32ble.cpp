@@ -70,6 +70,8 @@ class SensorGasCallbacks : public NimBLECharacteristicCallbacks {
 
 
 
+
+// Server Callbacks
 class ServerCallbacks : public NimBLEServerCallbacks {
     void onConnect(NimBLEServer *pServer, NimBLEConnInfo &connInfo) override {
         esp32ble.onConnect();
@@ -79,6 +81,34 @@ class ServerCallbacks : public NimBLEServerCallbacks {
         esp32ble.onDisconnect();
     }
 };
+
+void ESP32ble::onConnect() {
+    _connected = true;
+}
+
+void ESP32ble::onDisconnect() {
+    _connected = false;
+}
+
+void ESP32ble::handle() {
+    if (!_connected && _lastConnectionState && !_waitingToAdvertise) {
+        _disconnectTime = millis();
+        _waitingToAdvertise = true;
+    }
+
+    if (_waitingToAdvertise && millis() - _disconnectTime >= 500) {
+        NimBLEDevice::startAdvertising();
+        _lastConnectionState = _connected;
+        _waitingToAdvertise = false;
+    }
+
+    if (_connected && !_lastConnectionState) {
+        _lastConnectionState = _connected;
+    }
+}
+
+
+
 
 String ESP32ble::getDrive() const {
     return String(_speed1) + ":" + String(_speed2) + ":" + String(_wheel1) + ":" + String(_wheel2);
@@ -184,14 +214,6 @@ void ESP32ble::setSensorGas(const String &value) {
     }
 }
 
-
-void ESP32ble::onConnect() {
-    _connected = true;
-}
-
-void ESP32ble::onDisconnect() {
-    _connected = false;
-}
 
 void ESP32ble::setup(const String &name) {
     // Create the BLE Device
@@ -330,21 +352,4 @@ void ESP32ble::setup(const String &name) {
     pAdvertising->addServiceUUID(CMD_SERVICE_UUID);
     pAdvertising->addServiceUUID(SENSOR_SERVICE_UUID);
     NimBLEDevice::startAdvertising();
-}
-
-void ESP32ble::handle() {
-    if (!_connected && _lastConnectionState && !_waitingToAdvertise) {
-        _disconnectTime = millis();
-        _waitingToAdvertise = true;
-    }
-
-    if (_waitingToAdvertise && millis() - _disconnectTime >= 500) {
-        NimBLEDevice::startAdvertising();
-        _lastConnectionState = _connected;
-        _waitingToAdvertise = false;
-    }
-
-    if (_connected && !_lastConnectionState) {
-        _lastConnectionState = _connected;
-    }
 }
