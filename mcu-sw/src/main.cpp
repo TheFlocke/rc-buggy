@@ -78,9 +78,9 @@ void loop() {
   int grabber = esp32ble.getArm4();
 
   Servo::set(0, arm1);
-  Servo::set(1, -1* arm1);
+  Servo::set(1, map(arm1, 0, 180, 180, 0));
   Servo::set(2, arm2);
-  Servo::set(3, -1* arm2);
+  Servo::set(3, map(arm2, 0, 180, 180,0));
   Servo::set(4, arm3);
   Servo::set(5, grabber);
 }
