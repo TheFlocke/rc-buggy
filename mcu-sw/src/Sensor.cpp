@@ -21,10 +21,16 @@ void Sensor::read() {
         Serial.println("BME680 read failed - Check Wiring");
         return;
     }
+    // allow other processes to run while waiting for sensor
+    yield();
+
     if (!bme680.endReading()) {
         Serial.println("BME680 read failed - Check Wiring");
         return;
     }
+    // allow other processes to run while waiting for sensor
+    yield();
+
     // making float to String !!! Only for later use in WEB cannot be used anymore for calulations
     _temp = float2string(bme680.readTemperature());
     _pressure = float2string(bme680.readPressure());
