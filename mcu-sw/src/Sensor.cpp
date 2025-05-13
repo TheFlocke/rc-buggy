@@ -15,18 +15,31 @@ void Sensor::setup(int LED) {
     pinMode(LED, OUTPUT);
 }
 
-String Sensor::read() {
+void Sensor::read() {
     unsigned long endTime = bme680.beginReading();
     if (endTime == 0) {
         Serial.println("BME680 read failed - Check Wiring");
+        return;
     }
     if (!bme680.endReading()) {
         Serial.println("BME680 read failed - Check Wiring");
-
+        return;
     }
-    _temp = bme680.readTemperature();
-    _pressure = bme680.readPressure();
-    _humidity = bme680.readHumidity();
-    _gas = bme680.readGas();
+    // making float to String !!! Only for later use in WEB cannot be used anymore for calulations
+    _temp = float2string(bme680.readTemperature());
+    _pressure = float2string(bme680.readPressure());
+    _humidity = float2string(bme680.readHumidity());
+    _gas = float2string(bme680.readGas());
 }
 
+
+String Sensor::float2string(float value) {
+    // 15 Characters -1 for null and -1 for -x
+    char buffer[16];
+    // use buffer as save space
+    // 3 ==> overall minimum 3 digits including decimal point
+    // 2 ==> after decimal point 2 digits
+    // f ==> convert float to String
+    snprintf(buffer, sizeof(buffer), "%4.4f", value);
+    return {buffer};
+}

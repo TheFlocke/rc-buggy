@@ -85,4 +85,11 @@ void loop() {
   Servo::set(5, grabber);
 
   // Sensor
+  // Sense all data and convert it to Strings
+  sensor.read();
+  // Send all the converted Data to Client
+  esp32ble.setSensorTemp(sensor.getTemp());
+  esp32ble.setSensorHumidity(sensor.getHumidity());
+  esp32ble.setSensorPressure(sensor.getPressure());
+  esp32ble.setSensorGas(sensor.getGas());
 }

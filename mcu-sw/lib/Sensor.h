@@ -8,21 +8,22 @@
 
 
 class Sensor {
-    float _temp = -1;
-    float _pressure = -1;
-    float _humidity = -1;
-    float _gas = -1;
+    String _temp = -1;
+    String _pressure = -1;
+    String _humidity = -1;
+    String _gas = -1;
 
     public:
 
     static void setup(int LED);
 
-    String read();
+    void read();
+    static String float2string(float value);
 
-    int getTemp() const { return _temp; }
-    int getHumidity() const { return _humidity; }
-    int getPressure() const { return _pressure; }
-    int getGas() const { return _gas; }
+    String getTemp() const { return _temp; }
+    String getHumidity() const { return _humidity; }
+    String getPressure() const { return _pressure; }
+    String getGas() const { return _gas; }
 };
 
 extern Sensor sensor;
