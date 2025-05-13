@@ -41,6 +41,9 @@ constexpr int STEP1_DIR  = 6;
 constexpr int STEP0_STEP = 5;
 constexpr int STEP1_STEP = 7;
 
+long sensorTimeout = 100; // Sensor Timeout 100ms
+long sensorTime = 0;
+
 
 
 
@@ -85,11 +88,16 @@ void loop() {
   Servo::set(5, grabber);
 
   // Sensor
-  // Sense all data and convert it to Strings
-  sensor.read();
-  // Send all the converted Data to Client
-  esp32ble.setSensorTemp(sensor.getTemp());
-  esp32ble.setSensorHumidity(sensor.getHumidity());
-  esp32ble.setSensorPressure(sensor.getPressure());
-  esp32ble.setSensorGas(sensor.getGas());
+  if (millis() > sensorTimeout + sensorTime) {
+    // last time the function was called
+    sensorTime = millis();
+    // Sense all data and convert it to Strings
+    if (sensor.read()) {
+      // Send all the converted Data to Client
+      esp32ble.setSensorTemp(sensor.getTemp());
+      esp32ble.setSensorHumidity(sensor.getHumidity());
+      esp32ble.setSensorPressure(sensor.getPressure());
+      esp32ble.setSensorGas(sensor.getGas());
+    }
+  }
 }

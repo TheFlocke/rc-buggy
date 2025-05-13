@@ -17,7 +17,7 @@ class Sensor {
 
     static void setup(int LED);
 
-    void read();
+    bool read();
     static String float2string(float value);
 
     String getTemp() const { return _temp; }

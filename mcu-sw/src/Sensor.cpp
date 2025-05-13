@@ -15,18 +15,18 @@ void Sensor::setup(int LED) {
     pinMode(LED, OUTPUT);
 }
 
-void Sensor::read() {
+bool Sensor::read() {
     unsigned long endTime = bme680.beginReading();
     if (endTime == 0) {
         Serial.println("BME680 read failed - Check Wiring");
-        return;
+        return false;
     }
     // allow other processes to run while waiting for sensor
     yield();
 
     if (!bme680.endReading()) {
         Serial.println("BME680 read failed - Check Wiring");
-        return;
+        return false;
     }
     // allow other processes to run while waiting for sensor
     yield();
@@ -36,6 +36,7 @@ void Sensor::read() {
     _pressure = float2string(bme680.readPressure());
     _humidity = float2string(bme680.readHumidity());
     _gas = float2string(bme680.readGas());
+    return true;
 }
 
 
