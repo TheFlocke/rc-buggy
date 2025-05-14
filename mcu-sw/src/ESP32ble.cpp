@@ -230,55 +230,36 @@ void ESP32ble::setup(const String &name) {
     // Wheels/Drive
     // Create a BLE CMD Characteristic
     // only used one time in function
-    NimBLECharacteristic *pCmdCharacteristic = pCmdService->createCharacteristic(
+    NimBLECharacteristic *pCmdDriveCharacteristic = pCmdService->createCharacteristic(
         CMD_DRIVE,
         NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    pCmdCharacteristic->setCallbacks(new CmdDriveCallbacks()); {
-        // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
-        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-        pCmdCharacteristic->addDescriptor(descriptor_2904);
-    }
+    pCmdDriveCharacteristic->setCallbacks(new CmdDriveCallbacks());
+
 
     // Create a BLE CmdDriveState Characteristic
     _pCharacteristicCmdDriveState = pCmdService->createCharacteristic(
         CMD_DRIVE_STATE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicCmdDriveState->setCallbacks(new CmdDriveStateCallbacks()); {
-        // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = _pCharacteristicCmdDriveState->create2904();
-        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-        _pCharacteristicCmdDriveState->addDescriptor(descriptor_2904);
-    }
+    _pCharacteristicCmdDriveState->setCallbacks(new CmdDriveStateCallbacks());
 
 
     // Robotarm
     // Create a BLE ARM Characteristic
     // only used one time in function
-    NimBLECharacteristic *pArmCharacteristic = pCmdService->createCharacteristic(
+    NimBLECharacteristic *pCmdArmCharacteristic = pCmdService->createCharacteristic(
         CMD_ARM,
         NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    pArmCharacteristic->setCallbacks(new CmdArmCallbacks()); {
-        // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = pArmCharacteristic->create2904();
-        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-        pArmCharacteristic->addDescriptor(descriptor_2904);
-    }
+    pCmdArmCharacteristic->setCallbacks(new CmdArmCallbacks());
 
     // Create a BLE ARM_STATE Characteristic
     _pCharacteristicCmdArmState = pCmdService->createCharacteristic(
         CMD_ARM_STATE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicCmdArmState->setCallbacks(new CmdArmStateCallbacks()); {
-        // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = _pCharacteristicCmdArmState->create2904();
-        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-        _pCharacteristicCmdArmState->addDescriptor(descriptor_2904);
-    }
+    _pCharacteristicCmdArmState->setCallbacks(new CmdArmStateCallbacks());
 
 
     // Start the CMD Service
@@ -291,48 +272,28 @@ void ESP32ble::setup(const String &name) {
         SENSOR_TEMP,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicSensorTemp->setCallbacks(new SensorTempCallbacks()); {
-        // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = _pCharacteristicSensorTemp->create2904();
-        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-        _pCharacteristicSensorTemp->addDescriptor(descriptor_2904);
-    }
+    _pCharacteristicSensorTemp->setCallbacks(new SensorTempCallbacks());
 
     // Create a BLE Sensor Humidity Characteristic
     _pCharacteristicSensorHumidity = pSensorService->createCharacteristic(
         SENSOR_HUMIDITY,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicSensorHumidity->setCallbacks(new SensorHumidityCallbacks()); {
-        // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = _pCharacteristicSensorHumidity->create2904();
-        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-        _pCharacteristicSensorHumidity->addDescriptor(descriptor_2904);
-    }
+    _pCharacteristicSensorHumidity->setCallbacks(new SensorHumidityCallbacks());
 
     // Create a BLE Sensor Pressure Characteristic
     _pCharacteristicSensorPressure = pSensorService->createCharacteristic(
         SENSOR_PRESSURE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicSensorPressure->setCallbacks(new SensorPressureCallbacks()); {
-        // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = _pCharacteristicSensorPressure->create2904();
-        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-        _pCharacteristicSensorPressure->addDescriptor(descriptor_2904);
-    }
+    _pCharacteristicSensorPressure->setCallbacks(new SensorPressureCallbacks());
 
-    // Create a BLE Sensor Temp Characteristic
+    // Create a BLE Sensor Gas Characteristic
     _pCharacteristicSensorGas = pSensorService->createCharacteristic(
         SENSOR_GAS,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicSensorGas->setCallbacks(new SensorGasCallbacks()); {
-        // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = (NimBLE2904 *) _pCharacteristicSensorGas->createDescriptor(
-            NimBLEUUID((uint16_t) 0x2904));
-        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-    }
+    _pCharacteristicSensorGas->setCallbacks(new SensorGasCallbacks());
 
 
     // Start the Sensor Service
