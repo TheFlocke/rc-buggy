@@ -3,41 +3,73 @@
 
 ESP32ble esp32ble;
 
-class CmdCallbacks : public NimBLECharacteristicCallbacks {
+
+// CMD Callbacks
+// Drive
+class CmdDriveCallbacks : public NimBLECharacteristicCallbacks {
     void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        esp32ble.setCmd(pCharacteristic->getValue());
+        esp32ble.setDrive(pCharacteristic->getValue());
         pCharacteristic->notify();
     }
 };
 
-class StateCmdCallbacks : public NimBLECharacteristicCallbacks {
+class CmdDriveStateCallbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getCmd());
+        pCharacteristic->setValue(esp32ble.getDrive());
         pCharacteristic->notify();
     }
 };
 
-class ArmCallbacks : public NimBLECharacteristicCallbacks {
+// Arm
+class CmdArmCallbacks : public NimBLECharacteristicCallbacks {
     void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
         esp32ble.setArm(pCharacteristic->getValue());
         pCharacteristic->notify();
     }
 };
 
-class StateArmCallbacks : public NimBLECharacteristicCallbacks {
+class CmdArmStateCallbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
         pCharacteristic->setValue(esp32ble.getArm());
         pCharacteristic->notify();
     }
 };
 
-class SensorCallbacks : public NimBLECharacteristicCallbacks {
+// Sensor Callbacks
+// Temperature
+class SensorTempCallbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getSensor());
+        pCharacteristic->setValue(esp32ble.getSensorTemp());
         pCharacteristic->notify();
     }
 };
 
+// Humidity
+class SensorHumidityCallbacks : public NimBLECharacteristicCallbacks {
+    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
+        pCharacteristic->setValue(esp32ble.getSensorHumidity());
+        pCharacteristic->notify();
+    }
+};
+
+// Pressure
+class SensorPressureCallbacks : public NimBLECharacteristicCallbacks {
+    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
+        pCharacteristic->setValue(esp32ble.getSensorPressure());
+        pCharacteristic->notify();
+    }
+};
+
+// Gas
+class SensorGasCallbacks : public NimBLECharacteristicCallbacks {
+    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
+        pCharacteristic->setValue(esp32ble.getSensorGas());
+        pCharacteristic->notify();
+    }
+};
+
+
+// Server Callbacks
 class ServerCallbacks : public NimBLEServerCallbacks {
     void onConnect(NimBLEServer *pServer, NimBLEConnInfo &connInfo) override {
         esp32ble.onConnect();
@@ -48,11 +80,37 @@ class ServerCallbacks : public NimBLEServerCallbacks {
     }
 };
 
-String ESP32ble::getCmd() const {
+void ESP32ble::onConnect() {
+    _connected = true;
+}
+
+void ESP32ble::onDisconnect() {
+    _connected = false;
+}
+
+void ESP32ble::handle() {
+    if (!_connected && _lastConnectionState && !_waitingToAdvertise) {
+        _disconnectTime = millis();
+        _waitingToAdvertise = true;
+    }
+
+    if (_waitingToAdvertise && millis() - _disconnectTime >= 500) {
+        NimBLEDevice::startAdvertising();
+        _lastConnectionState = _connected;
+        _waitingToAdvertise = false;
+    }
+
+    if (_connected && !_lastConnectionState) {
+        _lastConnectionState = _connected;
+    }
+}
+
+
+String ESP32ble::getDrive() const {
     return String(_speed1) + ":" + String(_speed2) + ":" + String(_wheel1) + ":" + String(_wheel2);
 }
 
-void ESP32ble::setCmd(const String &value) {
+void ESP32ble::setDrive(const String &value) {
     // prüfen auf kombinierte anweisung: // `${speed1}:${speed2}:${wheel1}:${wheel2}`
     int t1 = value.indexOf(":");
     int t2 = value.indexOf(":", t1 + 1);
@@ -67,9 +125,9 @@ void ESP32ble::setCmd(const String &value) {
         _speed1 = 0;
         _speed2 = 0;
     }
-    if (_pStateCmdCharacteristic) {
-        _pStateCmdCharacteristic->setValue(getCmd());
-        _pStateCmdCharacteristic->notify();
+    if (_pCharacteristicCmdDriveState) {
+        _pCharacteristicCmdDriveState->setValue(getDrive());
+        _pCharacteristicCmdDriveState->notify();
     }
 }
 
@@ -89,24 +147,69 @@ void ESP32ble::setArm(const String &value) {
         _arm4 = value.substring(t3 + 1).toInt();
     }
 
-    // sonst soll er die Values so lassen ==> daher nichts hingeschrieben
-    if (_pStateArmCharacteristic) {
-        _pStateArmCharacteristic->setValue(getArm());
-        _pStateArmCharacteristic->notify();
+    if (_pCharacteristicCmdArmState) {
+        _pCharacteristicCmdArmState->setValue(getArm());
+        _pCharacteristicCmdArmState->notify();
     }
 }
 
-String ESP32ble::getSensor() const {
-    return String(_temp) + ":" + String(_humidity) + ":" + String(_pressure) + ":" + String(_gas);
+// Sensor
+// Temperature
+String ESP32ble::getSensorTemp() const {
+    return String(_temp);
 }
 
-void ESP32ble::onConnect() {
-    _connected = true;
+void ESP32ble::setSensorTemp(const String &value) {
+    _temp = value;
+
+    if (_pCharacteristicSensorTemp) {
+        _pCharacteristicSensorTemp->setValue(getSensorTemp());
+        _pCharacteristicSensorTemp->notify();
+    }
 }
 
-void ESP32ble::onDisconnect() {
-    _connected = false;
+// Humidity
+String ESP32ble::getSensorHumidity() const {
+    return String(_humidity);
 }
+
+void ESP32ble::setSensorHumidity(const String &value) {
+    _humidity = value;
+
+    if (_pCharacteristicSensorHumidity) {
+        _pCharacteristicSensorHumidity->setValue(getSensorHumidity());
+        _pCharacteristicSensorHumidity->notify();
+    }
+}
+
+// Pressure
+String ESP32ble::getSensorPressure() const {
+    return String(_pressure);
+}
+
+void ESP32ble::setSensorPressure(const String &value) {
+    _pressure = value;
+
+    if (_pCharacteristicSensorPressure) {
+        _pCharacteristicSensorPressure->setValue(getSensorPressure());
+        _pCharacteristicSensorPressure->notify();
+    }
+}
+
+// Gas
+String ESP32ble::getSensorGas() const {
+    return String(_gas);
+}
+
+void ESP32ble::setSensorGas(const String &value) {
+    _gas = value;
+
+    if (_pCharacteristicSensorGas) {
+        _pCharacteristicSensorGas->setValue(getSensorGas());
+        _pCharacteristicSensorGas->notify();
+    }
+}
+
 
 void ESP32ble::setup(const String &name) {
     // Create the BLE Device
@@ -117,92 +220,90 @@ void ESP32ble::setup(const String &name) {
     _pServer = NimBLEDevice::createServer();
     _pServer->setCallbacks(new ServerCallbacks());
 
-    // Create the BLE Service
-    NimBLEService *pService = _pServer->createService(SERVICE_UUID);
+    // Create the BLE CMDService
+    NimBLEService *pCmdService = _pServer->createService(CMD_SERVICE_UUID);
 
+    // Create the BLE SensorService
+    NimBLEService *pSensorService = _pServer->createService(SENSOR_SERVICE_UUID);
+
+
+    // Wheels/Drive
     // Create a BLE CMD Characteristic
-    NimBLECharacteristic *pCmdCharacteristic = pService->createCharacteristic(
-        CHARACTERISTIC_CMD,
+    // only used one time in function
+    NimBLECharacteristic *pCmdDriveCharacteristic = pCmdService->createCharacteristic(
+        CMD_DRIVE,
         NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    pCmdCharacteristic->setCallbacks(new CmdCallbacks()); {
-        // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
-        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-        pCmdCharacteristic->addDescriptor(descriptor_2904);
-    }
+    pCmdDriveCharacteristic->setCallbacks(new CmdDriveCallbacks());
 
-    // Create a BLE STATE_CMD Characteristic
-    _pStateCmdCharacteristic = pService->createCharacteristic(
-        CHARACTERISTIC_STATE_CMD,
+
+    // Create a BLE CmdDriveState Characteristic
+    _pCharacteristicCmdDriveState = pCmdService->createCharacteristic(
+        CMD_DRIVE_STATE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pStateCmdCharacteristic->setCallbacks(new StateCmdCallbacks()); {
-        // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
-        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-        _pStateCmdCharacteristic->addDescriptor(descriptor_2904);
-    }
+    _pCharacteristicCmdDriveState->setCallbacks(new CmdDriveStateCallbacks());
 
-    // Create a BLE SENSOR Characteristic
-    _pSensorCharacteristic = pService->createCharacteristic(
-        CHARACTERISTIC_SENSOR,
-        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
-    );
-    _pSensorCharacteristic->setCallbacks(new SensorCallbacks()); {
-        // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
-        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-        _pSensorCharacteristic->addDescriptor(descriptor_2904);
-    }
 
+    // Robotarm
     // Create a BLE ARM Characteristic
-    _pArmCharacteristic = pService->createCharacteristic(
-        CHARACTERISTIC_ARM,
+    // only used one time in function
+    NimBLECharacteristic *pCmdArmCharacteristic = pCmdService->createCharacteristic(
+        CMD_ARM,
         NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pArmCharacteristic->setCallbacks(new ArmCallbacks()); {
-        // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
-        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-        _pArmCharacteristic->addDescriptor(descriptor_2904);
-    }
+    pCmdArmCharacteristic->setCallbacks(new CmdArmCallbacks());
 
     // Create a BLE ARM_STATE Characteristic
-    _pStateArmCharacteristic = pService->createCharacteristic(
-        CHARACTERISTIC_STATE_ARM,
+    _pCharacteristicCmdArmState = pCmdService->createCharacteristic(
+        CMD_ARM_STATE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pStateArmCharacteristic->setCallbacks(new StateArmCallbacks()); {
-        // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = pCmdCharacteristic->create2904();
-        descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-        _pStateArmCharacteristic->addDescriptor(descriptor_2904);
-    }
+    _pCharacteristicCmdArmState->setCallbacks(new CmdArmStateCallbacks());
 
-    // Start the service
-    pService->start();
+
+    // Start the CMD Service
+    pCmdService->start();
+
+
+    // Sensor
+    // Create a BLE Sensor Temp Characteristic
+    _pCharacteristicSensorTemp = pSensorService->createCharacteristic(
+        SENSOR_TEMP,
+        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+    );
+    _pCharacteristicSensorTemp->setCallbacks(new SensorTempCallbacks());
+
+    // Create a BLE Sensor Humidity Characteristic
+    _pCharacteristicSensorHumidity = pSensorService->createCharacteristic(
+        SENSOR_HUMIDITY,
+        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+    );
+    _pCharacteristicSensorHumidity->setCallbacks(new SensorHumidityCallbacks());
+
+    // Create a BLE Sensor Pressure Characteristic
+    _pCharacteristicSensorPressure = pSensorService->createCharacteristic(
+        SENSOR_PRESSURE,
+        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+    );
+    _pCharacteristicSensorPressure->setCallbacks(new SensorPressureCallbacks());
+
+    // Create a BLE Sensor Gas Characteristic
+    _pCharacteristicSensorGas = pSensorService->createCharacteristic(
+        SENSOR_GAS,
+        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+    );
+    _pCharacteristicSensorGas->setCallbacks(new SensorGasCallbacks());
+
+
+    // Start the Sensor Service
+    pSensorService->start();
+
 
     // Start advertising
     NimBLEAdvertising *pAdvertising = NimBLEDevice::getAdvertising();
     pAdvertising->setName(_name.c_str());
-    pAdvertising->addServiceUUID(SERVICE_UUID);
+    pAdvertising->addServiceUUID(CMD_SERVICE_UUID);
+    pAdvertising->addServiceUUID(SENSOR_SERVICE_UUID);
     NimBLEDevice::startAdvertising();
-}
-
-void ESP32ble::handle() {
-    if (!_connected && _lastConnectionState && !_waitingToAdvertise) {
-        _disconnectTime = millis();
-        _waitingToAdvertise = true;
-    }
-
-    if (_waitingToAdvertise && millis() - _disconnectTime >= 500) {
-        NimBLEDevice::startAdvertising();
-        _lastConnectionState = _connected;
-        _waitingToAdvertise = false;
-    }
-
-    if (_connected && !_lastConnectionState) {
-        _lastConnectionState = _connected;
-    }
 }

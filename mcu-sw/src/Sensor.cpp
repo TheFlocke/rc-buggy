@@ -15,20 +15,47 @@ void Sensor::setup(int LED) {
     pinMode(LED, OUTPUT);
 }
 
-void Sensor::read() {
-    unsigned long endTime = bme680.beginReading();
-    if (endTime == 0) {
+bool Sensor::beginReading() {
+    if (_reading_started) return false;
+
+    _endTime = bme680.beginReading();
+    if (_endTime == 0) {
         Serial.println("BME680 read failed - Check Wiring");
-        return;
+        return false;
     }
+    _reading_started = true;
+    return true;
+}
+
+bool Sensor::checkComplete() {
+    if (!_reading_started) return false;
+
+    if (millis() < _endTime) return false;
+
     if (!bme680.endReading()) {
         Serial.println("BME680 read failed - Check Wiring");
-        return;
+        _reading_started = false;
+        return false;
     }
-    _temp = bme680.readTemperature();
-    _pressure = bme680.readPressure();
-    _humidity = bme680.readHumidity();
-    _gas = bme680.readGas();
+
+    // Process data
+    _temp = float2string(bme680.readTemperature());
+    _pressure = float2string(bme680.readPressure());
+    _humidity = float2string(bme680.readHumidity());
+    _gas = float2string(bme680.readGas());
+
+    _reading_started = false;
+    return true;
 }
 
 
+String Sensor::float2string(float value) {
+    // 15 Characters -1 for null and -1 for -x
+    char buffer[16];
+    // use buffer as save space
+    // 3 ==> overall minimum 3 digits including decimal point
+    // 2 ==> after decimal point 2 digits
+    // f ==> convert float to String
+    snprintf(buffer, sizeof(buffer), "%4.4f", value);
+    return {buffer};
+}

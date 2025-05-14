@@ -37,50 +37,66 @@ constexpr int I2C_SCL = 2;
 constexpr int UART_TX = 16;
 constexpr int UART_RX = 15;
 constexpr int STEP0_DIR = 4;
-constexpr int STEP1_DIR  = 6;
+constexpr int STEP1_DIR = 6;
 constexpr int STEP0_STEP = 5;
 constexpr int STEP1_STEP = 7;
 
-
+long sensorTimeout = 500; // Jede Sekunde 2 Updates
+long sensorTime = 0;
 
 
 // Using I2C 0 bus of 2 on the esp32
 TwoWire I2CBUS = TwoWire(0);
 
 void setup() {
-  // for debugging
-  // Serial.begin(9600);
-  // Giving ESP32 a BLE name
-  esp32ble.setup("rc-rover");
-  // Initializing I2C with predefined Ports
-  I2CBUS.begin(I2C_SDA, I2C_SCL, 100000);
-  // Loading Servo Setup and executing it ==> to see more go to ../src/servo.cpp
-  Servo::setup();
-  // Loading and setting Serial for communication for Motordriver up. Also setting Pins for STEP and DIR
-  stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, UART_RX, UART_TX);
-  // Loading and setting Sensor up with LED set to ACT_LED
-  sensor.setup(ACT_LED);
+    // for debugging
+    // Serial.begin(9600);
+    // Giving ESP32 a BLE name
+    esp32ble.setup("rc-rover");
+    // Initializing I2C with predefined Ports
+    I2CBUS.begin(I2C_SDA, I2C_SCL, 100000);
+    // Loading Servo Setup and executing it ==> to see more go to ../src/servo.cpp
+    Servo::setup();
+    // Loading and setting Serial for communication for Motordriver up. Also setting Pins for STEP and DIR
+    stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, UART_RX, UART_TX);
+    // Loading and setting Sensor up with LED set to ACT_LED
+    Sensor::setup(ACT_LED);
 }
 
 void loop() {
-  esp32ble.handle();
+    esp32ble.handle();
 
-  // Wheels
-  Servo::set(6, esp32ble.getWheel1());
-  Servo::set(7, esp32ble.getWheel2());
-  stepper.stepper_0(esp32ble.getSpeed1());
-  stepper.stepper_1(esp32ble.getSpeed2());
+    // Wheels
+    Servo::set(6, esp32ble.getWheel1());
+    Servo::set(7, esp32ble.getWheel2());
+    stepper.stepper_0(esp32ble.getSpeed1());
+    stepper.stepper_1(esp32ble.getSpeed2());
 
-  // Arm
-  int arm1 = esp32ble.getArm1();
-  int arm2 = esp32ble.getArm2();
-  int arm3 = esp32ble.getArm3();
-  int grabber = esp32ble.getArm4();
+    // Arm
+    int arm1 = esp32ble.getArm1();
+    int arm2 = esp32ble.getArm2();
+    int arm3 = esp32ble.getArm3();
+    int grabber = esp32ble.getArm4();
 
-  Servo::set(0, arm1);
-  Servo::set(1, map(arm1, 0, 180, 180, 0));
-  Servo::set(2, arm2);
-  Servo::set(3, map(arm2, 0, 180, 180,0));
-  Servo::set(4, arm3);
-  Servo::set(5, grabber);
+    Servo::set(0, arm1);
+    Servo::set(1, map(arm1, 0, 180, 180, 0));
+    Servo::set(2, arm2);
+    Servo::set(3, map(arm2, 0, 180, 180, 0));
+    Servo::set(4, arm3);
+    Servo::set(5, grabber);
+
+    // Sensor
+    if (millis() > sensorTimeout + sensorTime) {
+        if (sensor.beginReading()) {
+            sensorTime = millis(); // Reset timer on successful read start
+        }
+    }
+
+    if (sensor.checkComplete()) {
+        // Send data only when complete
+        esp32ble.setSensorTemp(sensor.getTemp());
+        esp32ble.setSensorHumidity(sensor.getHumidity());
+        esp32ble.setSensorPressure(sensor.getPressure());
+        esp32ble.setSensorGas(sensor.getGas());
+    }
 }

@@ -1,12 +1,18 @@
 #include "NimBLEDevice.h"
 
 // See the following for generating UUIDs: https://www.uuidgenerator.net/
-#define SERVICE_UUID                "5eaf1079-e806-47a9-a1ec-d815bea94805"
-#define CHARACTERISTIC_CMD          "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3"
-#define CHARACTERISTIC_STATE_CMD    "bd6fbfde-385d-480f-b5eb-64d60cc7be9a"
-#define CHARACTERISTIC_SENSOR       "4a95c0ef-4ee8-420d-8c35-c643678f7b77"
-#define CHARACTERISTIC_ARM          "99d69805-8efb-450e-ae78-c4ddba09f7f6"
-#define CHARACTERISTIC_STATE_ARM    "f8765d0c-81b5-4780-85a4-44f0999f5474"
+// CMD Service
+#define CMD_SERVICE_UUID            "5eaf1079-e806-47a9-a1ec-d815bea94805"
+#define CMD_DRIVE                   "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3"
+#define CMD_DRIVE_STATE             "bd6fbfde-385d-480f-b5eb-64d60cc7be9a"
+#define CMD_ARM                     "99d69805-8efb-450e-ae78-c4ddba09f7f6"
+#define CMD_ARM_STATE               "f8765d0c-81b5-4780-85a4-44f0999f5474"
+// Sensor Service
+#define SENSOR_SERVICE_UUID         "8da7a992-e263-4b78-abf2-bdb94808895c"
+#define SENSOR_TEMP                 "24c53354-de00-42ac-926c-31f805e5d2f5"
+#define SENSOR_PRESSURE             "545343fb-93a0-4415-9e2b-6a4c8e2835c4"
+#define SENSOR_HUMIDITY             "618c8e95-e436-4a86-9d7d-17c3db9992d0"
+#define SENSOR_GAS                  "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1"
 
 
 class ESP32ble {
@@ -25,19 +31,25 @@ class ESP32ble {
     int _arm3 = 45;
     int _arm4 = 45;
     // everything from the sensor
-    int _temp = -1;
-    int _humidity = -1;
-    int _pressure = -1;
-    int _gas = -1;
+    String _temp{"-1"};
+    String _pressure{"-1"};
+    String _humidity{"-1"};
+    String _gas{"-1"};
     // ESP32 handle
     unsigned long _disconnectTime = 0;
     bool _waitingToAdvertise = false;
 
     NimBLEServer *_pServer = nullptr;
-    NimBLECharacteristic *_pStateCmdCharacteristic = nullptr;
-    NimBLECharacteristic *_pSensorCharacteristic = nullptr;
-    NimBLECharacteristic *_pArmCharacteristic = nullptr;
-    NimBLECharacteristic *_pStateArmCharacteristic = nullptr;
+
+    // CMD Service
+    NimBLECharacteristic *_pCharacteristicCmdDriveState = nullptr;
+    NimBLECharacteristic *_pCharacteristicCmdArmState = nullptr;
+
+    // Sensor Service
+    NimBLECharacteristic *_pCharacteristicSensorTemp = nullptr;
+    NimBLECharacteristic *_pCharacteristicSensorHumidity = nullptr;
+    NimBLECharacteristic *_pCharacteristicSensorPressure = nullptr;
+    NimBLECharacteristic *_pCharacteristicSensorGas = nullptr;
 
 public:
     void setup(const String &name);
@@ -48,16 +60,34 @@ public:
 
     void onDisconnect();
 
-    void setCmd(const String &value);
+    // Wheels/CMD
+    void setDrive(const String &value);
+    String getDrive() const;
 
-    String getCmd() const;
-
+    // Arm
     String getArm() const;
-
     void setArm(const String &value);
 
-    String getSensor() const;
+    // Sensor
+    // Temperature
+    String getSensorTemp() const;
+    void setSensorTemp(const String &value);
 
+    // Humidity
+    String getSensorHumidity() const;
+    void setSensorHumidity(const String &value);
+
+    // Pressure
+    String getSensorPressure() const;
+    void setSensorPressure(const String &value);
+
+    // Gas
+    String getSensorGas() const;
+    void setSensorGas(const String &value);
+
+
+
+    // Get variables for later use
     //-255 ... 255
     int getSpeed1() const { return _speed1; }
     int getSpeed2() const { return _speed2; }
