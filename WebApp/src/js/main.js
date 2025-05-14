@@ -27,17 +27,17 @@ let infoMessageContainer;
 
 // Define BLE Device Specs
 // CMD Service
-let CMD_SERVICE_UUID = "5eaf1079-e806-47a9-a1ec-d815bea94805"
-let CMD_DRIVE = "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3"
-let CMD_DRIVE_STATE = "bd6fbfde-385d-480f-b5eb-64d60cc7be9a"
-let CMD_ARM = "99d69805-8efb-450e-ae78-c4ddba09f7f6"
-let CMD_ARM_STATE = "f8765d0c-81b5-4780-85a4-44f0999f5474"
+let UUID_SERVICE_CMD = "5eaf1079-e806-47a9-a1ec-d815bea94805"
+let UUID_CHAR_CMD_DRIVE = "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3"
+let UUID_CHAR_CMD_DRIVE_STATE = "bd6fbfde-385d-480f-b5eb-64d60cc7be9a"
+let UUID_CHAR_CMD_ARM = "99d69805-8efb-450e-ae78-c4ddba09f7f6"
+let UUID_CHAR_CMD_ARM_STATE = "f8765d0c-81b5-4780-85a4-44f0999f5474"
 // Sensor Service
-let SENSOR_SERVICE_UUID = "8da7a992-e263-4b78-abf2-bdb94808895c"
-let SENSOR_TEMP = "24c53354-de00-42ac-926c-31f805e5d2f5"
-let SENSOR_PRESSURE = "545343fb-93a0-4415-9e2b-6a4c8e2835c4"
-let SENSOR_HUMIDITY = "618c8e95-e436-4a86-9d7d-17c3db9992d0"
-let SENSOR_GAS = "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1"
+let UUID_SENSOR_SERVICE_UUID = "8da7a992-e263-4b78-abf2-bdb94808895c"
+let UUID_SENSOR_TEMP = "24c53354-de00-42ac-926c-31f805e5d2f5"
+let UUID_SENSOR_PRESSURE = "545343fb-93a0-4415-9e2b-6a4c8e2835c4"
+let UUID_SENSOR_HUMIDITY = "618c8e95-e436-4a86-9d7d-17c3db9992d0"
+let UUID_SENSOR_GAS = "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1"
 
 
 // Global variables to Handle Bluetooth
@@ -172,38 +172,38 @@ async function connectToDevice() {
         servicelist.forEach(service => html += "<li>" + (service.isPrimary ? "Primär" : "Zusatz") + ": " + service.uuid + "</li>")
         bleServiceList.innerHTML = "<div>services: <ul>" + html + "</ul></div>";
 
-        infoMessageContainer.innerHTML = "retrieve service " + CMD_SERVICE_UUID;
-        bleCmdService = await bleServer.getPrimaryService(CMD_SERVICE_UUID);
+        infoMessageContainer.innerHTML = "retrieve service " + UUID_SERVICE_CMD;
+        bleCmdService = await bleServer.getPrimaryService(UUID_SERVICE_CMD);
 
         bleServiceContainer.innerHTML = 'Verbunden mit Service ' + bleService.uuid;
         bleServiceContainer.classList.remove("error");
         bleServiceContainer.classList.add("info");
 
-        infoMessageContainer.innerHTML = "retrieve char CMD " + CMD_DRIVE;
-        CharacteristicCmdDrive = await bleService.getCharacteristic(CMD_DRIVE);
+        infoMessageContainer.innerHTML = "retrieve char CMD " + UUID_CHAR_CMD_DRIVE;
+        CharacteristicCmdDrive = await bleService.getCharacteristic(UUID_CHAR_CMD_DRIVE);
 
         bleCharCmd.innerHTML = "CMD Characteristik OK: " + CharacteristicCmdDrive.uuid;
         bleCharCmd.classList.remove("error");
         bleCharCmd.classList.add("info");
 
-        infoMessageContainer.innerHTML = "retrieve char STATE " + CMD_DRIVE_STATE;
-        CharacteristicCmdDriveState = await bleService.getCharacteristic(CMD_DRIVE_STATE);
+        infoMessageContainer.innerHTML = "retrieve char STATE " + UUID_CHAR_CMD_DRIVE_STATE;
+        CharacteristicCmdDriveState = await bleService.getCharacteristic(UUID_CHAR_CMD_DRIVE_STATE);
 
         bleCharState.innerHTML = "State Characteristik OK: " + CharacteristicCmdDriveState.uuid;
         bleCharState.classList.remove("error");
         bleCharState.classList.add("info");
 
 
-        bleArm.innerHTML = "retrieve char ARM " + CMD_ARM;
-        CharacteristicCmdArm = await bleService.getCharacteristic(CMD_ARM);
+        bleArm.innerHTML = "retrieve char ARM " + UUID_CHAR_CMD_ARM;
+        CharacteristicCmdArm = await bleService.getCharacteristic(UUID_CHAR_CMD_ARM);
 
         bleArm.innerHTML = "Arm Characteriskik OK: " + CharacteristicCmdArm.uuid;
         bleArm.classList.remove('error');
         bleArm.classList.add('info');
 
 
-        bleArmState.innerHTML = "retrieve char ARM_STATE " + CMD_ARM_STATE;
-        CharacteristicCmdArmState = await bleService.getCharacteristic(CMD_ARM_STATE);
+        bleArmState.innerHTML = "retrieve char ARM_STATE " + UUID_CHAR_CMD_ARM_STATE;
+        CharacteristicCmdArmState = await bleService.getCharacteristic(UUID_CHAR_CMD_ARM_STATE);
 
         bleArmState.innerHTML = "Arm_State Characteristik OK: " + CharacteristicCmdArmState.uuid;
         bleArmState.classList.remove("error");
