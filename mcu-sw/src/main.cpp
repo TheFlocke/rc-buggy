@@ -45,6 +45,7 @@ long sensorTimeout = 500; // Jede Sekunde 2 Updates
 long sensorTime = 0;
 
 
+
 // Using I2C 0 bus of 2 on the esp32
 TwoWire I2CBUS = TwoWire(0);
 
@@ -60,7 +61,7 @@ void setup() {
     // Loading and setting Serial for communication for Motordriver up. Also setting Pins for STEP and DIR
     stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, UART_RX, UART_TX);
     // Loading and setting Sensor up with LED set to ACT_LED
-    Sensor::setup(ACT_LED);
+    sensor.setup(ACT_LED);
 }
 
 void loop() {
@@ -85,14 +86,15 @@ void loop() {
     Servo::set(4, arm3);
     Servo::set(5, grabber);
 
-    // Sensor
-    if (millis() > sensorTimeout + sensorTime) {
-        if (sensor.beginReading()) {
-            sensorTime = millis(); // Reset timer on successful read start
-        }
+
+    // Non-blocking sensor reading
+    if (!sensor.isReadingStarted() && millis() > sensorTime + sensorTimeout) {
+        sensor.beginRead();
     }
 
-    if (sensor.checkComplete()) {
+    if (sensor.isReadingStarted() && sensor.endRead()) {
+        sensorTime = millis();
+
         // Send data only when complete
         esp32ble.setSensorTemp(sensor.getTemp());
         esp32ble.setSensorHumidity(sensor.getHumidity());

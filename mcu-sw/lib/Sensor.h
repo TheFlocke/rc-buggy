@@ -12,15 +12,19 @@ class Sensor {
     String _pressure{"-1"};
     String _humidity{"-1"};
     String _gas{"-1"};
-    bool _reading_started = false;
+    int _led = -1;
     unsigned long _endTime = 0;
+    bool _reading_started = false;
+
 
 public:
-    static void setup(int LED);
+    // Add this new method to check reading status
 
-    bool beginReading();
-
-    bool checkComplete();
+    // Keep existing methods the same
+    void setup(int LED);
+    bool beginRead(); // New method to start reading
+    bool endRead();   // New method to finish reading
+    void read();      // Keep for compatibility
 
     static String float2string(float value);
 
@@ -28,6 +32,7 @@ public:
     String getHumidity() const { return _humidity; }
     String getPressure() const { return _pressure; }
     String getGas() const { return _gas; }
+    bool isReadingStarted() { return _reading_started; }
 };
 
 extern Sensor sensor;
