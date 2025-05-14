@@ -12,12 +12,16 @@ class Sensor {
     String _pressure{"-1"};
     String _humidity{"-1"};
     String _gas{"-1"};
+    bool _reading_started = false;
+    unsigned long _endTime = 0;
 
-    public:
-
+public:
     static void setup(int LED);
 
-    bool read();
+    bool beginReading();
+
+    bool checkComplete();
+
     static String float2string(float value);
 
     String getTemp() const { return _temp; }

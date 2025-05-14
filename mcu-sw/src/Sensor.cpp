@@ -15,27 +15,36 @@ void Sensor::setup(int LED) {
     pinMode(LED, OUTPUT);
 }
 
-bool Sensor::read() {
-    unsigned long endTime = bme680.beginReading();
-    if (endTime == 0) {
+bool Sensor::beginReading() {
+    if (_reading_started) return false;
+
+    _endTime = bme680.beginReading();
+    if (_endTime == 0) {
         Serial.println("BME680 read failed - Check Wiring");
         return false;
     }
-    // allow other processes to run while waiting for sensor
-    yield();
+    _reading_started = true;
+    return true;
+}
+
+bool Sensor::checkComplete() {
+    if (!_reading_started) return false;
+
+    if (millis() < _endTime) return false;
 
     if (!bme680.endReading()) {
         Serial.println("BME680 read failed - Check Wiring");
+        _reading_started = false;
         return false;
     }
-    // allow other processes to run while waiting for sensor
-    yield();
 
-    // making float to String !!! Only for later use in WEB cannot be used anymore for calulations
+    // Process data
     _temp = float2string(bme680.readTemperature());
     _pressure = float2string(bme680.readPressure());
     _humidity = float2string(bme680.readHumidity());
     _gas = float2string(bme680.readGas());
+
+    _reading_started = false;
     return true;
 }
 

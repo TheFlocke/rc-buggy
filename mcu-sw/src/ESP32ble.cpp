@@ -69,8 +69,6 @@ class SensorGasCallbacks : public NimBLECharacteristicCallbacks {
 };
 
 
-
-
 // Server Callbacks
 class ServerCallbacks : public NimBLEServerCallbacks {
     void onConnect(NimBLEServer *pServer, NimBLEConnInfo &connInfo) override {
@@ -106,8 +104,6 @@ void ESP32ble::handle() {
         _lastConnectionState = _connected;
     }
 }
-
-
 
 
 String ESP32ble::getDrive() const {
@@ -231,7 +227,6 @@ void ESP32ble::setup(const String &name) {
     NimBLEService *pSensorService = _pServer->createService(SENSOR_SERVICE_UUID);
 
 
-
     // Wheels/Drive
     // Create a BLE CMD Characteristic
     // only used one time in function
@@ -257,8 +252,6 @@ void ESP32ble::setup(const String &name) {
         descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
         _pCharacteristicCmdDriveState->addDescriptor(descriptor_2904);
     }
-
-
 
 
     // Robotarm
@@ -336,9 +329,9 @@ void ESP32ble::setup(const String &name) {
     );
     _pCharacteristicSensorGas->setCallbacks(new SensorGasCallbacks()); {
         // Adds also the Characteristic Type Description - 0x2904 descriptor
-        NimBLE2904 *descriptor_2904 = _pCharacteristicSensorGas->create2904();
+        NimBLE2904 *descriptor_2904 = (NimBLE2904 *) _pCharacteristicSensorGas->createDescriptor(
+            NimBLEUUID((uint16_t) 0x2904));
         descriptor_2904->setFormat(NimBLE2904::FORMAT_UTF8);
-        _pCharacteristicSensorGas->addDescriptor(descriptor_2904);
     }
 
 
