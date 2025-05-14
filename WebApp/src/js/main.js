@@ -6,7 +6,6 @@ let versionDisplay;
 let bleStateContainer;
 let bleCharState;
 let bleCharCmd;
-let bleSensorState;
 let bleArm;
 let bleArmState;
 let bleServiceContainer;
@@ -30,7 +29,6 @@ let infoMessageContainer;
 let SERVICE_UUID         = "5eaf1079-e806-47a9-a1ec-d815bea94805";
 let CHARACTERISTIC_CMD   = "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3";
 let CHARACTERISTIC_STATE_CMD = "bd6fbfde-385d-480f-b5eb-64d60cc7be9a";
-let CHARACTERISTIC_SENSOR       =  "4a95c0ef-4ee8-420d-8c35-c643678f7b77"
 let CHARACTERISTIC_ARM          = "99d69805-8efb-450e-ae78-c4ddba09f7f6"
 let CHARACTERISTIC_STATE_ARM    =  "f8765d0c-81b5-4780-85a4-44f0999f5474"
 
@@ -40,7 +38,6 @@ let bleServer;
 let bleService;
 let cmdCharacteristic;
 let cmdStateCharacteristic;
-let sensorCharacteristic;
 let armCharacteristic;
 let armStateCharacteristic;
 
@@ -59,7 +56,6 @@ window.onload = () => {
 	bleServiceContainer = document.getElementById('bleService');
 	bleCharCmd = document.getElementById('bleCharCmd');
 	bleCharState = document.getElementById('bleCharState');
-	bleSensorState = document.getElementById('bleSensorState');
 	bleArm = document.getElementById('bleArm');
 	bleArmState = document.getElementById('bleArmState')
 	bleServiceList = document.getElementById('bleServiceList');
@@ -187,12 +183,6 @@ async function connectToDevice(){
 		bleCharState.classList.remove("error");
 		bleCharState.classList.add("info");
 
-		bleSensorState.innerHTML = "retrieve chat SENSOR "+CHARACTERISTIC_SENSOR;
-		sensorCharacteristic = await bleService.getCharacteristic(CHARACTERISTIC_SENSOR);
-
-		bleSensorState.innerHTML = "Sensor Characteristik OK: "+ sensorCharacteristic.uuid;
-		bleSensorState.classList.remove('error');
-		bleSensorState.classList.add('info');
 
 		bleArm.innerHTML = "retrieve char ARM "+CHARACTERISTIC_ARM;
 		armCharacteristic = await bleService.getCharacteristic(CHARACTERISTIC_ARM);
@@ -218,9 +208,6 @@ async function connectToDevice(){
 		await armStateCharacteristic.startNotifications();
 		armStateCharacteristic.readValue();
 
-		sensorCharacteristic.addEventListener('characteristicvaluechanged', handleCharacteristicChange)
-		await sensorCharacteristic.startNotifications();
-		sensorCharacteristic.readValue();
 		
 		infoMessageContainer.innerHTML = "erfolgreich verbunden";
         document.getElementById('connection').innerHTML='Verbunden mit ' + device.name;
