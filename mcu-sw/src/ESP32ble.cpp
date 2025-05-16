@@ -221,17 +221,17 @@ void ESP32ble::setup(const String &name) {
     _pServer->setCallbacks(new ServerCallbacks());
 
     // Create the BLE CMDService
-    NimBLEService *pCmdService = _pServer->createService(CMD_SERVICE_UUID);
+    NimBLEService *pCmdService = _pServer->createService(UUID_SERVICE_CMD);
 
     // Create the BLE SensorService
-    NimBLEService *pSensorService = _pServer->createService(SENSOR_SERVICE_UUID);
+    NimBLEService *pSensorService = _pServer->createService(UUID_SERVICE_SENSOR);
 
 
     // Wheels/Drive
     // Create a BLE CMD Characteristic
     // only used one time in function
     NimBLECharacteristic *pCmdDriveCharacteristic = pCmdService->createCharacteristic(
-        CMD_DRIVE,
+        UUID_CHAR_CMD_DRIVE,
         NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     pCmdDriveCharacteristic->setCallbacks(new CmdDriveCallbacks());
@@ -239,7 +239,7 @@ void ESP32ble::setup(const String &name) {
 
     // Create a BLE CmdDriveState Characteristic
     _pCharacteristicCmdDriveState = pCmdService->createCharacteristic(
-        CMD_DRIVE_STATE,
+        UUID_CHAR_CMD_DRIVE_STATE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     _pCharacteristicCmdDriveState->setCallbacks(new CmdDriveStateCallbacks());
@@ -249,14 +249,14 @@ void ESP32ble::setup(const String &name) {
     // Create a BLE ARM Characteristic
     // only used one time in function
     NimBLECharacteristic *pCmdArmCharacteristic = pCmdService->createCharacteristic(
-        CMD_ARM,
+        UUID_CHAR_CMD_ARM,
         NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     pCmdArmCharacteristic->setCallbacks(new CmdArmCallbacks());
 
     // Create a BLE ARM_STATE Characteristic
     _pCharacteristicCmdArmState = pCmdService->createCharacteristic(
-        CMD_ARM_STATE,
+        UUID_CHAR_CMD_ARM_STATE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     _pCharacteristicCmdArmState->setCallbacks(new CmdArmStateCallbacks());
@@ -269,28 +269,28 @@ void ESP32ble::setup(const String &name) {
     // Sensor
     // Create a BLE Sensor Temp Characteristic
     _pCharacteristicSensorTemp = pSensorService->createCharacteristic(
-        SENSOR_TEMP,
+        UUID_CHAR_SENSOR_TEMP,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     _pCharacteristicSensorTemp->setCallbacks(new SensorTempCallbacks());
 
     // Create a BLE Sensor Humidity Characteristic
     _pCharacteristicSensorHumidity = pSensorService->createCharacteristic(
-        SENSOR_HUMIDITY,
+        UUID_CHAR_SENSOR_HUMIDITY,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     _pCharacteristicSensorHumidity->setCallbacks(new SensorHumidityCallbacks());
 
     // Create a BLE Sensor Pressure Characteristic
     _pCharacteristicSensorPressure = pSensorService->createCharacteristic(
-        SENSOR_PRESSURE,
+        UUID_CHAR_SENSOR_PRESSURE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     _pCharacteristicSensorPressure->setCallbacks(new SensorPressureCallbacks());
 
     // Create a BLE Sensor Gas Characteristic
     _pCharacteristicSensorGas = pSensorService->createCharacteristic(
-        SENSOR_GAS,
+        UUID_CHAR_SENSOR_GAS,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
     _pCharacteristicSensorGas->setCallbacks(new SensorGasCallbacks());
@@ -303,7 +303,7 @@ void ESP32ble::setup(const String &name) {
     // Start advertising
     NimBLEAdvertising *pAdvertising = NimBLEDevice::getAdvertising();
     pAdvertising->setName(_name.c_str());
-    pAdvertising->addServiceUUID(CMD_SERVICE_UUID);
-    pAdvertising->addServiceUUID(SENSOR_SERVICE_UUID);
+    pAdvertising->addServiceUUID(UUID_SERVICE_CMD);
+    pAdvertising->addServiceUUID(UUID_SERVICE_SENSOR);
     NimBLEDevice::startAdvertising();
 }

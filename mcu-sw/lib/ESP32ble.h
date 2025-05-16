@@ -2,17 +2,17 @@
 
 // See the following for generating UUIDs: https://www.uuidgenerator.net/
 // CMD Service
-#define CMD_SERVICE_UUID            "5eaf1079-e806-47a9-a1ec-d815bea94805"
-#define CMD_DRIVE                   "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3"
-#define CMD_DRIVE_STATE             "bd6fbfde-385d-480f-b5eb-64d60cc7be9a"
-#define CMD_ARM                     "99d69805-8efb-450e-ae78-c4ddba09f7f6"
-#define CMD_ARM_STATE               "f8765d0c-81b5-4780-85a4-44f0999f5474"
+#define UUID_SERVICE_CMD                        "5eaf1079-e806-47a9-a1ec-d815bea94805"
+#define UUID_CHAR_CMD_DRIVE                     "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3"
+#define UUID_CHAR_CMD_DRIVE_STATE               "bd6fbfde-385d-480f-b5eb-64d60cc7be9a"
+#define UUID_CHAR_CMD_ARM                       "99d69805-8efb-450e-ae78-c4ddba09f7f6"
+#define UUID_CHAR_CMD_ARM_STATE                 "f8765d0c-81b5-4780-85a4-44f0999f5474"
 // Sensor Service
-#define SENSOR_SERVICE_UUID         "8da7a992-e263-4b78-abf2-bdb94808895c"
-#define SENSOR_TEMP                 "24c53354-de00-42ac-926c-31f805e5d2f5"
-#define SENSOR_PRESSURE             "545343fb-93a0-4415-9e2b-6a4c8e2835c4"
-#define SENSOR_HUMIDITY             "618c8e95-e436-4a86-9d7d-17c3db9992d0"
-#define SENSOR_GAS                  "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1"
+#define UUID_SERVICE_SENSOR                     "8da7a992-e263-4b78-abf2-bdb94808895c"
+#define UUID_CHAR_SENSOR_TEMP                   "24c53354-de00-42ac-926c-31f805e5d2f5"
+#define UUID_CHAR_SENSOR_PRESSURE               "545343fb-93a0-4415-9e2b-6a4c8e2835c4"
+#define UUID_CHAR_SENSOR_HUMIDITY               "618c8e95-e436-4a86-9d7d-17c3db9992d0"
+#define UUID_CHAR_SENSOR_GAS                    "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1"
 
 
 class ESP32ble {
@@ -89,17 +89,17 @@ public:
 
     // Get variables for later use
     //-255 ... 255
-    int getSpeed1() const { return _speed1; }
-    int getSpeed2() const { return _speed2; }
+    int getSpeed0() const { return _speed1; }
+    int getSpeed1() const { return _speed2; }
     // Einstellungswert der Stollen
-    int getWheel1() const { return _wheel1; }
-    int getWheel2() const { return _wheel2; }
+    int getWheel0() const { return _wheel1; }
+    int getWheel1() const { return _wheel2; }
     // Einstellungswert der einzelnen Armelemente zwischen 0 bis 180
     // Grenzwerte sind zur Sicherheit festgelegt, da sonst die Motoren durch Dauerlast durchbrennen oder der Arm kaput geht
-    int getArm1() const { return _arm1; }
-    int getArm2() const { return _arm2; }
-    int getArm3() const { return _arm3; }
-    int getArm4() const { return _arm4; }
+    int getArm0() const { return _arm1; }
+    int getArm1() const { return _arm2; }
+    int getArm2() const { return _arm3; }
+    int getArm3() const { return _arm4; }
 
 
 };
