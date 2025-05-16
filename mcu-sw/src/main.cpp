@@ -68,22 +68,22 @@ void loop() {
     esp32ble.handle();
 
     // Wheels
-    Servo::set(6, esp32ble.getWheel1());
-    Servo::set(7, esp32ble.getWheel2());
-    stepper.stepper_0(esp32ble.getSpeed1());
-    stepper.stepper_1(esp32ble.getSpeed2());
+    Servo::set(6, esp32ble.getWheel0()); // links
+    Servo::set(7, esp32ble.getWheel1()); // rechts
+    stepper.stepper_0(esp32ble.getSpeed0()); // links
+    stepper.stepper_1(esp32ble.getSpeed1()); // rechts
 
     // Arm
+    int arm0 = esp32ble.getArm0();
     int arm1 = esp32ble.getArm1();
     int arm2 = esp32ble.getArm2();
-    int arm3 = esp32ble.getArm3();
-    int grabber = esp32ble.getArm4();
+    int grabber = esp32ble.getArm3();
 
-    Servo::set(0, arm1);
-    Servo::set(1, map(arm1, 0, 180, 180, 0));
-    Servo::set(2, arm2);
-    Servo::set(3, map(arm2, 0, 180, 180, 0));
-    Servo::set(4, arm3);
+    Servo::set(0, arm0);
+    Servo::set(1, map(arm0, 0, 180, 180, 0));
+    Servo::set(2, arm1);
+    Servo::set(3, map(arm1, 0, 180, 180, 0));
+    Servo::set(4, arm2);
     Servo::set(5, grabber);
 
 

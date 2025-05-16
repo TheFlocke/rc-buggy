@@ -89,17 +89,17 @@ public:
 
     // Get variables for later use
     //-255 ... 255
-    int getSpeed1() const { return _speed1; }
-    int getSpeed2() const { return _speed2; }
+    int getSpeed0() const { return _speed1; }
+    int getSpeed1() const { return _speed2; }
     // Einstellungswert der Stollen
-    int getWheel1() const { return _wheel1; }
-    int getWheel2() const { return _wheel2; }
+    int getWheel0() const { return _wheel1; }
+    int getWheel1() const { return _wheel2; }
     // Einstellungswert der einzelnen Armelemente zwischen 0 bis 180
     // Grenzwerte sind zur Sicherheit festgelegt, da sonst die Motoren durch Dauerlast durchbrennen oder der Arm kaput geht
-    int getArm1() const { return _arm1; }
-    int getArm2() const { return _arm2; }
-    int getArm3() const { return _arm3; }
-    int getArm4() const { return _arm4; }
+    int getArm0() const { return _arm1; }
+    int getArm1() const { return _arm2; }
+    int getArm2() const { return _arm3; }
+    int getArm3() const { return _arm4; }
 
 
 };
