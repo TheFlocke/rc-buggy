@@ -10,6 +10,7 @@ let bleCmdService;
 let bleSensorService;
 let bleStateContainer;
 let bleServiceContainer;
+let bleServiceList;
 // Services
 // CMD
 let bleCharCmdDrive;
@@ -22,8 +23,9 @@ let bleCharSensorPressure;
 let bleCharSensorHumidity;
 let bleCharSensorGas;
 // BLE History
-let bleServiceList;
+// Sent
 let bleSendHistory;
+// Received
 let bleReceiveHistory;
 // Pages
 let page0;
@@ -37,6 +39,9 @@ let retrievedTimestamp;
 
 let errorMessageContainer;
 let infoMessageContainer;
+
+// Sent wait time in ms
+let waitTime = 15;
 
 
 // Define BLE Device Specs
@@ -79,10 +84,9 @@ window.onload = () => {
 
     connectButton = document.getElementById('connectBleButton');
     disconnectButton = document.getElementById('disconnectBleButton');
-    retrievedValue = document.getElementById('retrievedValue');
-    latestValueSent = document.getElementById('valueSent');
     bleStateContainer = document.getElementById('bleState');
     bleServiceContainer = document.getElementById('bleService');
+    bleServiceList = document.getElementById('bleServiceList');
     // CMD
     bleCharCmdDrive = document.getElementById('bleCharCmdDrive');
     bleCharCmdDriveState = document.getElementById('bleCharCmdDriveState');
@@ -93,11 +97,20 @@ window.onload = () => {
     bleCharSensorPressure = document.getElementById('bleCharSensorPressure');
     bleCharSensorHumidity = document.getElementById('bleCharSensorHumidity');
     bleCharSensorGas = document.getElementById('bleCharSensorGas');
-    bleServiceList = document.getElementById('bleServiceList');
+    // History (on main page)
+    // Values
+    // Sent
     bleSendHistory = document.getElementById('sendHistory');
+    // Received
     bleReceiveHistory = document.getElementById('receiveHistory');
+    // Info boxes (Top left)
+    // Sent
+    latestValueSent = document.getElementById('valueSent');
     sentTimestamp = document.getElementById('sent_timestamp');
+    // retrieved
+    retrievedValue = document.getElementById('retrievedValue');
     retrievedTimestamp = document.getElementById('retrieved_timestamp');
+
     errorMessageContainer = document.getElementById('errors');
     infoMessageContainer = document.getElementById('info');
     versionDisplay = document.getElementById('version');
@@ -291,33 +304,33 @@ async function connectToDevice() {
         // Listeners for BLE Notify
         // CMD
         // Drive_State
-        charCmdDriveState.addEventListener('charvaluechanged', handleCmdCharChange);
+        charCmdDriveState.addEventListener('characteristicvaluechanged', handleCmdCharChange);
         await charCmdDriveState.startNotifications();
         charCmdDriveState.readValue();
 
         // Arm_State
-        charCmdArmState.addEventListener('charvaluechanged', handleCmdCharChange)
+        charCmdArmState.addEventListener('characteristicvaluechanged', handleCmdCharChange)
         await charCmdArmState.startNotifications();
         charCmdArmState.readValue();
 
         // Sensor
         // Temp
-        charSensorTemp.addEventListener('charvaluechanged', handleSensorCharChange)
+        charSensorTemp.addEventListener('characteristicvaluechanged', handleSensorCharChange)
         await charSensorTemp.startNotifications();
         charSensorTemp.readValue();
 
         // Pressure
-        charSensorPressure.addEventListener('charvaluechanged', handleSensorCharChange)
+        charSensorPressure.addEventListener('characteristicvaluechanged', handleSensorCharChange)
         await charSensorPressure.startNotifications();
         charSensorPressure.readValue();
 
         // Humidity
-        charSensorHumidity.addEventListener('charvaluechanged', handleSensorCharChange)
+        charSensorHumidity.addEventListener('characteristicvaluechanged', handleSensorCharChange)
         await charSensorHumidity.startNotifications();
         charSensorHumidity.readValue();
 
         // Gas
-        charSensorGas.addEventListener('charvaluechanged', handleSensorCharChange)
+        charSensorGas.addEventListener('characteristicvaluechanged', handleSensorCharChange)
         await charSensorGas.startNotifications();
         charSensorGas.readValue();
 
@@ -406,13 +419,12 @@ function handleCmdCharChange(event) {
     const div = document.createElement('div');
     const header = document.createElement('h1');
     const text = document.createElement('p');
-    header.innerHTML = 'RECEIVE CMD STATE';
+    header.innerHTML = 'RECEIVED CMD STATE';
     text.innerHTML = newValueReceived;
     div.appendChild(header)
     div.appendChild(text)
     div.classList.add('entry')
     bleReceiveHistory.prepend(div)
-    // Remove the oldest entry if more than 6 children
     if (bleReceiveHistory.children.length > 1) {
         bleReceiveHistory.removeChild(bleReceiveHistory.lastElementChild);
     }
@@ -423,20 +435,6 @@ function handleSensorCharChange(event) {
     const newValueReceived = new TextDecoder().decode(event.target.value);
     retrievedValue.innerHTML = newValueReceived;
     retrievedTimestamp.innerHTML = getDateTime();
-
-    const div = document.createElement('div');
-    const header = document.createElement('h1');
-    const text = document.createElement('p');
-    header.innerHTML = 'RECEIVE SENSOR';
-    text.innerHTML = newValueReceived;
-    div.appendChild(header)
-    div.appendChild(text)
-    div.classList.add('entry')
-    bleReceiveHistory.prepend(div)
-    // Remove the oldest entry if more than 6 children
-    if (bleReceiveHistory.children.length > 1) {
-        bleReceiveHistory.removeChild(bleReceiveHistory.lastElementChild);
-    }
 }
 
 let sending = false;
@@ -459,13 +457,12 @@ export async function writeCmdDrive(value) {
             const div = document.createElement('div');
             const header = document.createElement('h1');
             const text = document.createElement('p');
-            header.innerHTML = 'CMD DRIVE';
+            header.innerHTML = 'CMD';
             text.innerHTML = value;
             div.appendChild(header)
             div.appendChild(text)
             div.classList.add('entry')
             bleSendHistory.prepend(div)
-            // Remove oldest entry if more than 6 children
             if (bleSendHistory.children.length > 1) {
                 bleSendHistory.removeChild(bleSendHistory.lastElementChild);
             }
@@ -478,7 +475,7 @@ export async function writeCmdDrive(value) {
         onDisconnected();
         sent = "disconnected"
     }
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, waitTime));
     sendingDrive = false;
 
     // Process pending value after completing the current send
@@ -510,13 +507,13 @@ export async function writeCmdArm(value) {
             const div = document.createElement('div');
             const header = document.createElement('h1');
             const text = document.createElement('p');
-            header.innerHTML = 'ARM';
+            header.innerHTML = 'CMD';
             text.innerHTML = value;
             div.appendChild(header)
             div.appendChild(text)
             div.classList.add('entry')
             bleSendHistory.prepend(div)
-            if (bleSendHistory.children.length > 6) {
+            if (bleSendHistory.children.length > 1) {
                 bleSendHistory.removeChild(bleSendHistory.lastElementChild);
             }
             sent = "ok";
@@ -528,14 +525,14 @@ export async function writeCmdArm(value) {
         onDisconnected();
         sent = "disconnected"
     }
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, waitTime));
     sending = false;
 
-    // After sending, check if a new value was queued during busy state
+    // After sending, check if a new value was queued during a busy state
     if (pendingArmValue !== null) {
         const nextValue = pendingArmValue;
         pendingArmValue = null; // Clear before sending to avoid loops
-        // Recursively call to send the latest value
+        // Recursively calls to send the latest value
         writeCmdArm(nextValue);
     }
 
