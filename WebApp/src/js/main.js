@@ -299,7 +299,7 @@ function handleCharacteristicChange(event) {
     div.appendChild(text)
     div.classList.add('entry')
     bleReceiveHistory.prepend(div)
-    // Remove oldest entry if more than 6 children
+    // Remove the oldest entry if more than 6 children
     if (bleReceiveHistory.children.length > 6) {
         bleReceiveHistory.removeChild(bleReceiveHistory.lastElementChild);
     }
@@ -327,7 +327,7 @@ export async function writeCmdDrive(value) {
             div.appendChild(text)
             div.classList.add('entry')
             bleSendHistory.prepend(div)
-            // Remove oldest entry if more than 6 children
+            // Remove the oldest entry if more than 6 children
             if (bleSendHistory.children.length > 6) {
                 bleSendHistory.removeChild(bleSendHistory.lastElementChild);
             }
@@ -340,7 +340,7 @@ export async function writeCmdDrive(value) {
         onDisconnected();
         sent = "disconnected"
     }
-    // 10ms verzögerung einbauen, um nicht zu häufig zu schicken!
+    // 10ms Verzögerung einbauen, um nicht zu häufig zu schicken!
     await new Promise((resolve) => setTimeout(resolve, 10));
     sending = false;
     return sent;
@@ -366,7 +366,7 @@ export async function writeCmdArm(value) {
             div.appendChild(text)
             div.classList.add('entry')
             bleSendHistory.prepend(div)
-            // Remove oldest entry if more than 6 children
+            // Remove the oldest entry if more than 6 children
             if (bleSendHistory.children.length > 6) {
                 bleSendHistory.removeChild(bleSendHistory.lastElementChild);
             }
@@ -379,7 +379,7 @@ export async function writeCmdArm(value) {
         onDisconnected();
         sent = "disconnected"
     }
-    // 10ms verzögerung einbauen, um nicht zu häufig zu schicken!
+    // 10ms Verzögerung einbauen, um nicht zu häufig zu schicken!
     await new Promise((resolve) => setTimeout(resolve, 10));
     sending = false;
     return sent;
