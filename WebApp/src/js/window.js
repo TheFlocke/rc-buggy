@@ -13,6 +13,7 @@ window.handleSpeedInput = function(motor) {
     const speed = event.target.value;
     currentSpeed[motor] = speed
     console.log("Motor: "+motor+" -- Current speed:", speed);
+
     writeCmdDrive(currentSpeed.speed1+':'+currentSpeed.speed2+':'+currentSpeed.wheel1+':'+currentSpeed.wheel2)
 };
 

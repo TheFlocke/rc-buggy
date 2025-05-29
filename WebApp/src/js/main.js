@@ -38,6 +38,7 @@ let retrievedTimestamp;
 let errorMessageContainer;
 let infoMessageContainer;
 
+
 // Define BLE Device Specs
 // CMD Service
 let UUID_SERVICE_CMD = "5eaf1079-e806-47a9-a1ec-d815bea94805"
@@ -64,7 +65,13 @@ let charSensorTemp;
 let charSensorPressure;
 let charSensorHumidity;
 let charSensorGas;
-
+// for sending the last value
+// CMD
+let sendingDrive = false;
+let pendingDriveValue = null;
+// Arm
+let sendingArm = false;
+let pendingArmValue = null;
 
 
 window.onload = () => {
@@ -284,33 +291,33 @@ async function connectToDevice() {
         // Listeners for BLE Notify
         // CMD
         // Drive_State
-        charCmdDriveState.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
+        charCmdDriveState.addEventListener('charvaluechanged', handleCmdCharChange);
         await charCmdDriveState.startNotifications();
         charCmdDriveState.readValue();
 
         // Arm_State
-        charCmdArmState.addEventListener('characteristicvaluechanged', handleCharacteristicChange)
+        charCmdArmState.addEventListener('charvaluechanged', handleCmdCharChange)
         await charCmdArmState.startNotifications();
         charCmdArmState.readValue();
 
         // Sensor
         // Temp
-        charSensorTemp.addEventListener('characteristicvaluechanged', handleCharacteristicChange)
+        charSensorTemp.addEventListener('charvaluechanged', handleSensorCharChange)
         await charSensorTemp.startNotifications();
         charSensorTemp.readValue();
 
         // Pressure
-        charSensorPressure.addEventListener('characteristicvaluechanged', handleCharacteristicChange)
+        charSensorPressure.addEventListener('charvaluechanged', handleSensorCharChange)
         await charSensorPressure.startNotifications();
         charSensorPressure.readValue();
 
         // Humidity
-        charSensorHumidity.addEventListener('characteristicvaluechanged', handleCharacteristicChange)
+        charSensorHumidity.addEventListener('charvaluechanged', handleSensorCharChange)
         await charSensorHumidity.startNotifications();
         charSensorHumidity.readValue();
 
         // Gas
-        charSensorGas.addEventListener('characteristicvaluechanged', handleCharacteristicChange)
+        charSensorGas.addEventListener('charvaluechanged', handleSensorCharChange)
         await charSensorGas.startNotifications();
         charSensorGas.readValue();
 
@@ -345,6 +352,7 @@ function onDisconnected() {
     bleStateContainer.classList.add("error");
     bleStateContainer.innerHTML = "Nicht verbunden";
 
+    // Char
     // CMD
     // Drive
     bleCharCmdDrive.classList.remove("info");
@@ -364,11 +372,32 @@ function onDisconnected() {
     bleCharCmdArmState.classList.add("error");
     bleCharCmdArmState.innerHTML = "Kein CMD Arm State";
 
+    // Sensor
+    // Temp
+    bleCharSensorTemp.classList.remove("info");
+    bleCharSensorTemp.classList.add("error");
+    bleCharSensorTemp.innerHTML = "Kein Sensor Temp";
+
+    // Pressure
+    bleCharSensorPressure.classList.remove("info");
+    bleCharSensorPressure.classList.add("error");
+    bleCharSensorPressure.innerHTML = "Kein Sensor Pressure";
+
+    // Humidity
+    bleCharSensorHumidity.classList.remove("info");
+    bleCharSensorHumidity.classList.add("error");
+    bleCharSensorHumidity.innerHTML = "Kein Sensor Humidity";
+
+    // Gas
+    bleCharSensorGas.classList.remove("info");
+    bleCharSensorGas.classList.add("error");
+    bleCharSensorGas.innerHTML = "Kein Sensor Gas";
+
     bleServiceList.innerHTML = "";
     document.getElementById('connection').innerHTML = "nicht verbunden";
 }
 
-function handleCharacteristicChange(event) {
+function handleCmdCharChange(event) {
     console.log(event.target.value)
     const newValueReceived = new TextDecoder().decode(event.target.value);
     retrievedValue.innerHTML = newValueReceived;
@@ -377,14 +406,35 @@ function handleCharacteristicChange(event) {
     const div = document.createElement('div');
     const header = document.createElement('h1');
     const text = document.createElement('p');
-    header.innerHTML = 'RECEIVE';
+    header.innerHTML = 'RECEIVE CMD STATE';
     text.innerHTML = newValueReceived;
     div.appendChild(header)
     div.appendChild(text)
     div.classList.add('entry')
     bleReceiveHistory.prepend(div)
     // Remove the oldest entry if more than 6 children
-    if (bleReceiveHistory.children.length > 6) {
+    if (bleReceiveHistory.children.length > 1) {
+        bleReceiveHistory.removeChild(bleReceiveHistory.lastElementChild);
+    }
+}
+
+function handleSensorCharChange(event) {
+    console.log(event.target.value)
+    const newValueReceived = new TextDecoder().decode(event.target.value);
+    retrievedValue.innerHTML = newValueReceived;
+    retrievedTimestamp.innerHTML = getDateTime();
+
+    const div = document.createElement('div');
+    const header = document.createElement('h1');
+    const text = document.createElement('p');
+    header.innerHTML = 'RECEIVE SENSOR';
+    text.innerHTML = newValueReceived;
+    div.appendChild(header)
+    div.appendChild(text)
+    div.classList.add('entry')
+    bleReceiveHistory.prepend(div)
+    // Remove the oldest entry if more than 6 children
+    if (bleReceiveHistory.children.length > 1) {
         bleReceiveHistory.removeChild(bleReceiveHistory.lastElementChild);
     }
 }
@@ -392,8 +442,12 @@ function handleCharacteristicChange(event) {
 let sending = false;
 
 export async function writeCmdDrive(value) {
-    if (sending) return "busy";
-    sending = true;
+    if (sendingDrive) {
+        // Overwrite with the latest value if already busy
+        pendingDriveValue = value;
+        return "busy";
+    }
+    sendingDrive = true;
     let sent = "failed";
     if (bleServer && bleServer.connected) {
         const textEncoder = new TextEncoder();
@@ -405,14 +459,14 @@ export async function writeCmdDrive(value) {
             const div = document.createElement('div');
             const header = document.createElement('h1');
             const text = document.createElement('p');
-            header.innerHTML = 'CMD';
+            header.innerHTML = 'CMD DRIVE';
             text.innerHTML = value;
             div.appendChild(header)
             div.appendChild(text)
             div.classList.add('entry')
             bleSendHistory.prepend(div)
-            // Remove the oldest entry if more than 6 children
-            if (bleSendHistory.children.length > 6) {
+            // Remove oldest entry if more than 6 children
+            if (bleSendHistory.children.length > 1) {
                 bleSendHistory.removeChild(bleSendHistory.lastElementChild);
             }
             sent = "ok";
@@ -424,14 +478,26 @@ export async function writeCmdDrive(value) {
         onDisconnected();
         sent = "disconnected"
     }
-    // 10ms Verzögerung einbauen, um nicht zu häufig zu schicken!
     await new Promise((resolve) => setTimeout(resolve, 10));
-    sending = false;
+    sendingDrive = false;
+
+    // Process pending value after completing the current send
+    if (pendingDriveValue !== null) {
+        const nextValue = pendingDriveValue;
+        pendingDriveValue = null; // Reset before recursion
+        writeCmdDrive(nextValue); // Send the queued value
+    }
+
     return sent;
 }
 
+
 export async function writeCmdArm(value) {
-    if (sending) return "busy";
+    if (sendingArm) {
+        // Overwrite with the latest value requested
+        pendingArmValue = value;
+        return "busy";
+    }
     sending = true;
     let sent = "failed";
     if (bleServer && bleServer.connected) {
@@ -450,7 +516,6 @@ export async function writeCmdArm(value) {
             div.appendChild(text)
             div.classList.add('entry')
             bleSendHistory.prepend(div)
-            // Remove the oldest entry if more than 6 children
             if (bleSendHistory.children.length > 6) {
                 bleSendHistory.removeChild(bleSendHistory.lastElementChild);
             }
@@ -463,9 +528,17 @@ export async function writeCmdArm(value) {
         onDisconnected();
         sent = "disconnected"
     }
-    // 10ms Verzögerung einbauen, um nicht zu häufig zu schicken!
     await new Promise((resolve) => setTimeout(resolve, 10));
     sending = false;
+
+    // After sending, check if a new value was queued during busy state
+    if (pendingArmValue !== null) {
+        const nextValue = pendingArmValue;
+        pendingArmValue = null; // Clear before sending to avoid loops
+        // Recursively call to send the latest value
+        writeCmdArm(nextValue);
+    }
+
     return sent;
 }
 
