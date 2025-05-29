@@ -58,7 +58,7 @@ body {
 	font-family:sans-serif;
 	background-color: rgb(50,50,50);
 	min-width:23em;
-	margin: 0em;
+	margin: 0;
 	height:100%;
     display:flex;
 }
@@ -98,7 +98,6 @@ h1 {
 #orientation_frame {
     position: relative;
     padding:0.2em;
-    background-image: url("./back.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     width: 100%;
@@ -159,11 +158,10 @@ h1 {
   padding:1em;
   font-size:90%;
   font-weight: bold;
-  font-family:"Courier New";
+    font-family: "Courier New", serif;
   background-color: rgba(200,200,200,0.9);
-  margin: 0.5em;
-  margin-top: 1.5em;
-  height:90%;
+    margin: 1.5em 0.5em 0.5em;
+    height:90%;
     width: 70%;
   flex-direction: column;
 }
@@ -180,8 +178,7 @@ h1 {
 }
 
 #status p {
-	margin:0em;
-	margin-bottom: 0.5em;
+    margin: 0 0 0.5em;
 }
 
 .on { 
@@ -215,7 +212,7 @@ h1 {
     bottom: 0; /* Anchor to bottom */
 }
 
-.arm-controlls {
+.arm-controls {
     order: 2; /* Controls below the arm view */
     width: 100% !important; /* Full width */
     height: 150px; /* Reduced height */
@@ -251,7 +248,6 @@ h1 {
 input[type=range][orient=vertical] {
     writing-mode: bt-lr;
     -webkit-appearance: slider-vertical;
-    appearance: slider-vertical;
     width: 8vw;
     height: 70vh; /* Reduced from 90vh */
     margin: 15vh 0; /* Increased from 5vh to center vertically */

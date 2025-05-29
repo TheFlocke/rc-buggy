@@ -40,7 +40,7 @@ bool Sensor::endRead() {
             _temp = float2string(bme680.temperature);
             _pressure = float2string(bme680.pressure / 100.0); // Convert to hPa
             _humidity = float2string(bme680.humidity);
-            _gas = float2string(bme680.gas_resistance);
+            _gas = float2string(bme680.gas_resistance / 1000.0); // Convert to Resistence
             _reading_started = false;
             digitalWrite(_led, LOW);  // Turn off activity LED
             return true;
