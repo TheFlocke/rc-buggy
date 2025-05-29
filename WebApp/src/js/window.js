@@ -1,4 +1,4 @@
-import { writeArmCmd, writeCmd } from './main.js'
+import { writeCmdArm, writeCmdDrive } from './main.js'
 
 
 let currentSpeed = {
@@ -13,14 +13,14 @@ window.handleSpeedInput = function(motor) {
     const speed = event.target.value;
     currentSpeed[motor] = speed
     console.log("Motor: "+motor+" -- Current speed:", speed);
-    writeCmd(currentSpeed.speed1+':'+currentSpeed.speed2+':'+currentSpeed.wheel1+':'+currentSpeed.wheel2)
+    writeCmdDrive(currentSpeed.speed1+':'+currentSpeed.speed2+':'+currentSpeed.wheel1+':'+currentSpeed.wheel2)
 };
 
 window.handleSpeedRelease = function(motor) {
     // noinspection JSDeprecatedSymbols
     event.target.value = 0;  // Snap back to 0
     currentSpeed[motor] = 0
-    writeCmd(currentSpeed.speed1+':'+currentSpeed.speed2+':'+currentSpeed.wheel1+':'+currentSpeed.wheel2)
+    writeCmdDrive(currentSpeed.speed1+':'+currentSpeed.speed2+':'+currentSpeed.wheel1+':'+currentSpeed.wheel2)
     console.log("Motor: "+ motor +" -- Speed reset to 0");
 };
 
@@ -128,18 +128,18 @@ document.addEventListener('DOMContentLoaded', function() {
             if (armClass === 'arm1') {
                 document.querySelector('.arm1-rotate').style.transform = `rotate(${calculateDegrees(angle, 'arm1')}deg)`;
                 current.arm1 = calculateDegrees(angle, 'arm1');
-                writeArmCmd(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
+                writeCmdArm(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
             } else if (armClass === 'arm2') {
                 document.querySelector('.arm2-rotate').style.transform = `rotate(${(calculateDegrees(angle, 'arm2')) * -1}deg)`;
                 current.arm2 = calculateDegrees(angle, 'arm2');
-                writeArmCmd(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
+                writeCmdArm(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
             } else if (armClass === 'arm3') {
                 document.querySelector('.arm3-rotate').style.transform = `rotate(${calculateDegrees(angle, 'arm3') - 90}deg)`;
                 current.arm3 = calculateDegrees(angle, 'arm3');
-                writeArmCmd(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
+                writeCmdArm(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
             } else if (armClass === 'arm4') {
                 current.arm4 = calculateDegrees(angle, 'arm4', 'notmain');
-                writeArmCmd(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
+                writeCmdArm(current.arm1+':'+current.arm2+':'+current.arm3+':'+current.arm4);
             }
         }
 

@@ -4,10 +4,10 @@ let connectButton;
 let disconnectButton;
 let versionDisplay;
 let bleStateContainer;
-let bleCharState;
-let bleCharCmd;
-let bleArm;
-let bleArmState;
+let bleCharCmdDrive;
+let bleCharCmdDriveState;
+let bleCharCmdArm;
+let bleCharCmdArmState;
 let bleServiceContainer;
 let bleServiceList;
 let bleSendHistory;
@@ -68,10 +68,10 @@ window.onload = () => {
     latestValueSent = document.getElementById('valueSent');
     bleStateContainer = document.getElementById('bleState');
     bleServiceContainer = document.getElementById('bleService');
-    bleCharCmd = document.getElementById('bleCharCmd');
-    bleCharState = document.getElementById('bleCharState');
-    bleArm = document.getElementById('bleArm');
-    bleArmState = document.getElementById('bleArmState')
+    bleCharCmdDrive = document.getElementById('bleCharCmdDrive');
+    bleCharCmdDriveState = document.getElementById('bleCharCmdDriveState');
+    bleCharCmdArm = document.getElementById('bleCharCmdArm');
+    bleCharCmdArmState = document.getElementById('bleCharCmdArmState')
     bleServiceList = document.getElementById('bleServiceList');
     bleSendHistory = document.getElementById('sendHistory');
     bleReceiveHistory = document.getElementById('receiveHistory')
@@ -150,16 +150,27 @@ async function connectToDevice() {
     bleServiceContainer.classList.add("error");
     bleStateContainer.classList.remove("info");
     bleStateContainer.classList.add("error");
-    bleCharCmd.classList.remove("info");
-    bleCharCmd.classList.add("error");
-    bleCharState.classList.remove("info");
-    bleCharState.classList.add("error");
+    // CMD
+    // Drive
+    bleCharCmdDrive.classList.remove("info");
+    bleCharCmdDrive.classList.add("error");
+    bleCharCmdDriveState.classList.remove("info");
+    bleCharCmdDriveState.classList.add("error");
+    // Arm
+    bleCharCmdArm.classList.remove("info");
+    bleCharCmdArm.classList.add("error");
+    bleCharCmdArmState.classList.remove("info");
+    bleCharCmdArmState.classList.add("error");
 
     errorMessageContainer.innerHTML = "";
 
     try {
         infoMessageContainer.innerHTML = "select device";
-        const device = await navigator.bluetooth.requestDevice();
+        const device = await navigator.bluetooth.requestDevice({
+            filters: [
+                { services: [UUID_SERVICE_CMD] },
+            ]
+        });
 
         device.addEventListener('gattservicedisconnected', onDisconnected);
 
@@ -175,48 +186,48 @@ async function connectToDevice() {
         infoMessageContainer.innerHTML = "retrieve service " + UUID_SERVICE_CMD;
         bleCmdService = await bleServer.getPrimaryService(UUID_SERVICE_CMD);
 
-        bleServiceContainer.innerHTML = 'Verbunden mit Service ' + bleService.uuid;
+        bleServiceContainer.innerHTML = 'Verbunden mit Service ' + bleCmdService.uuid;
         bleServiceContainer.classList.remove("error");
         bleServiceContainer.classList.add("info");
 
-        infoMessageContainer.innerHTML = "retrieve char CMD " + UUID_CHAR_CMD_DRIVE;
-        CharacteristicCmdDrive = await bleService.getCharacteristic(UUID_CHAR_CMD_DRIVE);
+        infoMessageContainer.innerHTML = "retrieve char Drive " + UUID_CHAR_CMD_DRIVE;
+        CharacteristicCmdDrive = await bleCmdService.getCharacteristic(UUID_CHAR_CMD_DRIVE);
 
-        bleCharCmd.innerHTML = "CMD Characteristik OK: " + CharacteristicCmdDrive.uuid;
-        bleCharCmd.classList.remove("error");
-        bleCharCmd.classList.add("info");
+        bleCharCmdDrive.innerHTML = "CMD Characteristik OK: " + CharacteristicCmdDrive.uuid;
+        bleCharCmdDrive.classList.remove("error");
+        bleCharCmdDrive.classList.add("info");
 
-        infoMessageContainer.innerHTML = "retrieve char STATE " + UUID_CHAR_CMD_DRIVE_STATE;
-        CharacteristicCmdDriveState = await bleService.getCharacteristic(UUID_CHAR_CMD_DRIVE_STATE);
+        infoMessageContainer.innerHTML = "retrieve char DRIVE_STATE " + UUID_CHAR_CMD_DRIVE_STATE;
+        CharacteristicCmdDriveState = await bleCmdService.getCharacteristic(UUID_CHAR_CMD_DRIVE_STATE);
 
-        bleCharState.innerHTML = "State Characteristik OK: " + CharacteristicCmdDriveState.uuid;
-        bleCharState.classList.remove("error");
-        bleCharState.classList.add("info");
-
-
-        bleArm.innerHTML = "retrieve char ARM " + UUID_CHAR_CMD_ARM;
-        CharacteristicCmdArm = await bleService.getCharacteristic(UUID_CHAR_CMD_ARM);
-
-        bleArm.innerHTML = "Arm Characteriskik OK: " + CharacteristicCmdArm.uuid;
-        bleArm.classList.remove('error');
-        bleArm.classList.add('info');
+        bleCharCmdDriveState.innerHTML = "Drive_State Characteristik OK: " + CharacteristicCmdDriveState.uuid;
+        bleCharCmdDriveState.classList.remove("error");
+        bleCharCmdDriveState.classList.add("info");
 
 
-        bleArmState.innerHTML = "retrieve char ARM_STATE " + UUID_CHAR_CMD_ARM_STATE;
-        CharacteristicCmdArmState = await bleService.getCharacteristic(UUID_CHAR_CMD_ARM_STATE);
+        bleCharCmdArm.innerHTML = "retrieve char ARM " + UUID_CHAR_CMD_ARM;
+        CharacteristicCmdArm = await bleCmdService.getCharacteristic(UUID_CHAR_CMD_ARM);
 
-        bleArmState.innerHTML = "Arm_State Characteristik OK: " + CharacteristicCmdArmState.uuid;
-        bleArmState.classList.remove("error");
-        bleArmState.classList.add("info");
+        bleCharCmdArm.innerHTML = "Arm Characteriskik OK: " + CharacteristicCmdArm.uuid;
+        bleCharCmdArm.classList.remove('error');
+        bleCharCmdArm.classList.add('info');
+
+
+        bleCharCmdArmState.innerHTML = "retrieve char ARM_STATE " + UUID_CHAR_CMD_ARM_STATE;
+        CharacteristicCmdArmState = await bleCmdService.getCharacteristic(UUID_CHAR_CMD_ARM_STATE);
+
+        bleCharCmdArmState.innerHTML = "Arm_State Characteristik OK: " + CharacteristicCmdArmState.uuid;
+        bleCharCmdArmState.classList.remove("error");
+        bleCharCmdArmState.classList.add("info");
 
 
         CharacteristicCmdDriveState.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
         await CharacteristicCmdDriveState.startNotifications();
         CharacteristicCmdDriveState.readValue();
 
-        CharacteristicCmdDriveState.addEventListener('characteristicvaluechanged', handleCharacteristicChange)
-        await CharacteristicCmdDriveState.startNotifications();
-        CharacteristicCmdDriveState.readValue();
+        CharacteristicCmdArmState.addEventListener('characteristicvaluechanged', handleCharacteristicChange)
+        await CharacteristicCmdArmState.startNotifications();
+        CharacteristicCmdArmState.readValue();
 
 
         infoMessageContainer.innerHTML = "erfolgreich verbunden";
@@ -249,13 +260,25 @@ function onDisconnected() {
     bleStateContainer.classList.add("error");
     bleStateContainer.innerHTML = "Nicht verbunden";
 
-    bleCharCmd.classList.remove("info");
-    bleCharCmd.classList.add("error");
-    bleCharCmd.innerHTML = "Kein CMD";
+    // CMD
+    // Drive
+    bleCharCmdDrive.classList.remove("info");
+    bleCharCmdDrive.classList.add("error");
+    bleCharCmdDrive.innerHTML = "Kein CMD Drive";
 
-    bleCharState.classList.remove("info");
-    bleCharState.classList.add("error");
-    bleCharState.innerHTML = "Kein State";
+    bleCharCmdDriveState.classList.remove("info");
+    bleCharCmdDriveState.classList.add("error");
+    bleCharCmdDriveState.innerHTML = "Kein CMD Drive State";
+
+    // Arm
+    bleCharCmdArm.classList.remove("info");
+    bleCharCmdArm.classList.add("error");
+    bleCharCmdArm.innerHTML = "Kein CMD Arm";
+
+    bleCharCmdArmState.classList.remove("info");
+    bleCharCmdArmState.classList.add("error");
+    bleCharCmdArmState.innerHTML = "Kein CMD Arm State";
+
     bleServiceList.innerHTML = "";
     document.getElementById('connection').innerHTML = "nicht verbunden";
 }
@@ -284,7 +307,7 @@ function handleCharacteristicChange(event) {
 
 let sending = false;
 
-export async function writeCmd(value) {
+export async function writeCmdDrive(value) {
     if (sending) return "busy";
     sending = true;
     let sent = "failed";
@@ -323,7 +346,7 @@ export async function writeCmd(value) {
     return sent;
 }
 
-export async function writeArmCmd(value) {
+export async function writeCmdArm(value) {
     if (sending) return "busy";
     sending = true;
     let sent = "failed";
@@ -380,7 +403,7 @@ function disconnectDevice() {
                     console.log("An error occurred:", error);
                 });
         } else {
-            console.log("No characteristic found to disconnect.");
+            console.log("Characteristic: Cmd Drive not found for disconnect.");
         }
     } else {
         // Throw an error if Bluetooth is not connected
