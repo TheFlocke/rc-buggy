@@ -30,6 +30,7 @@ let bleReceiveHistory;
 // Pages
 let page0;
 let page1;
+let page2;
 
 // For Info box
 let retrievedValue;
@@ -116,6 +117,7 @@ window.onload = () => {
     versionDisplay = document.getElementById('version');
     page0 = document.getElementById("swPage0");
     page1 = document.getElementById("swPage1");
+    page2 = document.getElementById("swPage2");
 
     document.getElementById('version').innerHTML = version;
     onDisconnected();
@@ -123,6 +125,7 @@ window.onload = () => {
 
     swPage0.addEventListener('click', () => togglePage0());
     swPage1.addEventListener('click', () => togglePage1());
+    swPage2.addEventListener('click', () => togglePage2());
 
     if (!navigator.bluetooth) {
         errorMessageContainer.innerHTML = "Web Bluetooth API ist für diesen Browser nicht verfügbar!";
@@ -142,11 +145,19 @@ window.onload = () => {
 function togglePage0() {
     document.getElementById('armController').style.visibility = 'hidden';
     document.getElementById('speedController').style.display = 'flex';
+    document.getElementById('settings').style.visibility = 'none';
 }
 
 function togglePage1() {
     document.getElementById('armController').style.visibility = 'visible';
     document.getElementById('speedController').style.display = 'none';
+    document.getElementById('settings').style.visibility = 'none';
+}
+
+function togglePage2() {
+    document.getElementById('armController').style.visibility = 'hidden';
+    document.getElementById('speedController').style.display = 'none';
+    document.getElementById('settings').style.visibility = 'flex';
 }
 
 async function registerServiceWorker() {
