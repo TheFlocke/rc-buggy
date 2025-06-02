@@ -130,6 +130,9 @@
         </div>
         <div id="armController">
             <div class="arm-controls">
+                <div class="dot-container arm0-dot-container">
+                    <div class="draggable-dot arm0-dot">0</div>
+                </div>
                 <div class="dot-container arm1-dot-container">
                     <div class="draggable-dot arm1-dot">1</div>
                 </div>
@@ -139,18 +142,15 @@
                 <div class="dot-container arm3-dot-container">
                     <div class="draggable-dot arm3-dot">3</div>
                 </div>
-                <div class="dot-container arm4-dot-container">
-                    <div class="draggable-dot arm4-dot">4</div>
-                </div>
             </div>
             <div class="arm-view">
 
-                <div class="arm1-rotate">
-                    <img class="arm arm1" src="img/arm_1.png" alt="">
-                    <div class="arm2-rotate">
-                        <img class="arm arm2" src="img/arm_2.png" alt="">
-                        <div class="arm3-rotate">
-                            <img class="arm arm3" src="img/arm_3.png" alt="">
+                <div class="arm0-rotate">
+                    <img class="arm arm0" src="img/arm_0.png" alt="">
+                    <div class="arm1-rotate">
+                        <img class="arm arm1" src="img/arm_1.png" alt="">
+                        <div class="arm2-rotate">
+                            <img class="arm arm2" src="img/arm_2.png" alt="">
                         </div>
                     </div>
                 </div>
@@ -158,12 +158,53 @@
         </div>
         <div id="settings">
             <div class="settings-container">
-                <div class="wheel1">
-                    <label for="wheel1-min"></label>
+                <div class="safe-wheel0">
+                    <label for="safe-wheel0-min"></label>
                     <input
                             type="number"
-                            id="wheel1-min"
-                            name="wheel1-min"
+                            id="safe-wheel0-min"
+                            name="safe-wheel0-min"
+                            min="0"
+                            max="180"
+                            placeholder="0°-180°"
+                            value="90"
+                            onchange="handleDegreeInput('wheel',0,'min',event)"
+                            data-part="wheel"
+                            data-number="0"
+                            data-limit="min"/>
+                    <label for="safe-wheel0-mid"></label>
+                    <input
+                            type="number"
+                            id="safe-wheel0-mid"
+                            name="safe-wheel0-mid"
+                            min="0"
+                            max="180"
+                            placeholder="0°-180°"
+                            value="90"
+                            onchange="handleDegreeInput('wheel',0,'mid',event)"
+                            data-part="wheel"
+                            data-number="0"
+                            data-limit="mid"/>
+                    <label for="safe-wheel0-max"></label>
+                    <input
+                            type="number"
+                            id="safe-wheel0-max"
+                            name="safe-wheel0-max"
+                            min="0"
+                            max="180"
+                            placeholder="0°-180°"
+                            value="90"
+                            onchange="handleDegreeInput('wheel',0,'max',event)"
+                            data-part="wheel"
+                            data-number="0"
+                            data-limit="max"/>
+                </div>
+                <div class="safe-wheel1">
+                    <label for="safe-wheel1-min"></label>
+                    <input
+                            type="number"
+                            id="safe-wheel1-min"
+                            name="safe-wheel1-min"
                             min="0"
                             max="180"
                             placeholder="0°-180°"
@@ -172,11 +213,24 @@
                             data-part="wheel"
                             data-number="1"
                             data-limit="min"/>
-                    <label for="wheel1-max"></label>
+                    <label for="safe-wheel1-mid"></label>
                     <input
                             type="number"
-                            id="wheel1-max"
-                            name="wheel1-max"
+                            id="safe-wheel1-mid"
+                            name="safe-wheel1-mid"
+                            min="0"
+                            max="180"
+                            placeholder="0°-180°"
+                            value="90"
+                            onchange="handleDegreeInput('wheel',1,'mid',event)"
+                            data-part="wheel"
+                            data-number="1"
+                            data-limit="mid"/>
+                    <label for="safe-wheel1-max"></label>
+                    <input
+                            type="number"
+                            id="safe-wheel1-max"
+                            name="safe-wheel1-max"
                             min="0"
                             max="180"
                             placeholder="0°-180°"
@@ -184,7 +238,119 @@
                             onchange="handleDegreeInput('wheel',1,'max',event)"
                             data-part="wheel"
                             data-number="1"
-                            data-limit="max" />
+                            data-limit="max"/>
+                </div>
+                <div class="safe-arm0">
+                    <label for="safe-arm0-min"></label>
+                    <input
+                            type="number"
+                            id="safe-arm0-min"
+                            name="safe-arm0-min"
+                            min="0"
+                            max="180"
+                            placeholder="0°-180°"
+                            value="90"
+                            onchange="handleDegreeInput('arm',0,'min',event)"
+                            data-part="arm"
+                            data-number="0"
+                            data-limit="min"/>
+                    <label for="safe-arm0-max"></label>
+                    <input
+                            type="number"
+                            id="safe-arm0-max"
+                            name="safe-arm0-max"
+                            min="0"
+                            max="180"
+                            placeholder="0°-180°"
+                            value="90"
+                            onchange="handleDegreeInput('arm',0,'max',event)"
+                            data-part="arm"
+                            data-number="0"
+                            data-limit="max"/>
+                </div>
+                <div class="safe-arm1">
+                    <label for="safe-arm1-min"></label>
+                    <input
+                            type="number"
+                            id="safe-arm1-min"
+                            name="safe-arm1-min"
+                            min="0"
+                            max="180"
+                            placeholder="0°-180°"
+                            value="90"
+                            onchange="handleDegreeInput('arm',1,'min',event)"
+                            data-part="arm"
+                            data-number="1"
+                            data-limit="min"/>
+                    <label for="safe-arm1-max"></label>
+                    <input
+                            type="number"
+                            id="safe-arm1-max"
+                            name="safe-arm1-max"
+                            min="0"
+                            max="180"
+                            placeholder="0°-180°"
+                            value="90"
+                            onchange="handleDegreeInput('arm',1,'max',event)"
+                            data-part="arm"
+                            data-number="1"
+                            data-limit="max"/>
+                </div>
+                <div class="safe-arm2">
+                    <label for="safe-arm2-min"></label>
+                    <input
+                            type="number"
+                            id="safe-arm2-min"
+                            name="safe-arm2-min"
+                            min="0"
+                            max="180"
+                            placeholder="0°-180°"
+                            value="90"
+                            onchange="handleDegreeInput('arm',2,'min',event)"
+                            data-part="arm"
+                            data-number="2"
+                            data-limit="min"/>
+                    <label for="safe-arm2-max"></label>
+                    <input
+                            type="number"
+                            id="safe-arm2-max"
+                            name="safe-arm2-max"
+                            min="0"
+                            max="180"
+                            placeholder="0°-180°"
+                            value="90"
+                            onchange="handleDegreeInput('arm',2,'max',event)"
+                            data-part="arm"
+                            data-number="2"
+                            data-limit="max"/>
+                </div>
+                <div class="safe-arm3">
+                    <label for="safe-arm3-min"></label>
+                    <input
+                            type="number"
+                            id="safe-arm3-min"
+                            name="safe-arm3-min"
+                            min="0"
+                            max="180"
+                            placeholder="0°-180°"
+                            value="90"
+                            onchange="handleDegreeInput('arm',3,'min',event)"
+                            data-part="arm"
+                            data-number="3"
+                            data-limit="min"/>
+                    <label for="safe-arm3-max"></label>
+                    <input
+                            type="number"
+                            id="safe-arm3-max"
+                            name="safe-arm3-max"
+                            min="0"
+                            max="180"
+                            placeholder="0°-180°"
+                            value="90"
+                            onchange="handleDegreeInput('arm',3,'max',event)"
+                            data-part="arm"
+                            data-number="3"
+                            data-limit="max"/>
                 </div>
             </div>
         </div>
@@ -194,9 +360,6 @@
                 id="orientation_info_device">device info</span></div>
 
     </div>
-
-
 </div>
-
 </body>
 </html>

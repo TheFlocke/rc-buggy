@@ -244,13 +244,13 @@ input[type=range][orient=vertical] {
 }
 
 /* Example: Custom positions for each layer */
-.arm1 {
+.arm0 {
     z-index: 1;
 
     transform: rotate(-6deg);
 }
 
-.arm1-rotate {
+.arm0-rotate {
     position: relative;
 
     height: 300px;
@@ -264,11 +264,11 @@ input[type=range][orient=vertical] {
     /* top: 0; left: 0; default, adjust if needed */
 }
 
-.arm2 {
+.arm1 {
     z-index: 3;
 }
 
-.arm2-rotate {
+.arm1-rotate {
     position: relative; /* Creates a positioning context */
     z-index: 2;
     top: -105px;
@@ -277,7 +277,7 @@ input[type=range][orient=vertical] {
     transform: rotate(-6deg);
 }
 
-.arm3-rotate {
+.arm2-rotate {
     position: relative;
     z-index: 2;
     left: 255px;
@@ -286,7 +286,7 @@ input[type=range][orient=vertical] {
     transform: rotate(-90deg);
 }
 
-.arm3 {
+.arm2 {
     z-index: 2;
 
     height: 50px !important;
@@ -322,7 +322,7 @@ input[type=range][orient=vertical] {
 
 /* Position each dot container relative to its arm */
 /* Reset individual dot container positioning */
-.arm1-dot-container, .arm2-dot-container, .arm3-dot-container, .arm4-dot-container {
+.arm0-dot-container, .arm1-dot-container, .arm2-dot-container, .arm3-dot-container {
     top: auto; /* Remove top positioning */
 }
 
