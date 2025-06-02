@@ -158,7 +158,34 @@
         </div>
         <div id="settings">
             <div class="settings-container">
-
+                <div class="wheel1">
+                    <label for="wheel1-min"></label>
+                    <input
+                            type="number"
+                            id="wheel1-min"
+                            name="wheel1-min"
+                            min="0"
+                            max="180"
+                            placeholder="0°-180°"
+                            value="90"
+                            onchange="handleDegreeInput('wheel',1,'min',event)"
+                            data-part="wheel"
+                            data-number="1"
+                            data-limit="min"/>
+                    <label for="wheel1-max"></label>
+                    <input
+                            type="number"
+                            id="wheel1-max"
+                            name="wheel1-max"
+                            min="0"
+                            max="180"
+                            placeholder="0°-180°"
+                            value="90"
+                            onchange="handleDegreeInput('wheel',1,'max',event)"
+                            data-part="wheel"
+                            data-number="1"
+                            data-limit="max" />
+                </div>
             </div>
         </div>
         <div style="font-size: 80%; text-align:right; color:white; padding-right:1em"><span id="orientation_info">orientation</span>

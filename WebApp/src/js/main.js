@@ -79,6 +79,10 @@ let pendingDriveValue = null;
 let sendingArm = false;
 let pendingArmValue = null;
 
+// Settings
+// Wheel values
+let whee1min = 90;
+
 
 window.onload = () => {
     registerServiceWorker();
@@ -115,6 +119,7 @@ window.onload = () => {
     errorMessageContainer = document.getElementById('errors');
     infoMessageContainer = document.getElementById('info');
     versionDisplay = document.getElementById('version');
+    // Pages
     page0 = document.getElementById("swPage0");
     page1 = document.getElementById("swPage1");
     page2 = document.getElementById("swPage2");
@@ -145,19 +150,18 @@ window.onload = () => {
 function togglePage0() {
     document.getElementById('armController').style.visibility = 'hidden';
     document.getElementById('speedController').style.display = 'flex';
-    document.getElementById('settings').style.visibility = 'none';
+    document.getElementById('settings').style.visibility = 'hidden';
 }
-
 function togglePage1() {
     document.getElementById('armController').style.visibility = 'visible';
     document.getElementById('speedController').style.display = 'none';
-    document.getElementById('settings').style.visibility = 'none';
+    document.getElementById('settings').style.visibility = 'hidden';
 }
 
 function togglePage2() {
     document.getElementById('armController').style.visibility = 'hidden';
     document.getElementById('speedController').style.display = 'none';
-    document.getElementById('settings').style.visibility = 'flex';
+    document.getElementById('settings').style.visibility = 'visible';
 }
 
 async function registerServiceWorker() {
