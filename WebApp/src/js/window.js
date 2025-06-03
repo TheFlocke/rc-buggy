@@ -69,6 +69,14 @@ window.handleDegreeInput = function (part, number, limit, event) {
         console.error('Invalid angle value');
         return;
     }
+
+    // if angle is a integer convert it into a number
+    if (!Number.isInteger(angle)) {
+        angle = Math.trunc(angle);
+        console.warn(`Number was converted into a Integer: ${angle}`);
+        event.target.value = angle;
+    }
+
     if (angle <= min) {
         angle = min;
         event.target.value = min;
