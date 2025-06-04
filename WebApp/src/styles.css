@@ -177,18 +177,62 @@ h1 {
 
 #settings {
     visibility: hidden;
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
+
+    width: 100%
 }
 
 .settings-container {
-    order: 1;
-    width: 100%;
-    align-self: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
 }
+
+/* Group wheel settings in a row */
+.head-safe-wheel0,
+.head-safe-wheel1,
+.safe-wheel0,
+.safe-wheel1 {
+    display: inline-block;
+    vertical-align: top;
+    width: 48%;
+    box-sizing: border-box;
+}
+
+
+/* Place wheels in a flex row */
+.head-safe-wheel0,
+.safe-wheel0 {
+    margin-right: 2%;
+}
+.head-safe-wheel1,
+.safe-wheel1 {
+    margin-left: 2%;
+}
+
+/* Use a wrapper to create a row for wheels */
+.safe-wheel0,
+.safe-wheel1 {
+    margin-bottom: 1em;
+}
+
+/* Arms: two rows, two columns */
+.safe-arm0, .safe-arm1, .safe-arm2, .safe-arm3 {
+    display: inline-block;
+    vertical-align: top;
+    width: 48%;
+    box-sizing: border-box;
+    margin-bottom: 1em;
+}
+
+/* Add spacing between columns */
+.safe-arm0, .safe-arm2 {
+    margin-right: 2%;
+}
+.safe-arm1, .safe-arm3 {
+    margin-left: 2%;
+}
+
+
 .wheel-container {
     order: 1;
     width: 100%;
