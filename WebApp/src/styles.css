@@ -137,6 +137,7 @@ h1 {
 
 /* Update the sliderContainer to be positioned absolutely */
 #sliderContainer {
+    display:
     position: absolute;
     width: 100%;
     height: 100%;

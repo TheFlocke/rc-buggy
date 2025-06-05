@@ -156,9 +156,10 @@ function togglePage1() {
 }
 
 function togglePage2() {
+    document.getElementById('sliderContainer').style.display = 'none';
     document.getElementById('armController').style.visibility = 'hidden';
-    document.getElementById('speedController').style.display = 'none';
     document.getElementById('settings').style.visibility = 'visible';
+    document.getElementById('settings').style.display = 'block';
 }
 
 async function registerServiceWorker() {
