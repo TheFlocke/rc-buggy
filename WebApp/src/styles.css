@@ -177,7 +177,7 @@ h1 {
 
 #settings {
     visibility: hidden;
-    width: 100%
+    width: 100%;
 }
 
 .settings-container {
@@ -267,11 +267,11 @@ input[type=range][orient=vertical] {
 }
 
 
-#speedDial1 {
+#speedDial0 {
     left: 10px;
 }
 
-#speedDial2 {
+#speedDial1 {
     right: 10px;
 }
 
@@ -388,7 +388,7 @@ input[type=range][orient=vertical] {
 }
 
 
-#wheel1, #wheel2 {
+#wheel0, #wheel1 {
     pointer-events: auto;
 }
 

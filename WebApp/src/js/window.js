@@ -48,7 +48,7 @@ window.handleSpeedInput = function (motor) {
     currentSpeed[motor] = speed
     console.log("Motor: " + motor + " -- Current speed:", speed);
 
-    writeCmdDrive(current.speed0 + ':' + currentSpeed.speed1 + ':' + currentSpeed.wheel0 + ':' + currentSpeed.wheel1)
+    writeCmdDrive(currentSpeed.speed0 + ':' + currentSpeed.speed1 + ':' + currentSpeed.wheel0 + ':' + currentSpeed.wheel1)
 };
 
 window.handleSpeedRelease = function (motor) {

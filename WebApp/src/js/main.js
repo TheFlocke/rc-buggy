@@ -79,9 +79,6 @@ let pendingDriveValue = null;
 let sendingArm = false;
 let pendingArmValue = null;
 
-// Settings
-// Wheel values
-let whee1min = 90;
 
 
 window.onload = () => {
@@ -447,8 +444,7 @@ function handleCmdCharChange(event) {
 
 function handleSensorCharChange(event) {
     console.log(event.target.value)
-    const newValueReceived = new TextDecoder().decode(event.target.value);
-    retrievedValue.innerHTML = newValueReceived;
+    retrievedValue.innerHTML = new TextDecoder().decode(event.target.value);
     retrievedTimestamp.innerHTML = getDateTime();
 }
 
@@ -472,7 +468,7 @@ export async function writeCmdDrive(value) {
             const div = document.createElement('div');
             const header = document.createElement('h1');
             const text = document.createElement('p');
-            header.innerHTML = 'CMD';
+            header.innerHTML = 'CMD Drive';
             text.innerHTML = value;
             div.appendChild(header)
             div.appendChild(text)
@@ -522,7 +518,7 @@ export async function writeCmdArm(value) {
             const div = document.createElement('div');
             const header = document.createElement('h1');
             const text = document.createElement('p');
-            header.innerHTML = 'CMD';
+            header.innerHTML = 'CMD ARM';
             text.innerHTML = value;
             div.appendChild(header)
             div.appendChild(text)

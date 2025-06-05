@@ -70,8 +70,8 @@ void loop() {
     // Wheels
     Servo::set(6, esp32ble.getWheel0()); // links
     Servo::set(7, esp32ble.getWheel1()); // rechts
-    stepper.stepper_0(esp32ble.getSpeed0()); // links
-    stepper.stepper_1(esp32ble.getSpeed1()); // rechts
+    stepper.stepper_0(-1 * esp32ble.getSpeed0()); // links
+    stepper.stepper_1(-1 * esp32ble.getSpeed1()); // rechts
 
     // Arm
     int arm0 = esp32ble.getArm0();
