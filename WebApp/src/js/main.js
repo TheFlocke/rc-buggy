@@ -146,17 +146,20 @@ window.onload = () => {
 
 function togglePage0() {
     document.getElementById('armController').style.visibility = 'hidden';
-    document.getElementById('speedController').style.display = 'flex';
+    document.getElementById('sliderContainer').style.display = 'flex';
+    document.getElementById('speedController').style.visibility = 'visible';
     document.getElementById('settings').style.visibility = 'hidden';
 }
 function togglePage1() {
+    document.getElementById('sliderContainer').style.display = 'none';
     document.getElementById('armController').style.visibility = 'visible';
-    document.getElementById('speedController').style.display = 'none';
+    document.getElementById('speedController').style.visibility = 'hidden';
     document.getElementById('settings').style.visibility = 'hidden';
 }
 
 function togglePage2() {
     document.getElementById('sliderContainer').style.display = 'none';
+    document.getElementById('speedController').style.visibility = 'hidden';
     document.getElementById('armController').style.visibility = 'hidden';
     document.getElementById('settings').style.visibility = 'visible';
     document.getElementById('settings').style.display = 'block';
