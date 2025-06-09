@@ -4,6 +4,9 @@
 #include "../lib/Servo.h"
 #include "../lib/Sensor.h"
 #include "../lib/Stepper.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
 /*
 constexpr int ACT_LED = 8; // Activitiy LED for the Sensor PCB
 constexpr int SD_CSB = 9;
@@ -45,9 +48,12 @@ long sensorTimeout = 500; // Jede Sekunde 2 Updates
 long sensorTime = 0;
 
 
-
 // Using I2C 0 bus of 2 on the esp32
 TwoWire I2CBUS = TwoWire(0);
+
+// Create a Task extra for the Sensor so that it wont block the loop and cause latency issues
+TaskHandle_t sensorTaskHandle;
+
 
 void setup() {
     // for debugging
@@ -62,6 +68,17 @@ void setup() {
     stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, UART_RX, UART_TX);
     // Loading and setting Sensor up with LED set to ACT_LED
     sensor.setup(ACT_LED);
+}
+
+void sensorTask(void *pvParameters) {
+    for (;;) {
+        do {
+            esp32ble.setSensorTemp(sensor.getTemp());
+            esp32ble.setSensorHumidity(sensor.getHumidity());
+            esp32ble.setSensorPressure(sensor.getPressure());
+            esp32ble.setSensorGas(sensor.getGas());
+        } while (sensor.read());
+    }
 }
 
 void loop() {
@@ -86,19 +103,14 @@ void loop() {
     Servo::set(4, arm2);
     Servo::set(5, grabber);
 
-
-    // Non-blocking sensor reading
-    if (!sensor.isReadingStarted() && millis() > sensorTime + sensorTimeout) {
-        sensor.beginRead();
-    }
-
-    if (sensor.isReadingStarted() && sensor.endRead()) {
-        sensorTime = millis();
-
-        // Send data only when complete
-        esp32ble.setSensorTemp(sensor.getTemp());
-        esp32ble.setSensorHumidity(sensor.getHumidity());
-        esp32ble.setSensorPressure(sensor.getPressure());
-        esp32ble.setSensorGas(sensor.getGas());
-    }
+    // Create sensor task pinned to Core 0
+    xTaskCreatePinnedToCore(
+        sensorTask, // Task function
+        "SensorTask", // Task name
+        4096, // Stack size
+        NULL, // Parameters
+        1, // Priority
+        &sensorTaskHandle, // Task handle
+        0 // Core 0 (leaves Core 1 for main loop)
+    );
 }
