@@ -14,7 +14,7 @@ While I focused on the electronics and software, my teammates handled the mechan
 
 ## Acknowledgements
 
- - [RC Car Project by my Teacher]([https://awesomeopensource.com/project/elangosundar/awesome-README-templates](https://github.com/bkZuendorf/rc-car))
+ - [RC Car Project by my Teacher](https://github.com/bkZuendorf/rc-car)
  - [3D-Printable Parts](https://github.com/matiassingers/awesome-readme)
  
 
