@@ -1,7 +1,7 @@
 
 # RC Rover
 
-![Rover on Vulcano](im/rover_on_vulcano.png)
+![Rover on Vulcano](img/rover_on_vulcano.png)
 
 
 This project was developed as part of a high school competition organized by the German Aerospace Center (DLR). The challenge: design and build a rover capable of collecting sensor data, navigating autonomously, and using a robotic arm to gather rock samples.
