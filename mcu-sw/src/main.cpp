@@ -44,15 +44,31 @@ constexpr int STEP1_DIR = 6;
 constexpr int STEP0_STEP = 5;
 constexpr int STEP1_STEP = 7;
 
-long sensorTimeout = 500; // Jede Sekunde 2 Updates
-long sensorTime = 0;
+// Measure duration in ms
+#define MEAS_DUR 140
 
 
 // Using I2C 0 bus of 2 on the esp32
 TwoWire I2CBUS = TwoWire(0);
 
 // Create a Task extra for the Sensor so that it wont block the loop and cause latency issues
-TaskHandle_t sensorTaskHandle;
+TaskHandle_t sensorTaskHandle = nullptr;
+
+void sensorTask(void *arg) {
+    for (;;) {
+        /* data being fetched for every 140ms */
+        vTaskDelay(MEAS_DUR / portTICK_RATE_MS);
+        do {
+            esp32ble.setSensorTemp(sensor.getTemp());
+            esp32ble.setSensorHumidity(sensor.getHumidity());
+            esp32ble.setSensorPressure(sensor.getPressure());
+            esp32ble.setSensorGasRes(sensor.getGasRes());
+            esp32ble.setSensorGasIndex(sensor.getGasIndex());
+            esp32ble.setSensorStatus(sensor.getStatus());
+            vTaskDelete(sensorTaskHandle);
+        } while (sensor.read());
+    }
+}
 
 
 void setup() {
@@ -68,18 +84,17 @@ void setup() {
     stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, UART_RX, UART_TX);
     // Loading and setting Sensor up with LED set to ACT_LED
     sensor.setup(ACT_LED);
+    // Create sensor task pinned to Core 0
+    xTaskCreate(
+        sensorTask, // Task function
+        "SensorTask", // Task name
+        4096, // Stack size
+        nullptr, // Parameters
+        1, // Priority
+        &sensorTaskHandle // Task handle
+    );
 }
 
-void sensorTask(void *pvParameters) {
-    for (;;) {
-        do {
-            esp32ble.setSensorTemp(sensor.getTemp());
-            esp32ble.setSensorHumidity(sensor.getHumidity());
-            esp32ble.setSensorPressure(sensor.getPressure());
-            esp32ble.setSensorGas(sensor.getGas());
-        } while (sensor.read());
-    }
-}
 
 void loop() {
     esp32ble.handle();
@@ -103,14 +118,7 @@ void loop() {
     Servo::set(4, arm2);
     Servo::set(5, grabber);
 
-    // Create sensor task pinned to Core 0
-    xTaskCreatePinnedToCore(
-        sensorTask, // Task function
-        "SensorTask", // Task name
-        4096, // Stack size
-        NULL, // Parameters
-        1, // Priority
-        &sensorTaskHandle, // Task handle
-        0 // Core 0 (leaves Core 1 for main loop)
-    );
+
+
+
 }

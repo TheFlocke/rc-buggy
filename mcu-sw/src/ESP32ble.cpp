@@ -60,14 +60,29 @@ class SensorPressureCallbacks : public NimBLECharacteristicCallbacks {
     }
 };
 
-// Gas
-class SensorGasCallbacks : public NimBLECharacteristicCallbacks {
+// Gas Resistance
+class SensorGasResCallbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getSensorGas());
+        pCharacteristic->setValue(esp32ble.getSensorGasRes());
         pCharacteristic->notify();
     }
 };
 
+// Gas Index
+class SensorGasIndexCallbacks : public NimBLECharacteristicCallbacks {
+    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
+        pCharacteristic->setValue(esp32ble.getSensorGasIndex());
+        pCharacteristic->notify();
+    }
+};
+
+// Gas Index
+class SensorStatus : public NimBLECharacteristicCallbacks {
+    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
+        pCharacteristic->setValue(esp32ble.getSensorStatus());
+        pCharacteristic->notify();
+    }
+};
 
 // Server Callbacks
 class ServerCallbacks : public NimBLEServerCallbacks {
@@ -125,9 +140,9 @@ void ESP32ble::setDrive(const String &value) {
         _speed1 = 0;
         _speed2 = 0;
     }
-    if (_pCharacteristicCmdDriveState) {
-        _pCharacteristicCmdDriveState->setValue(getDrive());
-        _pCharacteristicCmdDriveState->notify();
+    if (_pCharCmdDriveState) {
+        _pCharCmdDriveState->setValue(getDrive());
+        _pCharCmdDriveState->notify();
     }
 }
 
@@ -147,9 +162,9 @@ void ESP32ble::setArm(const String &value) {
         _arm4 = value.substring(t3 + 1).toInt();
     }
 
-    if (_pCharacteristicCmdArmState) {
-        _pCharacteristicCmdArmState->setValue(getArm());
-        _pCharacteristicCmdArmState->notify();
+    if (_pCharCmdArmState) {
+        _pCharCmdArmState->setValue(getArm());
+        _pCharCmdArmState->notify();
     }
 }
 
@@ -162,9 +177,9 @@ String ESP32ble::getSensorTemp() const {
 void ESP32ble::setSensorTemp(const String &value) {
     _temp = value;
 
-    if (_pCharacteristicSensorTemp) {
-        _pCharacteristicSensorTemp->setValue(getSensorTemp());
-        _pCharacteristicSensorTemp->notify();
+    if (_pCharSensorTemp) {
+        _pCharSensorTemp->setValue(getSensorTemp());
+        _pCharSensorTemp->notify();
     }
 }
 
@@ -176,9 +191,9 @@ String ESP32ble::getSensorHumidity() const {
 void ESP32ble::setSensorHumidity(const String &value) {
     _humidity = value;
 
-    if (_pCharacteristicSensorHumidity) {
-        _pCharacteristicSensorHumidity->setValue(getSensorHumidity());
-        _pCharacteristicSensorHumidity->notify();
+    if (_pCharSensorHumidity) {
+        _pCharSensorHumidity->setValue(getSensorHumidity());
+        _pCharSensorHumidity->notify();
     }
 }
 
@@ -190,23 +205,51 @@ String ESP32ble::getSensorPressure() const {
 void ESP32ble::setSensorPressure(const String &value) {
     _pressure = value;
 
-    if (_pCharacteristicSensorPressure) {
-        _pCharacteristicSensorPressure->setValue(getSensorPressure());
-        _pCharacteristicSensorPressure->notify();
+    if (_pCharSensorPressure) {
+        _pCharSensorPressure->setValue(getSensorPressure());
+        _pCharSensorPressure->notify();
     }
 }
 
-// Gas
-String ESP32ble::getSensorGas() const {
-    return String(_gas);
+// Gas Resistance
+String ESP32ble::getSensorGasRes() const {
+    return String(_gas_res);
 }
 
-void ESP32ble::setSensorGas(const String &value) {
-    _gas = value;
+void ESP32ble::setSensorGasRes(const String &value) {
+    _gas_res = value;
 
-    if (_pCharacteristicSensorGas) {
-        _pCharacteristicSensorGas->setValue(getSensorGas());
-        _pCharacteristicSensorGas->notify();
+    if (_pCharSensorGasRes) {
+        _pCharSensorGasRes->setValue(getSensorGasRes());
+        _pCharSensorGasRes->notify();
+    }
+}
+
+// Gas Index
+String ESP32ble::getSensorGasIndex() const {
+    return String(_gas_index);
+}
+
+void ESP32ble::setSensorGasIndex(const String &value) {
+    _gas_index = value;
+
+    if (_pCharSensorGasIndex) {
+        _pCharSensorGasIndex->setValue(getSensorGasIndex());
+        _pCharSensorGasIndex->notify();
+    }
+}
+
+// Gas Resistance
+String ESP32ble::getSensorStatus() const {
+    return String(_status);
+}
+
+void ESP32ble::setSensorStatus(const String &value) {
+    _status= value;
+
+    if (_pCharSensorStatus) {
+        _pCharSensorStatus->setValue(getSensorStatus());
+        _pCharSensorStatus->notify();
     }
 }
 
@@ -238,11 +281,11 @@ void ESP32ble::setup(const String &name) {
 
 
     // Create a BLE CmdDriveState Characteristic
-    _pCharacteristicCmdDriveState = pCmdService->createCharacteristic(
+    _pCharCmdDriveState = pCmdService->createCharacteristic(
         UUID_CHAR_CMD_DRIVE_STATE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicCmdDriveState->setCallbacks(new CmdDriveStateCallbacks());
+    _pCharCmdDriveState->setCallbacks(new CmdDriveStateCallbacks());
 
 
     // Robotarm
@@ -255,11 +298,11 @@ void ESP32ble::setup(const String &name) {
     pCmdArmCharacteristic->setCallbacks(new CmdArmCallbacks());
 
     // Create a BLE ARM_STATE Characteristic
-    _pCharacteristicCmdArmState = pCmdService->createCharacteristic(
+    _pCharCmdArmState = pCmdService->createCharacteristic(
         UUID_CHAR_CMD_ARM_STATE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicCmdArmState->setCallbacks(new CmdArmStateCallbacks());
+    _pCharCmdArmState->setCallbacks(new CmdArmStateCallbacks());
 
 
     // Start the CMD Service
@@ -268,32 +311,46 @@ void ESP32ble::setup(const String &name) {
 
     // Sensor
     // Create a BLE Sensor Temp Characteristic
-    _pCharacteristicSensorTemp = pSensorService->createCharacteristic(
+    _pCharSensorTemp = pSensorService->createCharacteristic(
         UUID_CHAR_SENSOR_TEMP,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicSensorTemp->setCallbacks(new SensorTempCallbacks());
+    _pCharSensorTemp->setCallbacks(new SensorTempCallbacks());
 
     // Create a BLE Sensor Humidity Characteristic
-    _pCharacteristicSensorHumidity = pSensorService->createCharacteristic(
+    _pCharSensorHumidity = pSensorService->createCharacteristic(
         UUID_CHAR_SENSOR_HUMIDITY,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicSensorHumidity->setCallbacks(new SensorHumidityCallbacks());
+    _pCharSensorHumidity->setCallbacks(new SensorHumidityCallbacks());
 
     // Create a BLE Sensor Pressure Characteristic
-    _pCharacteristicSensorPressure = pSensorService->createCharacteristic(
+    _pCharSensorPressure = pSensorService->createCharacteristic(
         UUID_CHAR_SENSOR_PRESSURE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicSensorPressure->setCallbacks(new SensorPressureCallbacks());
+    _pCharSensorPressure->setCallbacks(new SensorPressureCallbacks());
 
-    // Create a BLE Sensor Gas Characteristic
-    _pCharacteristicSensorGas = pSensorService->createCharacteristic(
-        UUID_CHAR_SENSOR_GAS,
+    // Create a BLE Sensor Gas Resistance Characteristic
+    _pCharSensorGasRes = pSensorService->createCharacteristic(
+        UUID_CHAR_SENSOR_GAS_RES,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicSensorGas->setCallbacks(new SensorGasCallbacks());
+    _pCharSensorGasRes->setCallbacks(new SensorGasResCallbacks());
+
+    // Create a BLE Sensor Gas Index Characteristic
+    _pCharSensorGasIndex = pSensorService->createCharacteristic(
+        UUID_CHAR_SENSOR_GAS_INDEX,
+        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+    );
+    _pCharSensorGasIndex->setCallbacks(new SensorGasIndexCallbacks());
+
+    // Create a BLE Sensor Status Characteristic
+    _pCharSensorStatus = pSensorService->createCharacteristic(
+        UUID_CHAR_SENSOR_STATUS,
+        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+    );
+    _pCharSensorStatus->setCallbacks(new SensorGasIndexCallbacks());
 
 
     // Start the Sensor Service

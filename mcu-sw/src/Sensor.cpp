@@ -6,8 +6,6 @@ Sensor sensor;
 Bme68x bme680;
 
 #define NEW_GAS_MEAS (BME68X_GASM_VALID_MSK | BME68X_HEAT_STAB_MSK | BME68X_NEW_DATA_MSK)
-// Measure duration in ms
-#define MEAS_DUR 140
 
 void Sensor::setup(int LED) {
     // Sensor itself
@@ -47,8 +45,6 @@ bool Sensor::read() {
     bme68xData bme680data;
     uint8_t nFieldsLeft = 0;
 
-    /* data being fetched for every 140ms */
-    delay(MEAS_DUR);
 
     if (bme680.fetchData()) {
         do {
@@ -57,13 +53,14 @@ bool Sensor::read() {
                 _temp = bme680data.temperature;
                 _pressure = bme680data.pressure;
                 _humidity = bme680data.humidity;
-                _gas_resistance = bme680data.gas_resistance;
+                _gas_res = bme680data.gas_resistance;
                 _status = bme680data.status;
                 _gas_index = bme680data.gas_index;
             }
         } while (nFieldsLeft);
         return true;
     }
+    return false;
 }
 
 
