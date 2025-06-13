@@ -42,25 +42,29 @@ void Sensor::setup(int LED) {
 }
 
 bool Sensor::read() {
-    bme68xData bme680data;
-    uint8_t nFieldsLeft = 0;
+    if (xSemaphoreTake(i2cMutex, portMAX_DELAY) == pdTRUE) {
+        bme68xData bme680data;
+        uint8_t nFieldsLeft = 0;
 
 
-    if (bme680.fetchData()) {
-        do {
-            nFieldsLeft = bme680.getData(bme680data);
-            if (bme680data.status == NEW_GAS_MEAS) {
-                _temp = bme680data.temperature;
-                _pressure = bme680data.pressure;
-                _humidity = bme680data.humidity;
-                _gas_res = bme680data.gas_resistance;
-                _status = bme680data.status;
-                _gas_index = bme680data.gas_index;
-            }
-        } while (nFieldsLeft);
-        return true;
+        if (bme680.fetchData()) {
+            do {
+                nFieldsLeft = bme680.getData(bme680data);
+                if (bme680data.status == NEW_GAS_MEAS) {
+                    _temp = float2string(bme680data.temperature);
+                    _pressure = float2string(bme680data.pressure);
+                    _humidity = float2string(bme680data.humidity);
+                    _gas_res = float2string(bme680data.gas_resistance);
+                    _status = float2string(bme680data.status);
+                    _gas_index = float2string(bme680data.gas_index);
+                }
+            } while (nFieldsLeft);
+            return true;
+        }
+        return false;
+        // Return for other counters that I2C is now available
+        xSemaphoreGive(i2cMutex);
     }
-    return false;
 }
 
 

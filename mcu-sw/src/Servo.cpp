@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "../lib/Servo.h"
+#include "../lib/main.h"
 
 Servo servo;
 
@@ -13,7 +14,10 @@ constexpr int servo_freq = 50;
 
 void Servo::set(int pin, int angle){
     int duty = map(angle,0,180,servo_min,servo_max);
-    pwm_servo.setPWM(pin, 0, duty);
+    if (xSemaphoreTake(i2cMutex, portMAX_DELAY) == pdTRUE) {
+        pwm_servo.setPWM(pin, 0, duty);
+        xSemaphoreGive(i2cMutex);
+    }
 }
 
 void Servo::setup() {

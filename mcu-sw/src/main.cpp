@@ -1,12 +1,5 @@
-#include <Arduino.h>
-#include "../lib/ESP32ble.h"
-#include "../lib/i2c_bus.h"
-#include "../lib/Servo.h"
-#include "../lib/Sensor.h"
-#include "../lib/Stepper.h"
 #include "../lib/main.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+
 
 /*
 constexpr int ACT_LED = 8; // Activity LED for the Sensor PCB
@@ -45,8 +38,7 @@ constexpr int STEP1_DIR = 6;
 constexpr int STEP0_STEP = 5;
 constexpr int STEP1_STEP = 7;
 
-// Measure duration in ms
-constexpr int MEAS_DUR = 140;
+
 
 
 // Using I2C 0 bus of 2 on the esp32
@@ -55,6 +47,9 @@ TwoWire I2CBUS = TwoWire(0);
 // Create a Task extra for the Sensor so that it won't block the loop and cause latency issues
 TaskHandle_t sensorTaskHandle = nullptr;
 TaskHandle_t BLETaskHandle = nullptr;
+
+// Semaphore for I2C so tasks (who dont know about each other) wont talk parallel
+SemaphoreHandle_t i2cMutex = nullptr;
 
 void sensorTask(void *xTaskParameters) {
     for (;;) {
@@ -95,6 +90,8 @@ void setup() {
     // Create sensor task pinned to Core 0
     xTaskCreate(sensorTask, "SensorTask", 2048, nullptr, 2, &sensorTaskHandle);
     xTaskCreate(bleTask, "BLETask", 4096, nullptr, 1, &BLETaskHandle);
+    // Create Semaphore Mutex for I2C
+    i2cMutex = xSemaphoreCreateMutex();
 }
 
 
