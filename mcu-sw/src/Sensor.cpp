@@ -1,5 +1,5 @@
 #include "../lib/Sensor.h"
-#include "../src/main.cpp"
+#include "../lib/main.h"
 
 Sensor sensor;
 

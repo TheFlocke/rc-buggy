@@ -4,11 +4,12 @@
 #include "../lib/Servo.h"
 #include "../lib/Sensor.h"
 #include "../lib/Stepper.h"
+#include "../lib/main.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
 /*
-constexpr int ACT_LED = 8; // Activitiy LED for the Sensor PCB
+constexpr int ACT_LED = 8; // Activity LED for the Sensor PCB
 constexpr int SD_CSB = 9;
 constexpr int BME680_CSB = 10;
 constexpr int SPI_SDI = 11;
@@ -33,7 +34,7 @@ constexpr int STEP1_STEP = 7;
 [[maybe_unused]] constexpr int GPIO_48 = 48;
 */
 
-constexpr int ACT_LED = 20; // Activitiy LED for the Sensor PCB
+constexpr int ACT_LED = 20; // Activity LED for the Sensor PCB
 constexpr int I2C_SDA = 1;
 constexpr int I2C_SCL = 2;
 // GPIO Ports used to control the TMC2209
@@ -45,16 +46,17 @@ constexpr int STEP0_STEP = 5;
 constexpr int STEP1_STEP = 7;
 
 // Measure duration in ms
-#define MEAS_DUR 140
+constexpr int MEAS_DUR = 140;
 
 
 // Using I2C 0 bus of 2 on the esp32
 TwoWire I2CBUS = TwoWire(0);
 
-// Create a Task extra for the Sensor so that it wont block the loop and cause latency issues
+// Create a Task extra for the Sensor so that it won't block the loop and cause latency issues
 TaskHandle_t sensorTaskHandle = nullptr;
+TaskHandle_t BLETaskHandle = nullptr;
 
-void sensorTask(void *arg) {
+void sensorTask(void *xTaskParameters) {
     for (;;) {
         /* data being fetched for every 140ms */
         vTaskDelay(MEAS_DUR / portTICK_RATE_MS);
@@ -65,8 +67,14 @@ void sensorTask(void *arg) {
             esp32ble.setSensorGasRes(sensor.getGasRes());
             esp32ble.setSensorGasIndex(sensor.getGasIndex());
             esp32ble.setSensorStatus(sensor.getStatus());
-            vTaskDelete(sensorTaskHandle);
         } while (sensor.read());
+    };
+};
+
+void bleTask(void *xTaskParameters){
+    for (;;) {
+        esp32ble.handle();
+        vTaskDelay(10);
     }
 }
 
@@ -85,20 +93,12 @@ void setup() {
     // Loading and setting Sensor up with LED set to ACT_LED
     sensor.setup(ACT_LED);
     // Create sensor task pinned to Core 0
-    xTaskCreate(
-        sensorTask, // Task function
-        "SensorTask", // Task name
-        4096, // Stack size
-        nullptr, // Parameters
-        1, // Priority
-        &sensorTaskHandle // Task handle
-    );
+    xTaskCreate(sensorTask, "SensorTask", 2048, nullptr, 2, &sensorTaskHandle);
+    xTaskCreate(bleTask, "BLETask", 4096, nullptr, 1, &BLETaskHandle);
 }
 
 
 void loop() {
-    esp32ble.handle();
-
     // Wheels
     Servo::set(6, esp32ble.getWheel0()); // links
     Servo::set(7, esp32ble.getWheel1()); // rechts
@@ -112,13 +112,9 @@ void loop() {
     int grabber = esp32ble.getArm3();
 
     Servo::set(0, arm0);
-    Servo::set(1, map(arm0, 0, 180, 180, 0));
+    Servo::set(1, 180 - arm0);
     Servo::set(2, arm1);
-    Servo::set(3, map(arm1, 0, 180, 180, 0));
+    Servo::set(3, 180 - arm1);
     Servo::set(4, arm2);
     Servo::set(5, grabber);
-
-
-
-
 }
