@@ -42,10 +42,12 @@ void Sensor::setup(int LED) {
 }
 
 bool Sensor::read() {
+    Serial.println("Sensor read trying");
     if (xSemaphoreTake(i2cMutex, portMAX_DELAY) == pdTRUE) {
+        Serial.println("Sensor read started");
         bme68xData bme680data;
         uint8_t nFieldsLeft = 0;
-
+        bool result = false;
 
         if (bme680.fetchData()) {
             do {
@@ -59,12 +61,15 @@ bool Sensor::read() {
                     _gas_index = float2string(bme680data.gas_index);
                 }
             } while (nFieldsLeft);
-            return true;
+            result = true;
         }
-        return false;
+        return result;
         // Return for other counters that I2C is now available
         xSemaphoreGive(i2cMutex);
+    } else {
+        Serial.println("Sensor read failed");
     }
+    return false;
 }
 
 

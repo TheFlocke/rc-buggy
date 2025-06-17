@@ -122,24 +122,46 @@ void ESP32ble::handle() {
 
 
 String ESP32ble::getDrive() const {
-    return String(_speed1) + ":" + String(_speed2) + ":" + String(_wheel1) + ":" + String(_wheel2);
+    return String(_speed0) + ":" + String(_speed1) + ":" + String(_wheel0) + ":" + String(_wheel1);
 }
 
 void ESP32ble::setDrive(const String &value) {
-    // prüfen auf kombinierte anweisung: // `${speed1}:${speed2}:${wheel1}:${wheel2}`
-    int t1 = value.indexOf(":");
-    int t2 = value.indexOf(":", t1 + 1);
-    int t3 = value.indexOf(":", t2 + 1);
-    if (t1 > 0 && t3 < value.length()) {
-        _speed1 = value.substring(0, t1).toInt();
-        _speed2 = value.substring(t1 + 1, t2).toInt();
-        _wheel1 = value.substring(t2 + 1, t3).toInt();
-        _wheel2 = value.substring(t3 + 1).toInt();
-    } else {
-        // Wheel wird einfach auf der letzten Position gelassen
-        _speed1 = 0;
-        _speed2 = 0;
+    // Split value into four parts
+    int idx[4], lastIdx = 0;
+    int vals[4];
+
+    // Find the positions of the colons
+    for (int i = 0; i < 3; i++) {
+        idx[i] = value.indexOf(':', lastIdx);
+        if (idx[i] == -1) return; // Not enough parts
+        lastIdx = idx[i] + 1;
     }
+    idx[3] = value.length();
+
+    // Parse the four values
+    vals[0] = value.substring(0, idx[0]).toInt();
+    vals[1] = value.substring(idx[0] + 1, idx[1]).toInt();
+    vals[2] = value.substring(idx[1] + 1, idx[2]).toInt();
+    vals[3] = value.substring(idx[2] + 1, idx[3]).toInt();
+
+    // Arrays for current values and update functions
+    int *vars[4] = {&_speed0, &_speed1, &_wheel0, &_wheel1};
+    int idxs[4] = {0, 1, 6, 7};
+
+    // Update only if value changed
+    for (int i = 2; i < 4; i++) {
+        if (*vars[i] != vals[i]) {
+            *vars[i] = vals[i];
+            Servo::set(idxs[i], *vars[i]);
+        }
+    }
+    for (int i = 0; i < 1; i++) {
+        if (*vars[i] != vals[i]) {
+            *vars[i] = vals[i];
+            Stepper::stepper_[idxs[i]](*vars[i]);
+        }
+    }
+
     if (_pCharCmdDriveState) {
         _pCharCmdDriveState->setValue(getDrive());
         _pCharCmdDriveState->notify();
@@ -147,24 +169,42 @@ void ESP32ble::setDrive(const String &value) {
 }
 
 String ESP32ble::getArm() const {
-    return String(_arm1) + ":" + String(_arm2) + ":" + String(_arm3) + ":" + String(_arm4);
+    return String(_arm0) + ":" + String(_arm1) + ":" + String(_arm2) + ":" + String(_arm3);
 }
 
 void ESP32ble::setArm(const String &value) {
-    // prüfen auf kombinierte anweisung: // `${arm1}:${arm2}:${arm3}:${arm4}`
-    int t1 = value.indexOf(":");
-    int t2 = value.indexOf(":", t1 + 1);
-    int t3 = value.indexOf(":", t2 + 1);
-    if (t1 > 0 && t3 < value.length()) {
-        _arm1 = value.substring(0, t1).toInt();
-        _arm2 = value.substring(t1 + 1, t2).toInt();
-        _arm3 = value.substring(t2 + 1, t3).toInt();
-        _arm4 = value.substring(t3 + 1).toInt();
-    }
+    // Split value into four parts
+    int idx[4], lastIdx = 0;
+    int vals[4];
 
-    if (_pCharCmdArmState) {
-        _pCharCmdArmState->setValue(getArm());
-        _pCharCmdArmState->notify();
+    // Find the positions of the colons
+    for (int i = 0; i < 3; i++) {
+        idx[i] = value.indexOf(':', lastIdx);
+        if (idx[i] == -1) return; // Not enough parts
+        lastIdx = idx[i] + 1;
+    }
+    idx[3] = value.length();
+
+    // Parse the four values
+    vals[0] = value.substring(0, idx[0]).toInt();
+    vals[1] = value.substring(idx[0] + 1, idx[1]).toInt();
+    vals[2] = value.substring(idx[1] + 1, idx[2]).toInt();
+    vals[3] = value.substring(idx[2] + 1, idx[3]).toInt();
+
+    // Arrays for current values and update functions
+    int *vars[4] = {&_arm0, &_arm1, &_arm2, &_arm3};
+    int idxs[4] = {0, 2, 4, 5};
+
+    // checking if value has changed and if yes set it
+    for (int i = 0; i < 4; i++) {
+        if (*vars[i] != vals[i]) {
+            *vars[i] = vals[i];
+            Servo::set(idxs[i], *vars[i]);
+            // for arm0 and 1 make mirrored signal
+            if (i == 0 || i == 1) {
+                Servo::set(1 + idxs[i], 180 - *vars[i]);
+            }
+        }
     }
 }
 
@@ -245,7 +285,7 @@ String ESP32ble::getSensorStatus() const {
 }
 
 void ESP32ble::setSensorStatus(const String &value) {
-    _status= value;
+    _status = value;
 
     if (_pCharSensorStatus) {
         _pCharSensorStatus->setValue(getSensorStatus());

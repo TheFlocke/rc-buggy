@@ -1,4 +1,6 @@
 #include "NimBLEDevice.h"
+#include "../lib/Servo.h"
+#include "../lib/Stepper.h"
 
 // See the following for generating UUIDs: https://www.uuidgenerator.net/
 // CMD Service
@@ -23,15 +25,15 @@ class ESP32ble {
     bool _connected = false;
     bool _lastConnectionState = false;
     // everything for the movement of the rover
+    int _speed0 = 0;
     int _speed1 = 0;
-    int _speed2 = 0;
-    int _wheel1 = 45;
-    int _wheel2 = 45;
+    int _wheel0 = 90;
+    int _wheel1 = 90;
     // everything for the movement of the arm (default set to home)
-    int _arm1 = 45;
-    int _arm2 = 45;
-    int _arm3 = 45;
-    int _arm4 = 45;
+    int _arm0 = 90;
+    int _arm1 = 90;
+    int _arm2 = 90;
+    int _arm3 = 90;
     // everything from the sensor
     String _temp{"N/A"};
     String _pressure{"N/A"};
@@ -103,17 +105,16 @@ public:
 
     // Get variables for later use
     //-255 ... 255
-    int getSpeed0() const { return _speed1; }
-    int getSpeed1() const { return _speed2; }
+    int getSpeed(int i) const { return _speed[i]; }
     // Einstellungswert der Stollen
-    int getWheel0() const { return _wheel1; }
-    int getWheel1() const { return _wheel2; }
+    int getWheel0() const { return _wheel0; }
+    int getWheel1() const { return _wheel1; }
     // Einstellungswert der einzelnen Armelemente zwischen 0 bis 180
     // Grenzwerte sind zur Sicherheit festgelegt, da sonst die Motoren durch Dauerlast durchbrennen oder der Arm kaput geht
-    int getArm0() const { return _arm1; }
-    int getArm1() const { return _arm2; }
-    int getArm2() const { return _arm3; }
-    int getArm3() const { return _arm4; }
+    int getArm0() const { return _arm0; }
+    int getArm1() const { return _arm1; }
+    int getArm2() const { return _arm2; }
+    int getArm3() const { return _arm3; }
 
 
 };

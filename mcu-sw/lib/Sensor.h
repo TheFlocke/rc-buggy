@@ -7,12 +7,12 @@
 
 
 class Sensor {
-    String _temp{"-1"};
-    String _pressure{"-1"};
-    String _humidity{"-1"};
-    String _gas_res{"-1"};
-    String _status{"-1"};
-    String _gas_index{"-1"};
+    String _temp{"N/A"};
+    String _pressure{"N/A"};
+    String _humidity{"N/A"};
+    String _gas_res{"N/A"};
+    String _gas_index{"N/A"};
+    String _status{"N/A"};
     int _led = -1;
     unsigned long _endTime = 0;
     bool _reading_started = false;
