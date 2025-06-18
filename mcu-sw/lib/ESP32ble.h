@@ -70,37 +70,44 @@ public:
 
     // Wheels/CMD
     void setDrive(const String &value);
+
     String getDrive() const;
 
     // Arm
     String getArm() const;
+
     void setArm(const String &value);
 
     // Sensor
     // Temperature
     String getSensorTemp() const;
+
     void setSensorTemp(const String &value);
 
     // Humidity
     String getSensorHumidity() const;
+
     void setSensorHumidity(const String &value);
 
     // Pressure
     String getSensorPressure() const;
+
     void setSensorPressure(const String &value);
 
     // Gas Res
     String getSensorGasRes() const;
+
     void setSensorGasRes(const String &value);
 
     // Gas Index
     String getSensorGasIndex() const;
+
     void setSensorGasIndex(const String &value);
 
     // Gas Index
     String getSensorStatus() const;
-    void setSensorStatus(const String &value);
 
+    void setSensorStatus(const String &value);
 
 
     // Get variables for later use
@@ -116,8 +123,6 @@ public:
     int getArm1() const { return _arm1; }
     int getArm2() const { return _arm2; }
     int getArm3() const { return _arm3; }
-
-
 };
 
 extern ESP32ble esp32ble;

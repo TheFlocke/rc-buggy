@@ -17,9 +17,9 @@ class Sensor {
     unsigned long _endTime = 0;
     bool _reading_started = false;
 
-
 public:
     void setup(int LED);
+
     bool read();
 
     static String float2string(float value);

@@ -9,6 +9,7 @@
 #define R_SENSE 0.17f // for 1.2A see online on how to calc https://learn.watterott.com/silentstepstick/faq/#calculator-tmc21xx-and-tmc2209
 
 
+
 // Your motor parts:
 #define FULL_STEPS 200.0   // 1.8 degrees per whole step
 #define MICROSTEPS 8     // 8, 16, 32, 64, 128, 256
@@ -23,12 +24,12 @@ Stepper stepper;
 TMC2209Stepper driver0(&SERIAL_PORT, R_SENSE, DRIVER_ADDRESS_0);
 TMC2209Stepper driver1(&SERIAL_PORT, R_SENSE, DRIVER_ADDRESS_1);
 // putting them in an array for more efficiency
-TMC2209Stepper* drivers[2] = {&driver0, &driver1};
+TMC2209Stepper *drivers[2] = {&driver0, &driver1};
 
 // setting up FactAccel
 FastAccelStepperEngine engine = FastAccelStepperEngine();
 // putting them in a array for more efficiency
-FastAccelStepper* steppers[2] = {nullptr, nullptr};
+FastAccelStepper *steppers[2] = {nullptr, nullptr};
 
 void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX_PIN) {
     // putting control gpio into array for efficiency
@@ -42,7 +43,7 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX
     // Setting up Driver
     for (int i = 0; i < 2; i++) {
         drivers[i]->begin();
-        if (!drivers[i]->test_connection()) Serial.println("Driver " + String(i) +  " UART error!");
+        if (!drivers[i]->test_connection()) Serial.println("Driver " + String(i) + " UART error!");
         drivers[i]->toff(5); // Enables driver in software
         drivers[i]->vsense(true); // Enable UART current control
         drivers[i]->rms_current(RMS_CURRENT); // Dieser liegt bei 1,2A und Vref muss daher auch auf 1,2V
@@ -52,14 +53,14 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX
         // nut 70% des Drehmoments. Durch 1/3 Übersetzung haben wir dennoch 600 statt 200 Steps
         drivers[i]->microsteps(MICROSTEPS);
         drivers[i]->en_spreadCycle(true);
-        drivers[i]->irun(31);   // maximales Moment wenn die Motoren drehen
+        drivers[i]->irun(31); // maximales Moment wenn die Motoren drehen
     }
 
     // setting up Fastaccelstepper for both Steppers
-    for ( int i = 0; i < 2; i++) {
+    for (int i = 0; i < 2; i++) {
         steppers[i] = engine.stepperConnectToPin(*setStep[i], 2);
         if (steppers[i]) {
-            steppers[i]->setDirectionPin(*setStep[i+2]);
+            steppers[i]->setDirectionPin(*setStep[i + 2]);
             steppers[i]->setAcceleration(5000); // steps/s^2
         } else {
             Serial.println("Failed to initialize " + String(i) + " stepper!");
@@ -68,9 +69,7 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX
 }
 
 
-
 void Stepper::set(int stepperindex, int speed) {
-
     if (!steppers[stepperindex]) return;
 
     if (speed == 0) {

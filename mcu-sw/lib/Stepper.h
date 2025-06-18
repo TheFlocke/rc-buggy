@@ -10,19 +10,14 @@
 #include <FastAccelStepper.h>
 
 
-
-
 class Stepper {
-
     // Array init for 2 steppers
-    FastAccelStepper* steppers[2] = {nullptr, nullptr};
-
+    FastAccelStepper *steppers[2] = {nullptr, nullptr};
 
 public:
     void setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX_PIN);
 
     void set(int stepperIndex, int speed);
-
 };
 
 
