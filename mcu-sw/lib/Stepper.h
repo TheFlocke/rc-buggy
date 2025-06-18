@@ -13,23 +13,15 @@
 
 
 class Stepper {
-    int _PSTEP0_Dir = -1;
-    int _PSTEP0_STEP = -1;
-    int _PSTEP1_Dir = -1;
-    int _PSTEP1_STEP = -1;
-    int _RX_PIN = -1;
-    int _TX_PIN = -1;
 
-    FastAccelStepper *stepper0 = nullptr; // Pointers of all Steppers who are connected
-    FastAccelStepper *stepper1 = nullptr;
+    // Array init for 2 steppers
+    FastAccelStepper* steppers[2] = {nullptr, nullptr};
 
 
 public:
     void setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX_PIN);
 
-    void stepper_0(int speed) const;
-
-    void stepper_1(int speed) const;
+    void set(int stepperIndex, int speed);
 
 };
 

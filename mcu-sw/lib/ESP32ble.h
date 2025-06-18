@@ -105,7 +105,8 @@ public:
 
     // Get variables for later use
     //-255 ... 255
-    int getSpeed(int i) const { return _speed[i]; }
+    int getSpeed0() const { return _speed0; }
+    int getSpeed1() const { return _speed1; }
     // Einstellungswert der Stollen
     int getWheel0() const { return _wheel0; }
     int getWheel1() const { return _wheel1; }

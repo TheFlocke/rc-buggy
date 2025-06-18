@@ -57,7 +57,6 @@ TwoWire I2CBUS = TwoWire(0);
 // Create a Task extra for the Sensor so that it won't block the loop and cause latency issues
 TaskHandle_t sensorTaskHandle = nullptr;
 TaskHandle_t BLETaskHandle = nullptr;
-TaskHandle_t stepperTaskHandle = nullptr;
 
 // Semaphore for I2C so tasks (who dont know about each other) wont talk parallel
 SemaphoreHandle_t i2cMutex = nullptr;
@@ -84,20 +83,6 @@ void bleTask(void *xTaskParameters) {
     }
 }
 
-void stepperTask(void *xTaskParameters) {
-    for (;;) {
-        if (speed0 != esp32ble.getSpeed0()) {
-            speed0 = esp32ble.getSpeed0();
-            stepper.stepper_0(-1 * speed0); // links
-        }
-        if (speed1 != esp32ble.getSpeed1()) {
-            speed1 = esp32ble.getSpeed1();
-            stepper.stepper_1(-1 * speed1); // Rechts
-        }
-        vTaskDelay(5);
-    }
-}
-
 
 void setup() {
     // for debugging
@@ -114,8 +99,6 @@ void setup() {
     sensor.setup(ACT_LED);
     // Create sensor task pinned to Core 0
     xTaskCreate(bleTask, "BLETask", 4096, nullptr, 1, &BLETaskHandle);
-    xTaskCreate(servoTask, "ServoTask", 8192, nullptr, 2, &servoTaskHandle);
-    xTaskCreate(stepperTask, "StepperTask", 4096, nullptr, 3, &stepperTaskHandle);
     xTaskCreate(sensorTask, "SensorTask", 4096, nullptr, 3, &sensorTaskHandle);
     // Create Semaphore Mutex for I2C
     i2cMutex = xSemaphoreCreateMutex();

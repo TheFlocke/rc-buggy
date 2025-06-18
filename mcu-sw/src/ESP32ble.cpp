@@ -158,7 +158,7 @@ void ESP32ble::setDrive(const String &value) {
     for (int i = 0; i < 1; i++) {
         if (*vars[i] != vals[i]) {
             *vars[i] = vals[i];
-            Stepper::stepper_[idxs[i]](*vars[i]);
+            stepper.set(idxs[i], *vars[i]);
         }
     }
 
