@@ -15,8 +15,8 @@
 #define UUID_CHAR_SENSOR_PRESSURE               "545343fb-93a0-4415-9e2b-6a4c8e2835c4"
 #define UUID_CHAR_SENSOR_HUMIDITY               "618c8e95-e436-4a86-9d7d-17c3db9992d0"
 #define UUID_CHAR_SENSOR_GAS_RES                "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1"
-#define UUID_CHAR_SENSOR_GAS_INDEX              "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1" // Neu generieren!!
-#define UUID_CHAR_SENSOR_STATUS                 "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1" // Neu generieren!!
+#define UUID_CHAR_SENSOR_GAS_INDEX              "3b9e4e45-42f2-4892-8d63-35f4a4bc8093"
+#define UUID_CHAR_SENSOR_STATUS                 "988b016d-91a0-4830-ae55-650ef2bb9c8d"
 
 
 class ESP32ble {
