@@ -155,7 +155,7 @@ void ESP32ble::setDrive(const String &value) {
             Servo::set(idxs[i], *vars[i]);
         }
     }
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 2; i++) {
         if (*vars[i] != vals[i]) {
             *vars[i] = vals[i];
             stepper.set(idxs[i], *vars[i]);

@@ -55,26 +55,11 @@ int speed1;
 TwoWire I2CBUS = TwoWire(0);
 
 // Create a Task extra for the Sensor so that it won't block the loop and cause latency issues
-TaskHandle_t sensorTaskHandle = nullptr;
 TaskHandle_t BLETaskHandle = nullptr;
 
 // Semaphore for I2C so tasks (who dont know about each other) wont talk parallel
 SemaphoreHandle_t i2cMutex = nullptr;
 
-void sensorTask(void *xTaskParameters) {
-    for (;;) {
-        /* data being fetched for every 140ms */
-        vTaskDelay(MEAS_DUR / portTICK_RATE_MS);
-        do {
-            esp32ble.setSensorTemp(sensor.getTemp());
-            esp32ble.setSensorHumidity(sensor.getHumidity());
-            esp32ble.setSensorPressure(sensor.getPressure());
-            esp32ble.setSensorGasRes(sensor.getGasRes());
-            esp32ble.setSensorGasIndex(sensor.getGasIndex());
-            esp32ble.setSensorStatus(sensor.getStatus());
-        } while (sensor.read());
-    };
-};
 
 void bleTask(void *xTaskParameters) {
     for (;;) {
@@ -97,14 +82,20 @@ void setup() {
     stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, UART_RX, UART_TX);
     // Loading and setting Sensor up with LED set to ACT_LED
     sensor.setup(ACT_LED);
-    // Create sensor task pinned to Core 0
     xTaskCreate(bleTask, "BLETask", 4096, nullptr, 1, &BLETaskHandle);
-    xTaskCreate(sensorTask, "SensorTask", 4096, nullptr, 3, &sensorTaskHandle);
     // Create Semaphore Mutex for I2C
     i2cMutex = xSemaphoreCreateMutex();
 }
 
 
 void loop() {
-    delay(10);
+    delay(140);
+    do {
+        esp32ble.setSensorTemp(sensor.getTemp());
+        esp32ble.setSensorHumidity(sensor.getHumidity());
+        esp32ble.setSensorPressure(sensor.getPressure());
+        esp32ble.setSensorGasRes(sensor.getGasRes());
+        esp32ble.setSensorGasIndex(sensor.getGasIndex());
+        esp32ble.setSensorStatus(sensor.getStatus());
+    } while (sensor.read());
 }

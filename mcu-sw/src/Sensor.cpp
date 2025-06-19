@@ -63,9 +63,10 @@ bool Sensor::read() {
             } while (nFieldsLeft);
             result = true;
         }
-        return result;
         // Return for other counters that I2C is now available
         xSemaphoreGive(i2cMutex);
+        return result;
+
     } else {
         Serial.println("Sensor read failed");
     }
