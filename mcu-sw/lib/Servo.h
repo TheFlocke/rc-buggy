@@ -7,7 +7,6 @@
 
 
 class Servo {
-
 public:
     static void set(int pin, int angle);
 

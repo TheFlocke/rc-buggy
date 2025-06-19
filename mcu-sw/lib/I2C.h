@@ -8,7 +8,6 @@
 #include <Wire.h>
 
 class I2C {
-
 public:
     void setup(int SDA, int SCL);
 };

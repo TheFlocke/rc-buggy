@@ -13,7 +13,6 @@ public:
     void setup(int LED);
 
     static void read();
-
 };
 
 extern Sensor sensor;

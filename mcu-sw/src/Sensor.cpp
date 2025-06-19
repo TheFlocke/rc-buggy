@@ -73,22 +73,22 @@ void newDataCallback(const bme68xData data, const bsecOutputs outputs, Bsec2 bse
             const bsecData output = outputs.output[i];
             switch (output.sensor_id) {
                 case BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE:
-                    esp32ble.setSensorTemp(String(output.signal));
+                    esp32ble.setSensor(0, String(output.signal));
                     break;
                 case BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_HUMIDITY:
-                    esp32ble.setSensorHumidity(String(output.signal));
+                    esp32ble.setSensor(1, String(output.signal));
                     break;
                 case BSEC_OUTPUT_RAW_PRESSURE:
-                    esp32ble.setSensorPressure(String(output.signal));
+                    esp32ble.setSensor(2, String(output.signal));
                     break;
                 case BSEC_OUTPUT_IAQ:
-                    esp32ble.setSensorIAQ(checkInit(0, String(output.signal)));
+                    esp32ble.setSensor(3, checkInit(0, String(output.signal)));
                     break;
                 case BSEC_OUTPUT_CO2_EQUIVALENT:
-                    esp32ble.setSensorCO2(checkInit(1, String(output.signal)));
+                    esp32ble.setSensor(4, checkInit(1, String(output.signal)));
                     break;
                 case BSEC_OUTPUT_BREATH_VOC_EQUIVALENT:
-                    esp32ble.setSensorVOC(checkInit(2, String(output.signal)));
+                    esp32ble.setSensor(5, checkInit(2, String(output.signal)));
                     break;
                 default:
                     break;
