@@ -795,12 +795,28 @@
       "USB-C"
     ],
     [
+      "0ac296f4-03ae-499d-aafb-881a622f74c5",
+      "PWR"
+    ],
+    [
+      "7028e6e6-1791-44a5-abb8-055fcde4a91e",
+      "Logic Level Converter"
+    ],
+    [
       "c7590ae9-962e-4ee0-9e27-2edcddf062e3",
       "Motorcontrol"
     ],
     [
       "e4847025-be0e-420c-950d-df11eddb04e5",
       "Connections"
+    ],
+    [
+      "0feeb017-dd09-4b70-817b-7ffb1f3c6811",
+      "PWR_IC"
+    ],
+    [
+      "94ebfe74-5dff-42cc-bca3-a2d363e6b399",
+      "PWR_MOT"
     ]
   ],
   "text_variables": {}

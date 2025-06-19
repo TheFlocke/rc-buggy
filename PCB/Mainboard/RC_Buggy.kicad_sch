@@ -4538,6 +4538,248 @@
 		)
 	)
 	(sheet
+		(at 25.4 165.1)
+		(size 38.1 25.4)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "0ac296f4-03ae-499d-aafb-881a622f74c5")
+		(property "Sheetname" "PWR"
+			(at 25.4 164.3884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "PWR.kicad_sch"
+			(at 25.4 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "RC_Buggy"
+				(path "/95edd31c-9fee-4eef-843b-c880bdcf4bfe"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 200.66 116.84)
+		(size 67.31 26.67)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "7028e6e6-1791-44a5-abb8-055fcde4a91e")
+		(property "Sheetname" "Logic Level Converter"
+			(at 200.66 116.1284 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "LLC.kicad_sch"
+			(at 266.192 138.938 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DATA2_5V" bidirectional
+			(at 231.14 116.84 90)
+			(uuid "69189e00-1b84-4f82-b023-acf5e04ac45b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "DATA2_3V3" bidirectional
+			(at 231.14 143.51 270)
+			(uuid "b5585702-0c5d-427e-b441-cb0b8092a14e")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DATA0_5V" bidirectional
+			(at 226.06 116.84 90)
+			(uuid "bb79352d-48c6-46f1-98d1-5afb6268a200")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "DATA0_3V3" bidirectional
+			(at 226.06 143.51 270)
+			(uuid "a495b1cb-b4cd-4fb2-9639-6934eebc211f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DATA7_3V3" bidirectional
+			(at 243.84 143.51 270)
+			(uuid "af2fcb93-2733-454e-a51c-29ccf52ef0fc")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DATA6_3V3" bidirectional
+			(at 241.3 143.51 270)
+			(uuid "11a04e85-2b6a-4d3f-bdcf-be07b6b77232")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DATA1_3V3" bidirectional
+			(at 228.6 143.51 270)
+			(uuid "ae088602-a522-4f42-9eab-fcece79c981f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DATA3_3V3" bidirectional
+			(at 233.68 143.51 270)
+			(uuid "89c451f4-3406-4e15-9718-353cddf497d9")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DATA5_3V3" bidirectional
+			(at 238.76 143.51 270)
+			(uuid "1712a799-8025-48fa-bffc-5b89cc0b67ee")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DATA4_3V3" bidirectional
+			(at 236.22 143.51 270)
+			(uuid "aac7e5cd-6441-46e3-9269-b80c434ae1cc")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DATA4_5V" bidirectional
+			(at 236.22 116.84 90)
+			(uuid "fb712f27-26c3-432f-bb7d-c84f856110c8")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "DATA7_5V" bidirectional
+			(at 243.84 116.84 90)
+			(uuid "6eacb7af-3d05-40f2-9969-3c6983635231")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "DATA6_5V" bidirectional
+			(at 241.3 116.84 90)
+			(uuid "d8c3fb11-8f79-4d4a-8965-8085e4af1e6a")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "DATA1_5V" bidirectional
+			(at 228.6 116.84 90)
+			(uuid "7413e61f-77ac-4c21-952c-c6275defd89a")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "DATA3_5V" bidirectional
+			(at 233.68 116.84 90)
+			(uuid "c6602204-9576-42ea-825e-f93b6ed07dd7")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "DATA5_5V" bidirectional
+			(at 238.76 116.84 90)
+			(uuid "6f1fe0a9-0c84-4151-906a-b6da0e29ed2a")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "RC_Buggy"
+				(path "/95edd31c-9fee-4eef-843b-c880bdcf4bfe"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
 		(at 200.66 17.78)
 		(size 67.31 25.4)
 		(exclude_from_sim no)
