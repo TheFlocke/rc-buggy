@@ -1,4 +1,4 @@
-# RC Rover 🤖🌋
+# RC Rover 🌋
 
 ![Rover on Vulcano](img/rover_on_vulcano.png)
 
@@ -12,7 +12,7 @@ To enable wireless control from any BLE-capable device, I developed:
 - 🌐 Dedicated web app
 - 🖥️ Bespoke PCB design (unfortunately, the PCB was never manufactured due to supply issues)
 
-The foundation for the code was a project from my teacher, which I significantly modified and expanded. While I focused on electronics/software 💡, my teammates handled mechanical engineering ⚙️.
+The foundation for the code was a project from my teacher, which I significantly modified and expanded. While I focused on electronics/software ⚡️, my teammates handled mechanical engineering ⚙️.
 
 ## Project Screenshots 📸
 ![Webinterface0](img/webinterface0.png)
