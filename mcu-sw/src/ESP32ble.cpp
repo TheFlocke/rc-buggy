@@ -63,7 +63,7 @@ class SensorPressureCallbacks : public NimBLECharacteristicCallbacks {
 // Gas Resistance
 class SensorGasResCallbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getSensorGasRes());
+        pCharacteristic->setValue(esp32ble.getSensorIAQ());
         pCharacteristic->notify();
     }
 };
@@ -71,7 +71,7 @@ class SensorGasResCallbacks : public NimBLECharacteristicCallbacks {
 // Gas Index
 class SensorGasIndexCallbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getSensorGasIndex());
+        pCharacteristic->setValue(esp32ble.getSensorCO2());
         pCharacteristic->notify();
     }
 };
@@ -79,7 +79,7 @@ class SensorGasIndexCallbacks : public NimBLECharacteristicCallbacks {
 // Gas Index
 class SensorStatus : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getSensorStatus());
+        pCharacteristic->setValue(esp32ble.getSensorVOC());
         pCharacteristic->notify();
     }
 };
@@ -252,44 +252,44 @@ void ESP32ble::setSensorPressure(const String &value) {
 }
 
 // Gas Resistance
-String ESP32ble::getSensorGasRes() const {
-    return String(_gas_res);
+String ESP32ble::getSensorIAQ() const {
+    return String(_iaq);
 }
 
-void ESP32ble::setSensorGasRes(const String &value) {
-    _gas_res = value;
+void ESP32ble::setSensorIAQ(const String &value) {
+    _iaq = value;
 
-    if (_pCharSensorGasRes) {
-        _pCharSensorGasRes->setValue(getSensorGasRes());
-        _pCharSensorGasRes->notify();
+    if (_pCharSensorIAQ) {
+        _pCharSensorIAQ->setValue(getSensorIAQ());
+        _pCharSensorIAQ->notify();
     }
 }
 
 // Gas Index
-String ESP32ble::getSensorGasIndex() const {
-    return String(_gas_index);
+String ESP32ble::getSensorCO2() const {
+    return String(_co2);
 }
 
-void ESP32ble::setSensorGasIndex(const String &value) {
-    _gas_index = value;
+void ESP32ble::setSensorCO2(const String &value) {
+    _co2 = value;
 
-    if (_pCharSensorGasIndex) {
-        _pCharSensorGasIndex->setValue(getSensorGasIndex());
-        _pCharSensorGasIndex->notify();
+    if (_pCharSensorCO2) {
+        _pCharSensorCO2->setValue(getSensorCO2());
+        _pCharSensorCO2->notify();
     }
 }
 
 // Gas Resistance
-String ESP32ble::getSensorStatus() const {
-    return String(_status);
+String ESP32ble::getSensorVOC() const {
+    return String(_voc);
 }
 
-void ESP32ble::setSensorStatus(const String &value) {
-    _status = value;
+void ESP32ble::setSensorVOC(const String &value) {
+    _voc = value;
 
-    if (_pCharSensorStatus) {
-        _pCharSensorStatus->setValue(getSensorStatus());
-        _pCharSensorStatus->notify();
+    if (_pCharSensorVOC) {
+        _pCharSensorVOC->setValue(getSensorVOC());
+        _pCharSensorVOC->notify();
     }
 }
 
@@ -372,25 +372,25 @@ void ESP32ble::setup(const String &name) {
     _pCharSensorPressure->setCallbacks(new SensorPressureCallbacks());
 
     // Create a BLE Sensor Gas Resistance Characteristic
-    _pCharSensorGasRes = pSensorService->createCharacteristic(
-        UUID_CHAR_SENSOR_GAS_RES,
+    _pCharSensorIAQ = pSensorService->createCharacteristic(
+        UUID_CHAR_SENSOR_IAQ,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharSensorGasRes->setCallbacks(new SensorGasResCallbacks());
+    _pCharSensorIAQ->setCallbacks(new SensorGasResCallbacks());
 
     // Create a BLE Sensor Gas Index Characteristic
-    _pCharSensorGasIndex = pSensorService->createCharacteristic(
-        UUID_CHAR_SENSOR_GAS_INDEX,
+    _pCharSensorCO2 = pSensorService->createCharacteristic(
+        UUID_CHAR_SENSOR_CO2,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharSensorGasIndex->setCallbacks(new SensorGasIndexCallbacks());
+    _pCharSensorCO2->setCallbacks(new SensorGasIndexCallbacks());
 
     // Create a BLE Sensor Status Characteristic
-    _pCharSensorStatus = pSensorService->createCharacteristic(
-        UUID_CHAR_SENSOR_STATUS,
+    _pCharSensorVOC = pSensorService->createCharacteristic(
+        UUID_CHAR_SENSOR_VOC,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharSensorStatus->setCallbacks(new SensorGasIndexCallbacks());
+    _pCharSensorVOC->setCallbacks(new SensorGasIndexCallbacks());
 
 
     // Start the Sensor Service

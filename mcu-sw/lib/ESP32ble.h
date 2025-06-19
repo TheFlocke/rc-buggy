@@ -14,9 +14,9 @@
 #define UUID_CHAR_SENSOR_TEMP                   "24c53354-de00-42ac-926c-31f805e5d2f5"
 #define UUID_CHAR_SENSOR_PRESSURE               "545343fb-93a0-4415-9e2b-6a4c8e2835c4"
 #define UUID_CHAR_SENSOR_HUMIDITY               "618c8e95-e436-4a86-9d7d-17c3db9992d0"
-#define UUID_CHAR_SENSOR_GAS_RES                "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1"
-#define UUID_CHAR_SENSOR_GAS_INDEX              "3b9e4e45-42f2-4892-8d63-35f4a4bc8093"
-#define UUID_CHAR_SENSOR_STATUS                 "988b016d-91a0-4830-ae55-650ef2bb9c8d"
+#define UUID_CHAR_SENSOR_IAQ                    "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1"
+#define UUID_CHAR_SENSOR_CO2                    "3b9e4e45-42f2-4892-8d63-35f4a4bc8093"
+#define UUID_CHAR_SENSOR_VOC                    "988b016d-91a0-4830-ae55-650ef2bb9c8d"
 
 
 class ESP32ble {
@@ -25,22 +25,22 @@ class ESP32ble {
     bool _connected = false;
     bool _lastConnectionState = false;
     // everything for the movement of the rover
-    int _speed0 = 0;
-    int _speed1 = 0;
-    int _wheel0 = 90;
-    int _wheel1 = 90;
+    int _speed0 = -1;
+    int _speed1 = -1;
+    int _wheel0 = -1;
+    int _wheel1 = -1;
     // everything for the movement of the arm (default set to home)
-    int _arm0 = 90;
-    int _arm1 = 90;
-    int _arm2 = 90;
-    int _arm3 = 90;
+    int _arm0 = -1;
+    int _arm1 = -1;
+    int _arm2 = -1;
+    int _arm3 = -1;
     // everything from the sensor
     String _temp{"N/A"};
     String _pressure{"N/A"};
     String _humidity{"N/A"};
-    String _gas_res{"N/A"};
-    String _gas_index{"N/A"};
-    String _status{"N/A"};
+    String _iaq{"N/A"};
+    String _co2{"N/A"};
+    String _voc{"N/A"};
     // ESP32 handle
     unsigned long _disconnectTime = 0;
     bool _waitingToAdvertise = false;
@@ -55,9 +55,9 @@ class ESP32ble {
     NimBLECharacteristic *_pCharSensorTemp = nullptr;
     NimBLECharacteristic *_pCharSensorHumidity = nullptr;
     NimBLECharacteristic *_pCharSensorPressure = nullptr;
-    NimBLECharacteristic *_pCharSensorGasRes = nullptr;
-    NimBLECharacteristic *_pCharSensorGasIndex = nullptr;
-    NimBLECharacteristic *_pCharSensorStatus = nullptr;
+    NimBLECharacteristic *_pCharSensorIAQ = nullptr;
+    NimBLECharacteristic *_pCharSensorCO2 = nullptr;
+    NimBLECharacteristic *_pCharSensorVOC = nullptr;
 
 public:
     void setup(const String &name);
@@ -95,19 +95,19 @@ public:
     void setSensorPressure(const String &value);
 
     // Gas Res
-    String getSensorGasRes() const;
+    String getSensorIAQ() const;
 
-    void setSensorGasRes(const String &value);
-
-    // Gas Index
-    String getSensorGasIndex() const;
-
-    void setSensorGasIndex(const String &value);
+    void setSensorIAQ(const String &value);
 
     // Gas Index
-    String getSensorStatus() const;
+    String getSensorCO2() const;
 
-    void setSensorStatus(const String &value);
+    void setSensorCO2(const String &value);
+
+    // Gas Index
+    String getSensorVOC() const;
+
+    void setSensorVOC(const String &value);
 
 
     // Get variables for later use

@@ -1,86 +1,119 @@
 #include "../lib/Sensor.h"
-#include "../lib/main.h"
+#include "../lib/I2C.h"
+#include "../lib/ESP32ble.h"
+
+#define SAMPLE_RATE		BSEC_SAMPLE_RATE_LP
 
 Sensor sensor;
 
-Bme68x bme680;
+void checkIaqSensorStatus(void);
 
-#define NEW_GAS_MEAS (BME68X_GASM_VALID_MSK | BME68X_HEAT_STAB_MSK | BME68X_NEW_DATA_MSK)
+void checkBsecStatus(Bsec2 bsec);
+
+void newDataCallback(const bme68xData data, const bsecOutputs outputs, Bsec2 bsec);
+
+
+Bsec2 bme680;
+
 
 void Sensor::setup(int LED) {
-    // Sensor itself
-    bme680.begin(0x77, I2CBUS);
-    if (bme680.checkStatus()) {
-        if (bme680.checkStatus() == BME68X_ERROR) {
-            Serial.println("Sensor error:" + bme680.statusString());
-            return;
-        }
-        if (bme680.checkStatus() == BME68X_WARNING) {
-            Serial.println("Sensor Warning:" + bme680.statusString());
-        }
+    if (!bme680.begin(0x77, I2CBUS)) {
+        checkBsecStatus(bme680);
     }
-    // All default values provided by Bosch Sensortec Library
-    /* Set the default configuration for temperature, pressure and humidity */
-    bme680.setTPH();
-    /* Heater temperature in degree Celsius */
-    uint16_t tempProf[10] = {
-        320, 100, 100, 100, 200, 200, 200, 320, 320,
-        320
-    };
-    /* Multiplier to the shared heater duration */
-    uint16_t mulProf[10] = {5, 2, 10, 30, 5, 5, 5, 5, 5, 5};
-    /* Shared heating duration in milliseconds */
-    uint16_t sharedHeaterDur = MEAS_DUR - (bme680.getMeasDur(BME68X_PARALLEL_MODE) / 1000);
 
-    bme680.setHeaterProf(tempProf, mulProf, sharedHeaterDur, 10);
-    // All measurements are taken in Parallel instead of sequentially
-    bme680.setOpMode(BME68X_PARALLEL_MODE);
+    if (SAMPLE_RATE == BSEC_SAMPLE_RATE_ULP) {
+        bme680.setTemperatureOffset(TEMP_OFFSET_ULP);
+    } else if (SAMPLE_RATE == BSEC_SAMPLE_RATE_LP) {
+        bme680.setTemperatureOffset(TEMP_OFFSET_LP);
+    }
+
+    // List of data needed to be processed from the Sensor
+    bsec_virtual_sensor_t sensorList[6] =
+    {
+        BSEC_OUTPUT_RAW_PRESSURE,
+        BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE,
+        BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_HUMIDITY,
+        BSEC_OUTPUT_IAQ,
+        BSEC_OUTPUT_CO2_EQUIVALENT,
+        BSEC_OUTPUT_BREATH_VOC_EQUIVALENT,
+    };
+
+    /* Subsribe to the desired BSEC2 outputs */
+    if (!bme680.updateSubscription(sensorList, ARRAY_LEN(sensorList), SAMPLE_RATE)) {
+        checkBsecStatus(bme680);
+    }
+
+    /* Whenever new data is available call the newDataCallback function */
+    bme680.attachCallback(newDataCallback);
+
 
     // LED on Sensor board
     _led = LED;
     pinMode(LED, OUTPUT);
 }
 
-bool Sensor::read() {
-    Serial.println("Sensor read trying");
-    if (xSemaphoreTake(i2cMutex, portMAX_DELAY) == pdTRUE) {
-        Serial.println("Sensor read started");
-        bme68xData bme680data;
-        uint8_t nFieldsLeft = 0;
-        bool result = false;
-
-        if (bme680.fetchData()) {
-            do {
-                nFieldsLeft = bme680.getData(bme680data);
-                if (bme680data.status == NEW_GAS_MEAS) {
-                    _temp = float2string(bme680data.temperature);
-                    _pressure = float2string(bme680data.pressure);
-                    _humidity = float2string(bme680data.humidity);
-                    _gas_res = float2string(bme680data.gas_resistance);
-                    _status = float2string(bme680data.status);
-                    _gas_index = float2string(bme680data.gas_index);
-                }
-            } while (nFieldsLeft);
-            result = true;
-        }
-        // Return for other counters that I2C is now available
-        xSemaphoreGive(i2cMutex);
-        return result;
-
-    } else {
-        Serial.println("Sensor read failed");
+void Sensor::read() {
+    if (!bme680.run())
+    {
+        checkBsecStatus(bme680);
     }
-    return false;
+}
+
+void newDataCallback(const bme68xData data, const bsecOutputs outputs, Bsec2 bsec) {
+    if (xSemaphoreTake(i2cMutex, portMAX_DELAY) == pdTRUE) {
+        if (!outputs.nOutputs)
+        {
+            return;
+        }
+
+        for (uint8_t i = 0; i < outputs.nOutputs; i++)
+        {
+            const bsecData output  = outputs.output[i];
+            switch (output.sensor_id)
+            {
+
+                case BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE:
+                    esp32ble.setSensorTemp(String(output.signal));
+                    break;
+                case BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_HUMIDITY:
+                    esp32ble.setSensorHumidity(String(output.signal));
+                    break;
+                case BSEC_OUTPUT_RAW_PRESSURE:
+                    esp32ble.setSensorPressure(String(output.signal));
+                    break;
+                case BSEC_OUTPUT_IAQ:
+                    esp32ble.setSensorIAQ(String(output.signal));
+                    break;
+                case BSEC_OUTPUT_CO2_EQUIVALENT:
+                    esp32ble.setSensorCO2(String(output.signal));
+                    break;
+                case BSEC_OUTPUT_BREATH_VOC_EQUIVALENT:
+                    esp32ble.setSensorVOC(String(output.signal));
+                    break;
+                default:
+                    break;
+            }
+        }
+        xSemaphoreGive(i2cMutex);
+    }
 }
 
 
-String Sensor::float2string(float value) {
-    // 15 Characters -1 for null and -1 for -x
-    char buffer[16];
-    // use buffer as safe space
-    // 3 ==> overall minimum 3 digits including decimal point
-    // 2 ==> after decimal point 2 digits
-    // f ==> convert float to String
-    snprintf(buffer, sizeof(buffer), "%4.4f", value);
-    return {buffer};
+void checkBsecStatus(Bsec2 bsec) {
+    if (bsec.status < BSEC_OK)
+    {
+        Serial.println("BSEC error code : " + String(bsec.status));
+    }
+    else if (bsec.status > BSEC_OK)
+    {
+        Serial.println("BSEC warning code : " + String(bsec.status));
+    }
+    if (bsec.sensor.status < BME68X_OK)
+    {
+        Serial.println("BME68X error code : " + String(bsec.sensor.status));
+    }
+    else if (bsec.sensor.status > BME68X_OK)
+    {
+        Serial.println("BME68X warning code : " + String(bsec.sensor.status));
+    }
 }

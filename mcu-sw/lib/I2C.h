@@ -7,6 +7,16 @@
 
 #include <Wire.h>
 
+class I2C {
+
+public:
+    void setup(int SDA, int SCL);
+};
+
+extern I2C i2c;
+
+extern SemaphoreHandle_t i2cMutex;
+
 extern TwoWire I2CBUS;
 
 

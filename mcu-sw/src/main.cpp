@@ -1,4 +1,12 @@
-#include "../lib/main.h"
+#include <Arduino.h>
+#include "../lib/ESP32ble.h"
+#include "../lib/I2C.h"
+#include "../lib/Servo.h"
+#include "../lib/Sensor.h"
+#include "../lib/Stepper.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
 
 
 /*
@@ -38,28 +46,8 @@ constexpr int STEP1_DIR = 6;
 constexpr int STEP0_STEP = 5;
 constexpr int STEP1_STEP = 7;
 
-// for servos
-int arm0;
-int arm1;
-int arm2;
-int arm3;
-int wheel0;
-int wheel1;
-
-// for steppers
-int speed0;
-int speed1;
-
-
-// Using I2C 0 bus of 2 on the esp32
-TwoWire I2CBUS = TwoWire(0);
-
 // Create a Task extra for the Sensor so that it won't block the loop and cause latency issues
 TaskHandle_t BLETaskHandle = nullptr;
-
-// Semaphore for I2C so tasks (who dont know about each other) wont talk parallel
-SemaphoreHandle_t i2cMutex = nullptr;
-
 
 void bleTask(void *xTaskParameters) {
     for (;;) {
@@ -71,11 +59,11 @@ void bleTask(void *xTaskParameters) {
 
 void setup() {
     // for debugging
-    // Serial.begin(9600);
+    Serial.begin(9600);
     // Giving ESP32 a BLE name
     esp32ble.setup("rc-rover");
-    // Initializing I2C with predefined Ports
-    I2CBUS.begin(I2C_SDA, I2C_SCL, 100000);
+    // setup I2C
+    i2c.setup(I2C_SDA, I2C_SCL);
     // Loading Servo Setup and executing it ==> to see more go to ../src/servo.cpp
     Servo::setup();
     // Loading and setting Serial for communication for Motordriver up. Also setting Pins for STEP and DIR
@@ -83,19 +71,10 @@ void setup() {
     // Loading and setting Sensor up with LED set to ACT_LED
     sensor.setup(ACT_LED);
     xTaskCreate(bleTask, "BLETask", 4096, nullptr, 1, &BLETaskHandle);
-    // Create Semaphore Mutex for I2C
-    i2cMutex = xSemaphoreCreateMutex();
 }
 
 
 void loop() {
-    delay(140);
-    do {
-        esp32ble.setSensorTemp(sensor.getTemp());
-        esp32ble.setSensorHumidity(sensor.getHumidity());
-        esp32ble.setSensorPressure(sensor.getPressure());
-        esp32ble.setSensorGasRes(sensor.getGasRes());
-        esp32ble.setSensorGasIndex(sensor.getGasIndex());
-        esp32ble.setSensorStatus(sensor.getStatus());
-    } while (sensor.read());
+    delay(330);
+    sensor.read();
 }

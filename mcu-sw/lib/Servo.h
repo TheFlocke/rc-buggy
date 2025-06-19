@@ -2,7 +2,7 @@
 #define ServoStep_h
 
 #include <../lib/Servo.h>
-#include "../lib/i2c_bus.h"
+#include "../lib/I2C.h"
 #include <Adafruit_PWMServoDriver.h>
 
 

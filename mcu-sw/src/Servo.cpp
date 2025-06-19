@@ -1,6 +1,6 @@
 #include "Arduino.h"
 #include "../lib/Servo.h"
-#include "../lib/main.h"
+#include "../lib/I2C.h"
 
 Servo servo;
 
