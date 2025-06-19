@@ -6,11 +6,16 @@
 
 Sensor sensor;
 
-void checkIaqSensorStatus(void);
+void checkIaqSensorStatus();
 
 void checkBsecStatus(Bsec2 bsec);
 
-void newDataCallback(const bme68xData data, const bsecOutputs outputs, Bsec2 bsec);
+// Check if Sensor algorithm is initialised and if not say so to ble client
+String checkINT(int id, String data);
+
+bool isINT[3] = {false, false, false};
+
+void newDataCallback(bme68xData data, bsecOutputs outputs, Bsec2 bsec);
 
 
 Bsec2 bme680;
@@ -53,25 +58,20 @@ void Sensor::setup(int LED) {
 }
 
 void Sensor::read() {
-    if (!bme680.run())
-    {
+    if (!bme680.run()) {
         checkBsecStatus(bme680);
     }
 }
 
 void newDataCallback(const bme68xData data, const bsecOutputs outputs, Bsec2 bsec) {
     if (xSemaphoreTake(i2cMutex, portMAX_DELAY) == pdTRUE) {
-        if (!outputs.nOutputs)
-        {
+        if (!outputs.nOutputs) {
             return;
         }
 
-        for (uint8_t i = 0; i < outputs.nOutputs; i++)
-        {
-            const bsecData output  = outputs.output[i];
-            switch (output.sensor_id)
-            {
-
+        for (uint8_t i = 0; i < outputs.nOutputs; i++) {
+            const bsecData output = outputs.output[i];
+            switch (output.sensor_id) {
                 case BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE:
                     esp32ble.setSensorTemp(String(output.signal));
                     break;
@@ -82,13 +82,13 @@ void newDataCallback(const bme68xData data, const bsecOutputs outputs, Bsec2 bse
                     esp32ble.setSensorPressure(String(output.signal));
                     break;
                 case BSEC_OUTPUT_IAQ:
-                    esp32ble.setSensorIAQ(String(output.signal));
+                    esp32ble.setSensorIAQ(checkINT(0, String(output.signal)));
                     break;
                 case BSEC_OUTPUT_CO2_EQUIVALENT:
-                    esp32ble.setSensorCO2(String(output.signal));
+                    esp32ble.setSensorCO2(checkINT(1, String(output.signal)));
                     break;
                 case BSEC_OUTPUT_BREATH_VOC_EQUIVALENT:
-                    esp32ble.setSensorVOC(String(output.signal));
+                    esp32ble.setSensorVOC(checkINT(2, String(output.signal)));
                     break;
                 default:
                     break;
@@ -100,20 +100,27 @@ void newDataCallback(const bme68xData data, const bsecOutputs outputs, Bsec2 bse
 
 
 void checkBsecStatus(Bsec2 bsec) {
-    if (bsec.status < BSEC_OK)
-    {
+    if (bsec.status < BSEC_OK) {
         Serial.println("BSEC error code : " + String(bsec.status));
-    }
-    else if (bsec.status > BSEC_OK)
-    {
+    } else if (bsec.status > BSEC_OK) {
         Serial.println("BSEC warning code : " + String(bsec.status));
     }
-    if (bsec.sensor.status < BME68X_OK)
-    {
+    if (bsec.sensor.status < BME68X_OK) {
         Serial.println("BME68X error code : " + String(bsec.sensor.status));
-    }
-    else if (bsec.sensor.status > BME68X_OK)
-    {
+    } else if (bsec.sensor.status > BME68X_OK) {
         Serial.println("BME68X warning code : " + String(bsec.sensor.status));
     }
+}
+
+String checkINT(int id, String data) {
+    // IAQ, CO2, VOC
+    if (isINT[id]) {
+        return data;
+    }
+    const String checkData[3] = {"50.00", "500.00", "0.50"};
+    if (checkData[id] != String(data.c_str())) {
+        isINT[id] = true;
+        return data;
+    }
+    return {"Initializing..."};
 }

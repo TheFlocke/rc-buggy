@@ -60,29 +60,31 @@ class SensorPressureCallbacks : public NimBLECharacteristicCallbacks {
     }
 };
 
-// Gas Resistance
-class SensorGasResCallbacks : public NimBLECharacteristicCallbacks {
+// IAQ
+class SensorIAQCallbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
         pCharacteristic->setValue(esp32ble.getSensorIAQ());
         pCharacteristic->notify();
     }
 };
 
-// Gas Index
-class SensorGasIndexCallbacks : public NimBLECharacteristicCallbacks {
+// CO2
+class SensorCO2Callbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
         pCharacteristic->setValue(esp32ble.getSensorCO2());
         pCharacteristic->notify();
     }
 };
 
-// Gas Index
-class SensorStatus : public NimBLECharacteristicCallbacks {
+// VOC
+class SensorVOCCallbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
         pCharacteristic->setValue(esp32ble.getSensorVOC());
         pCharacteristic->notify();
     }
 };
+
+
 
 // Server Callbacks
 class ServerCallbacks : public NimBLEServerCallbacks {
@@ -376,21 +378,21 @@ void ESP32ble::setup(const String &name) {
         UUID_CHAR_SENSOR_IAQ,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharSensorIAQ->setCallbacks(new SensorGasResCallbacks());
+    _pCharSensorIAQ->setCallbacks(new SensorIAQCallbacks());
 
     // Create a BLE Sensor Gas Index Characteristic
     _pCharSensorCO2 = pSensorService->createCharacteristic(
         UUID_CHAR_SENSOR_CO2,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharSensorCO2->setCallbacks(new SensorGasIndexCallbacks());
+    _pCharSensorCO2->setCallbacks(new SensorCO2Callbacks());
 
     // Create a BLE Sensor Status Characteristic
     _pCharSensorVOC = pSensorService->createCharacteristic(
         UUID_CHAR_SENSOR_VOC,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharSensorVOC->setCallbacks(new SensorGasIndexCallbacks());
+    _pCharSensorVOC->setCallbacks(new SensorVOCCallbacks());
 
 
     // Start the Sensor Service
