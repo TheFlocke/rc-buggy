@@ -2,88 +2,61 @@
 #include "NimBLEDevice.h"
 
 ESP32ble esp32ble;
+// vars and array init
+// CMD
+int speed0 = -1;
+int speed1 = -1;
+int wheel0 = -1;
+int wheel1 = -1;
+int arm0 = -1;
+int arm1 = -1;
+int arm2 = -1;
+int arm3 = -1;
+// Sensor
+String temp{"N/A"};
+String pressure{"N/A"};
+String humidity{"N/A"};
+String iaq{"N/A"};
+String co2{"N/A"};
+String voc{"N/A"};
+
+
+int *cmdValues[8] = {&speed0, &speed1, &wheel0, &wheel1, &arm0, &arm1, &arm2, &arm3};
+String *sensorValues[6] = {&temp, &pressure, &humidity, &iaq, &co2, &voc};
 
 
 // CMD Callbacks
-// Drive
-class CmdDriveCallbacks : public NimBLECharacteristicCallbacks {
+class CmdCallbacks : public NimBLECharacteristicCallbacks {
     void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        esp32ble.setDrive(pCharacteristic->getValue());
+        esp32ble.setCMD(pCharacteristic->getValue());
         pCharacteristic->notify();
     }
 };
 
-class CmdDriveStateCallbacks : public NimBLECharacteristicCallbacks {
+class CmdStateCallbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getDrive());
+        pCharacteristic->setValue(esp32ble.getCMD());
         pCharacteristic->notify();
     }
 };
 
-// Arm
-class CmdArmCallbacks : public NimBLECharacteristicCallbacks {
-    void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        esp32ble.setArm(pCharacteristic->getValue());
-        pCharacteristic->notify();
-    }
-};
-
-class CmdArmStateCallbacks : public NimBLECharacteristicCallbacks {
-    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getArm());
-        pCharacteristic->notify();
-    }
-};
 
 // Sensor Callbacks
-// Temperature
-class SensorTempCallbacks : public NimBLECharacteristicCallbacks {
+class SensorValueCallback : public NimBLECharacteristicCallbacks {
+public:
+    using GetterFunc = std::function<String(void)>;
+
+    SensorValueCallback(GetterFunc getter) : _getter(getter) {
+    }
+
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getSensorTemp());
+        pCharacteristic->setValue(_getter());
         pCharacteristic->notify();
     }
-};
 
-// Humidity
-class SensorHumidityCallbacks : public NimBLECharacteristicCallbacks {
-    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getSensorHumidity());
-        pCharacteristic->notify();
-    }
+private:
+    GetterFunc _getter;
 };
-
-// Pressure
-class SensorPressureCallbacks : public NimBLECharacteristicCallbacks {
-    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getSensorPressure());
-        pCharacteristic->notify();
-    }
-};
-
-// IAQ
-class SensorIAQCallbacks : public NimBLECharacteristicCallbacks {
-    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getSensorIAQ());
-        pCharacteristic->notify();
-    }
-};
-
-// CO2
-class SensorCO2Callbacks : public NimBLECharacteristicCallbacks {
-    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getSensorCO2());
-        pCharacteristic->notify();
-    }
-};
-
-// VOC
-class SensorVOCCallbacks : public NimBLECharacteristicCallbacks {
-    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getSensorVOC());
-        pCharacteristic->notify();
-    }
-};
-
 
 
 // Server Callbacks
@@ -123,176 +96,63 @@ void ESP32ble::handle() {
 }
 
 
-String ESP32ble::getDrive() const {
-    return String(_speed0) + ":" + String(_speed1) + ":" + String(_wheel0) + ":" + String(_wheel1);
+String ESP32ble::getCMD() const {
+    return String(_latestID) + ":" + String(*cmdValues[_latestID]);
 }
 
-void ESP32ble::setDrive(const String &value) {
-    // Split value into four parts
-    int idx[4], lastIdx = 0;
-    int vals[4];
+void ESP32ble::setCMD(const String &cmd) {
+    int sepIdx = cmd.indexOf(':');
+    if (sepIdx == -1) return; // Invalid format
 
-    // Find the positions of the colons
-    for (int i = 0; i < 3; i++) {
-        idx[i] = value.indexOf(':', lastIdx);
-        if (idx[i] == -1) return; // Not enough parts
-        lastIdx = idx[i] + 1;
-    }
-    idx[3] = value.length();
+    // get id and value out of String
+    int id = cmd.substring(0, sepIdx).toInt();
+    int value = cmd.substring(sepIdx + 1).toInt();
 
-    // Parse the four values
-    vals[0] = value.substring(0, idx[0]).toInt();
-    vals[1] = value.substring(idx[0] + 1, idx[1]).toInt();
-    vals[2] = value.substring(idx[1] + 1, idx[2]).toInt();
-    vals[3] = value.substring(idx[2] + 1, idx[3]).toInt();
+    // array: Each ID corresponding to its usage
+    int idxs[10] = {0, 1, 0, 1, 2, 3, 4, 5, 6, 7};
 
-    // Arrays for current values and update functions
-    int *vars[4] = {&_speed0, &_speed1, &_wheel0, &_wheel1};
-    int idxs[4] = {0, 1, 6, 7};
+    // Safety check
+    if (id < 0 || id >= 8) return;
 
-    // Update only if value changed
-    for (int i = 2; i < 4; i++) {
-        if (*vars[i] != vals[i]) {
-            *vars[i] = vals[i];
-            Servo::set(idxs[i], *vars[i]);
-        }
-    }
-    for (int i = 0; i < 2; i++) {
-        if (*vars[i] != vals[i]) {
-            *vars[i] = vals[i];
-            stepper.set(idxs[i], *vars[i]);
-        }
-    }
+    // only update value if has changed
+    if (*cmdValues[id] != value) {
+        *cmdValues[id] = value;
 
-    if (_pCharCmdDriveState) {
-        _pCharCmdDriveState->setValue(getDrive());
-        _pCharCmdDriveState->notify();
-    }
-}
-
-String ESP32ble::getArm() const {
-    return String(_arm0) + ":" + String(_arm1) + ":" + String(_arm2) + ":" + String(_arm3);
-}
-
-void ESP32ble::setArm(const String &value) {
-    // Split value into four parts
-    int idx[4], lastIdx = 0;
-    int vals[4];
-
-    // Find the positions of the colons
-    for (int i = 0; i < 3; i++) {
-        idx[i] = value.indexOf(':', lastIdx);
-        if (idx[i] == -1) return; // Not enough parts
-        lastIdx = idx[i] + 1;
-    }
-    idx[3] = value.length();
-
-    // Parse the four values
-    vals[0] = value.substring(0, idx[0]).toInt();
-    vals[1] = value.substring(idx[0] + 1, idx[1]).toInt();
-    vals[2] = value.substring(idx[1] + 1, idx[2]).toInt();
-    vals[3] = value.substring(idx[2] + 1, idx[3]).toInt();
-
-    // Arrays for current values and update functions
-    int *vars[4] = {&_arm0, &_arm1, &_arm2, &_arm3};
-    int idxs[4] = {0, 2, 4, 5};
-
-    // checking if value has changed and if yes set it
-    for (int i = 0; i < 4; i++) {
-        if (*vars[i] != vals[i]) {
-            *vars[i] = vals[i];
-            Servo::set(idxs[i], *vars[i]);
-            // for arm0 and 1 make mirrored signal
-            if (i == 0 || i == 1) {
-                Servo::set(1 + idxs[i], 180 - *vars[i]);
+        // connect Value to corresponding ID
+        if (id <= 1) {
+            stepper.set(idxs[id], *cmdValues[id]);
+        } else if (id <= 7) {
+            Servo::set(idxs[id], *cmdValues[id]);
+            if (idxs[id] == 1 || idxs[id] == 3) {
+                Servo::set(idxs[id + 1], 180 - *cmdValues[id]);
             }
         }
+        // update latest value that was updated so
+        _latestID = id;
+        if (_pCharCmdState) {
+            _pCharCmdState->setValue(getCMD());
+            _pCharCmdState->notify();
+        }
     }
 }
+
+void ESP32ble::setSensor(int id, const String &value) {
+    if (id < 0 || id >= 6) return; // Safety check
+
+    *sensorValues[id] = value;
+
+    if (_sensorCharacteristics[id]) {
+        _sensorCharacteristics[id]->setValue(getSensor(id));
+        _sensorCharacteristics[id]->notify();
+    }
+}
+
 
 // Sensor
-// Temperature
-String ESP32ble::getSensorTemp() const {
-    return String(_temp);
-}
+String ESP32ble::getSensor(const int id) {
+    if (id < 0 || id >= 6) return "Error: Data is uut of scope!"; // Safety check
 
-void ESP32ble::setSensorTemp(const String &value) {
-    _temp = value;
-
-    if (_pCharSensorTemp) {
-        _pCharSensorTemp->setValue(getSensorTemp());
-        _pCharSensorTemp->notify();
-    }
-}
-
-// Humidity
-String ESP32ble::getSensorHumidity() const {
-    return String(_humidity);
-}
-
-void ESP32ble::setSensorHumidity(const String &value) {
-    _humidity = value;
-
-    if (_pCharSensorHumidity) {
-        _pCharSensorHumidity->setValue(getSensorHumidity());
-        _pCharSensorHumidity->notify();
-    }
-}
-
-// Pressure
-String ESP32ble::getSensorPressure() const {
-    return String(_pressure);
-}
-
-void ESP32ble::setSensorPressure(const String &value) {
-    _pressure = value;
-
-    if (_pCharSensorPressure) {
-        _pCharSensorPressure->setValue(getSensorPressure());
-        _pCharSensorPressure->notify();
-    }
-}
-
-// Gas Resistance
-String ESP32ble::getSensorIAQ() const {
-    return String(_iaq);
-}
-
-void ESP32ble::setSensorIAQ(const String &value) {
-    _iaq = value;
-
-    if (_pCharSensorIAQ) {
-        _pCharSensorIAQ->setValue(getSensorIAQ());
-        _pCharSensorIAQ->notify();
-    }
-}
-
-// Gas Index
-String ESP32ble::getSensorCO2() const {
-    return String(_co2);
-}
-
-void ESP32ble::setSensorCO2(const String &value) {
-    _co2 = value;
-
-    if (_pCharSensorCO2) {
-        _pCharSensorCO2->setValue(getSensorCO2());
-        _pCharSensorCO2->notify();
-    }
-}
-
-// Gas Resistance
-String ESP32ble::getSensorVOC() const {
-    return String(_voc);
-}
-
-void ESP32ble::setSensorVOC(const String &value) {
-    _voc = value;
-
-    if (_pCharSensorVOC) {
-        _pCharSensorVOC->setValue(getSensorVOC());
-        _pCharSensorVOC->notify();
-    }
+    return String(*sensorValues[id]);
 }
 
 
@@ -315,89 +175,44 @@ void ESP32ble::setup(const String &name) {
     // Wheels/Drive
     // Create a BLE CMD Characteristic
     // only used one time in function
-    NimBLECharacteristic *pCmdDriveCharacteristic = pCmdService->createCharacteristic(
-        UUID_CHAR_CMD_DRIVE,
+    NimBLECharacteristic *pCmdCharacteristic = pCmdService->createCharacteristic(
+        UUID_CHAR_CMD,
         NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    pCmdDriveCharacteristic->setCallbacks(new CmdDriveCallbacks());
+    pCmdCharacteristic->setCallbacks(new CmdCallbacks());
 
 
-    // Create a BLE CmdDriveState Characteristic
-    _pCharCmdDriveState = pCmdService->createCharacteristic(
-        UUID_CHAR_CMD_DRIVE_STATE,
+    // Create a BLE CmdState Characteristic
+    _pCharCmdState = pCmdService->createCharacteristic(
+        UUID_CHAR_CMD_STATE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharCmdDriveState->setCallbacks(new CmdDriveStateCallbacks());
-
-
-    // Robotarm
-    // Create a BLE ARM Characteristic
-    // only used one time in function
-    NimBLECharacteristic *pCmdArmCharacteristic = pCmdService->createCharacteristic(
-        UUID_CHAR_CMD_ARM,
-        NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
-    );
-    pCmdArmCharacteristic->setCallbacks(new CmdArmCallbacks());
-
-    // Create a BLE ARM_STATE Characteristic
-    _pCharCmdArmState = pCmdService->createCharacteristic(
-        UUID_CHAR_CMD_ARM_STATE,
-        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
-    );
-    _pCharCmdArmState->setCallbacks(new CmdArmStateCallbacks());
-
-
-    // Start the CMD Service
-    pCmdService->start();
+    _pCharCmdState->setCallbacks(new CmdStateCallbacks());
 
 
     // Sensor
     // Create a BLE Sensor Temp Characteristic
-    _pCharSensorTemp = pSensorService->createCharacteristic(
+    const char *sensorCharUUID[6] = {
         UUID_CHAR_SENSOR_TEMP,
-        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
-    );
-    _pCharSensorTemp->setCallbacks(new SensorTempCallbacks());
-
-    // Create a BLE Sensor Humidity Characteristic
-    _pCharSensorHumidity = pSensorService->createCharacteristic(
-        UUID_CHAR_SENSOR_HUMIDITY,
-        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
-    );
-    _pCharSensorHumidity->setCallbacks(new SensorHumidityCallbacks());
-
-    // Create a BLE Sensor Pressure Characteristic
-    _pCharSensorPressure = pSensorService->createCharacteristic(
         UUID_CHAR_SENSOR_PRESSURE,
-        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
-    );
-    _pCharSensorPressure->setCallbacks(new SensorPressureCallbacks());
-
-    // Create a BLE Sensor Gas Resistance Characteristic
-    _pCharSensorIAQ = pSensorService->createCharacteristic(
+        UUID_CHAR_SENSOR_HUMIDITY,
         UUID_CHAR_SENSOR_IAQ,
-        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
-    );
-    _pCharSensorIAQ->setCallbacks(new SensorIAQCallbacks());
-
-    // Create a BLE Sensor Gas Index Characteristic
-    _pCharSensorCO2 = pSensorService->createCharacteristic(
         UUID_CHAR_SENSOR_CO2,
-        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
-    );
-    _pCharSensorCO2->setCallbacks(new SensorCO2Callbacks());
+        UUID_CHAR_SENSOR_VOC
+    };
+    for (int id = 0; id < 6; id++) {
+        _sensorCharacteristics[id] = pSensorService->createCharacteristic(
+            sensorCharUUID[id],
+            NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+        );
+        _sensorCharacteristics[id]->setCallbacks(new SensorValueCallback([id]() {
+            return esp32ble.getSensor(id);
+        }));
+    }
 
-    // Create a BLE Sensor Status Characteristic
-    _pCharSensorVOC = pSensorService->createCharacteristic(
-        UUID_CHAR_SENSOR_VOC,
-        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
-    );
-    _pCharSensorVOC->setCallbacks(new SensorVOCCallbacks());
-
-
+    pCmdService->start();
     // Start the Sensor Service
     pSensorService->start();
-
 
     // Start advertising
     NimBLEAdvertising *pAdvertising = NimBLEDevice::getAdvertising();

@@ -5,10 +5,8 @@
 // See the following for generating UUIDs: https://www.uuidgenerator.net/
 // CMD Service
 #define UUID_SERVICE_CMD                        "5eaf1079-e806-47a9-a1ec-d815bea94805"
-#define UUID_CHAR_CMD_DRIVE                     "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3"
-#define UUID_CHAR_CMD_DRIVE_STATE               "bd6fbfde-385d-480f-b5eb-64d60cc7be9a"
-#define UUID_CHAR_CMD_ARM                       "99d69805-8efb-450e-ae78-c4ddba09f7f6"
-#define UUID_CHAR_CMD_ARM_STATE                 "f8765d0c-81b5-4780-85a4-44f0999f5474"
+#define UUID_CHAR_CMD                           "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3"
+#define UUID_CHAR_CMD_STATE                     "bd6fbfde-385d-480f-b5eb-64d60cc7be9a"
 // Sensor Service
 #define UUID_SERVICE_SENSOR                     "8da7a992-e263-4b78-abf2-bdb94808895c"
 #define UUID_CHAR_SENSOR_TEMP                   "24c53354-de00-42ac-926c-31f805e5d2f5"
@@ -18,46 +16,47 @@
 #define UUID_CHAR_SENSOR_CO2                    "3b9e4e45-42f2-4892-8d63-35f4a4bc8093"
 #define UUID_CHAR_SENSOR_VOC                    "988b016d-91a0-4830-ae55-650ef2bb9c8d"
 
+// Variables (with latest) values that could be used in other functions
+// CMD
+extern int speed0;
+extern int speed1;
+extern int wheel0;
+extern int wheel1;
+extern int arm0;
+extern int arm1;
+extern int arm2;
+extern int arm3;
+
+// everything from the sensor
+extern String temp;
+extern String pressure;
+extern String humidity;
+extern String iaq;
+extern String co2;
+extern String voc;
+
+// array for outside (and inside) use that corresponds to ids 01 -> speed0 or sensor data
+extern int *cmdValues[8];
+extern String *sensorValues[6];
 
 class ESP32ble {
     // everything for BLE connection
     String _name;
     bool _connected = false;
     bool _lastConnectionState = false;
-    // everything for the movement of the rover
-    int _speed0 = -1;
-    int _speed1 = -1;
-    int _wheel0 = -1;
-    int _wheel1 = -1;
-    // everything for the movement of the arm (default set to home)
-    int _arm0 = -1;
-    int _arm1 = -1;
-    int _arm2 = -1;
-    int _arm3 = -1;
-    // everything from the sensor
-    String _temp{"N/A"};
-    String _pressure{"N/A"};
-    String _humidity{"N/A"};
-    String _iaq{"N/A"};
-    String _co2{"N/A"};
-    String _voc{"N/A"};
+    // for get command so it corresponds to the latest value
+    int _latestID = -1;
     // ESP32 handle
     unsigned long _disconnectTime = 0;
     bool _waitingToAdvertise = false;
 
     NimBLEServer *_pServer = nullptr;
 
-    // CMD Service
-    NimBLECharacteristic *_pCharCmdDriveState = nullptr;
-    NimBLECharacteristic *_pCharCmdArmState = nullptr;
+    // CMD Characteristic
+    NimBLECharacteristic *_pCharCmdState = nullptr;
 
-    // Sensor Service
-    NimBLECharacteristic *_pCharSensorTemp = nullptr;
-    NimBLECharacteristic *_pCharSensorHumidity = nullptr;
-    NimBLECharacteristic *_pCharSensorPressure = nullptr;
-    NimBLECharacteristic *_pCharSensorIAQ = nullptr;
-    NimBLECharacteristic *_pCharSensorCO2 = nullptr;
-    NimBLECharacteristic *_pCharSensorVOC = nullptr;
+    // Sensor Characteristic
+    NimBLECharacteristic *_sensorCharacteristics[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
 public:
     void setup(const String &name);
@@ -69,60 +68,15 @@ public:
     void onDisconnect();
 
     // Wheels/CMD
-    void setDrive(const String &value);
+    void setCMD(const String &value);
 
-    String getDrive() const;
+    String getCMD() const;
 
-    // Arm
-    String getArm() const;
-
-    void setArm(const String &value);
 
     // Sensor
-    // Temperature
-    String getSensorTemp() const;
+    void setSensor(int id, const String &value);
 
-    void setSensorTemp(const String &value);
-
-    // Humidity
-    String getSensorHumidity() const;
-
-    void setSensorHumidity(const String &value);
-
-    // Pressure
-    String getSensorPressure() const;
-
-    void setSensorPressure(const String &value);
-
-    // Gas Res
-    String getSensorIAQ() const;
-
-    void setSensorIAQ(const String &value);
-
-    // Gas Index
-    String getSensorCO2() const;
-
-    void setSensorCO2(const String &value);
-
-    // Gas Index
-    String getSensorVOC() const;
-
-    void setSensorVOC(const String &value);
-
-
-    // Get variables for later use
-    //-255 ... 255
-    int getSpeed0() const { return _speed0; }
-    int getSpeed1() const { return _speed1; }
-    // Einstellungswert der Stollen
-    int getWheel0() const { return _wheel0; }
-    int getWheel1() const { return _wheel1; }
-    // Einstellungswert der einzelnen Armelemente zwischen 0 bis 180
-    // Grenzwerte sind zur Sicherheit festgelegt, da sonst die Motoren durch Dauerlast durchbrennen oder der Arm kaput geht
-    int getArm0() const { return _arm0; }
-    int getArm1() const { return _arm1; }
-    int getArm2() const { return _arm2; }
-    int getArm3() const { return _arm3; }
+    String getSensor(int id);
 };
 
 extern ESP32ble esp32ble;

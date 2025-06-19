@@ -8,7 +8,6 @@
 #include "freertos/task.h"
 
 
-
 /*
 constexpr int ACT_LED = 8; // Activity LED for the Sensor PCB
 constexpr int SD_CSB = 9;
