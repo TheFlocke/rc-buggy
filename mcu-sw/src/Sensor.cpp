@@ -11,9 +11,9 @@ void checkIaqSensorStatus();
 void checkBsecStatus(Bsec2 bsec);
 
 // Check if Sensor algorithm is initialised and if not say so to ble client
-String checkINT(int id, String data);
+String checkInit(int id, String data);
 
-bool isINT[3] = {false, false, false};
+bool isInit[3] = {false, false, false};
 
 void newDataCallback(bme68xData data, bsecOutputs outputs, Bsec2 bsec);
 
@@ -82,13 +82,13 @@ void newDataCallback(const bme68xData data, const bsecOutputs outputs, Bsec2 bse
                     esp32ble.setSensorPressure(String(output.signal));
                     break;
                 case BSEC_OUTPUT_IAQ:
-                    esp32ble.setSensorIAQ(checkINT(0, String(output.signal)));
+                    esp32ble.setSensorIAQ(checkInit(0, String(output.signal)));
                     break;
                 case BSEC_OUTPUT_CO2_EQUIVALENT:
-                    esp32ble.setSensorCO2(checkINT(1, String(output.signal)));
+                    esp32ble.setSensorCO2(checkInit(1, String(output.signal)));
                     break;
                 case BSEC_OUTPUT_BREATH_VOC_EQUIVALENT:
-                    esp32ble.setSensorVOC(checkINT(2, String(output.signal)));
+                    esp32ble.setSensorVOC(checkInit(2, String(output.signal)));
                     break;
                 default:
                     break;
@@ -112,14 +112,14 @@ void checkBsecStatus(Bsec2 bsec) {
     }
 }
 
-String checkINT(int id, String data) {
+String checkInit(int id, String data) {
     // IAQ, CO2, VOC
-    if (isINT[id]) {
+    if (isInit[id]) {
         return data;
     }
     const String checkData[3] = {"50.00", "500.00", "0.50"};
     if (checkData[id] != String(data.c_str())) {
-        isINT[id] = true;
+        isInit[id] = true;
         return data;
     }
     return {"Initializing..."};

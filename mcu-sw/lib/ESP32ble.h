@@ -5,10 +5,8 @@
 // See the following for generating UUIDs: https://www.uuidgenerator.net/
 // CMD Service
 #define UUID_SERVICE_CMD                        "5eaf1079-e806-47a9-a1ec-d815bea94805"
-#define UUID_CHAR_CMD_DRIVE                     "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3"
-#define UUID_CHAR_CMD_DRIVE_STATE               "bd6fbfde-385d-480f-b5eb-64d60cc7be9a"
-#define UUID_CHAR_CMD_ARM                       "99d69805-8efb-450e-ae78-c4ddba09f7f6"
-#define UUID_CHAR_CMD_ARM_STATE                 "f8765d0c-81b5-4780-85a4-44f0999f5474"
+#define UUID_CHAR_CMD                           "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3"
+#define UUID_CHAR_CMD_STATE                     "bd6fbfde-385d-480f-b5eb-64d60cc7be9a"
 // Sensor Service
 #define UUID_SERVICE_SENSOR                     "8da7a992-e263-4b78-abf2-bdb94808895c"
 #define UUID_CHAR_SENSOR_TEMP                   "24c53354-de00-42ac-926c-31f805e5d2f5"
@@ -18,22 +16,28 @@
 #define UUID_CHAR_SENSOR_CO2                    "3b9e4e45-42f2-4892-8d63-35f4a4bc8093"
 #define UUID_CHAR_SENSOR_VOC                    "988b016d-91a0-4830-ae55-650ef2bb9c8d"
 
+// Variables (with latest) values that could be used in other functions
+
+extern int speed0;
+extern int speed1;
+extern int wheel0;
+extern int wheel1;
+extern int arm0;
+extern int arm1;
+extern int arm2;
+extern int arm3;
+
+// array for outside (and inside) use that corresponds to ids 01 -> speed0
+extern int *vars[8];
 
 class ESP32ble {
     // everything for BLE connection
     String _name;
     bool _connected = false;
     bool _lastConnectionState = false;
-    // everything for the movement of the rover
-    int _speed0 = -1;
-    int _speed1 = -1;
-    int _wheel0 = -1;
-    int _wheel1 = -1;
-    // everything for the movement of the arm (default set to home)
-    int _arm0 = -1;
-    int _arm1 = -1;
-    int _arm2 = -1;
-    int _arm3 = -1;
+    // for get command so it corresponds to the latest value
+    int _latestID = -1;
+
     // everything from the sensor
     String _temp{"N/A"};
     String _pressure{"N/A"};
@@ -48,7 +52,7 @@ class ESP32ble {
     NimBLEServer *_pServer = nullptr;
 
     // CMD Service
-    NimBLECharacteristic *_pCharCmdDriveState = nullptr;
+    NimBLECharacteristic *_pCharCmdState = nullptr;
     NimBLECharacteristic *_pCharCmdArmState = nullptr;
 
     // Sensor Service
@@ -69,14 +73,10 @@ public:
     void onDisconnect();
 
     // Wheels/CMD
-    void setDrive(const String &value);
+    void setCMD(const String &value);
 
-    String getDrive() const;
+    String getCMD() const;
 
-    // Arm
-    String getArm() const;
-
-    void setArm(const String &value);
 
     // Sensor
     // Temperature
@@ -112,17 +112,17 @@ public:
 
     // Get variables for later use
     //-255 ... 255
-    int getSpeed0() const { return _speed0; }
-    int getSpeed1() const { return _speed1; }
+    int getSpeed0() const { return speed0; }
+    int getSpeed1() const { return speed1; }
     // Einstellungswert der Stollen
-    int getWheel0() const { return _wheel0; }
-    int getWheel1() const { return _wheel1; }
+    int getWheel0() const { return wheel0; }
+    int getWheel1() const { return wheel1; }
     // Einstellungswert der einzelnen Armelemente zwischen 0 bis 180
     // Grenzwerte sind zur Sicherheit festgelegt, da sonst die Motoren durch Dauerlast durchbrennen oder der Arm kaput geht
-    int getArm0() const { return _arm0; }
-    int getArm1() const { return _arm1; }
-    int getArm2() const { return _arm2; }
-    int getArm3() const { return _arm3; }
+    int getArm0() const { return arm0; }
+    int getArm1() const { return arm1; }
+    int getArm2() const { return arm2; }
+    int getArm3() const { return arm3; }
 };
 
 extern ESP32ble esp32ble;
