@@ -75,6 +75,5 @@ void setup() {
 
 
 void loop() {
-    delay(330);
-    sensor.read();
+    Sensor::read();
 }
