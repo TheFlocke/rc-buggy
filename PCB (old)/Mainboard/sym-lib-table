@@ -1,7 +1,0 @@
-(sym_lib_table
-  (version 7)
-  (lib (name "AP33772SDKZ-13-FA01")(type "KiCad")(uri "${KIPRJMOD}/Symbols/AP33772SDKZ-13-FA01.kicad_sym")(options "")(descr "")(disabled))
-  (lib (name "AON7262E")(type "KiCad")(uri "${KIPRJMOD}/Symbols/AON7262E.kicad_sym")(options "")(descr ""))
-  (lib (name "TPS56637RPAR")(type "KiCad")(uri "${KIPRJMOD}/Symbols/TPS56637RPAR.kicad_sym")(options "")(descr ""))
-  (lib (name "TYPE-C-31-M-12")(type "KiCad")(uri "${KIPRJMOD}/Symbols/TYPE-C-31-M-12.kicad_sym")(options "")(descr ""))
-)
