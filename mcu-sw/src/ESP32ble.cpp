@@ -60,14 +60,29 @@ class SensorPressureCallbacks : public NimBLECharacteristicCallbacks {
     }
 };
 
-// Gas
-class SensorGasCallbacks : public NimBLECharacteristicCallbacks {
+// Gas Resistance
+class SensorGasResCallbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getSensorGas());
+        pCharacteristic->setValue(esp32ble.getSensorGasRes());
         pCharacteristic->notify();
     }
 };
 
+// Gas Index
+class SensorGasIndexCallbacks : public NimBLECharacteristicCallbacks {
+    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
+        pCharacteristic->setValue(esp32ble.getSensorGasIndex());
+        pCharacteristic->notify();
+    }
+};
+
+// Gas Index
+class SensorStatus : public NimBLECharacteristicCallbacks {
+    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
+        pCharacteristic->setValue(esp32ble.getSensorStatus());
+        pCharacteristic->notify();
+    }
+};
 
 // Server Callbacks
 class ServerCallbacks : public NimBLEServerCallbacks {
@@ -107,49 +122,89 @@ void ESP32ble::handle() {
 
 
 String ESP32ble::getDrive() const {
-    return String(_speed1) + ":" + String(_speed2) + ":" + String(_wheel1) + ":" + String(_wheel2);
+    return String(_speed0) + ":" + String(_speed1) + ":" + String(_wheel0) + ":" + String(_wheel1);
 }
 
 void ESP32ble::setDrive(const String &value) {
-    // prüfen auf kombinierte anweisung: // `${speed1}:${speed2}:${wheel1}:${wheel2}`
-    int t1 = value.indexOf(":");
-    int t2 = value.indexOf(":", t1 + 1);
-    int t3 = value.indexOf(":", t2 + 1);
-    if (t1 > 0 && t3 < value.length()) {
-        _speed1 = value.substring(0, t1).toInt();
-        _speed2 = value.substring(t1 + 1, t2).toInt();
-        _wheel1 = value.substring(t2 + 1, t3).toInt();
-        _wheel2 = value.substring(t3 + 1).toInt();
-    } else {
-        // Wheel wird einfach auf der letzten Position gelassen
-        _speed1 = 0;
-        _speed2 = 0;
+    // Split value into four parts
+    int idx[4], lastIdx = 0;
+    int vals[4];
+
+    // Find the positions of the colons
+    for (int i = 0; i < 3; i++) {
+        idx[i] = value.indexOf(':', lastIdx);
+        if (idx[i] == -1) return; // Not enough parts
+        lastIdx = idx[i] + 1;
     }
-    if (_pCharacteristicCmdDriveState) {
-        _pCharacteristicCmdDriveState->setValue(getDrive());
-        _pCharacteristicCmdDriveState->notify();
+    idx[3] = value.length();
+
+    // Parse the four values
+    vals[0] = value.substring(0, idx[0]).toInt();
+    vals[1] = value.substring(idx[0] + 1, idx[1]).toInt();
+    vals[2] = value.substring(idx[1] + 1, idx[2]).toInt();
+    vals[3] = value.substring(idx[2] + 1, idx[3]).toInt();
+
+    // Arrays for current values and update functions
+    int *vars[4] = {&_speed0, &_speed1, &_wheel0, &_wheel1};
+    int idxs[4] = {0, 1, 6, 7};
+
+    // Update only if value changed
+    for (int i = 2; i < 4; i++) {
+        if (*vars[i] != vals[i]) {
+            *vars[i] = vals[i];
+            Servo::set(idxs[i], *vars[i]);
+        }
+    }
+    for (int i = 0; i < 2; i++) {
+        if (*vars[i] != vals[i]) {
+            *vars[i] = vals[i];
+            stepper.set(idxs[i], *vars[i]);
+        }
+    }
+
+    if (_pCharCmdDriveState) {
+        _pCharCmdDriveState->setValue(getDrive());
+        _pCharCmdDriveState->notify();
     }
 }
 
 String ESP32ble::getArm() const {
-    return String(_arm1) + ":" + String(_arm2) + ":" + String(_arm3) + ":" + String(_arm4);
+    return String(_arm0) + ":" + String(_arm1) + ":" + String(_arm2) + ":" + String(_arm3);
 }
 
 void ESP32ble::setArm(const String &value) {
-    // prüfen auf kombinierte anweisung: // `${arm1}:${arm2}:${arm3}:${arm4}`
-    int t1 = value.indexOf(":");
-    int t2 = value.indexOf(":", t1 + 1);
-    int t3 = value.indexOf(":", t2 + 1);
-    if (t1 > 0 && t3 < value.length()) {
-        _arm1 = value.substring(0, t1).toInt();
-        _arm2 = value.substring(t1 + 1, t2).toInt();
-        _arm3 = value.substring(t2 + 1, t3).toInt();
-        _arm4 = value.substring(t3 + 1).toInt();
-    }
+    // Split value into four parts
+    int idx[4], lastIdx = 0;
+    int vals[4];
 
-    if (_pCharacteristicCmdArmState) {
-        _pCharacteristicCmdArmState->setValue(getArm());
-        _pCharacteristicCmdArmState->notify();
+    // Find the positions of the colons
+    for (int i = 0; i < 3; i++) {
+        idx[i] = value.indexOf(':', lastIdx);
+        if (idx[i] == -1) return; // Not enough parts
+        lastIdx = idx[i] + 1;
+    }
+    idx[3] = value.length();
+
+    // Parse the four values
+    vals[0] = value.substring(0, idx[0]).toInt();
+    vals[1] = value.substring(idx[0] + 1, idx[1]).toInt();
+    vals[2] = value.substring(idx[1] + 1, idx[2]).toInt();
+    vals[3] = value.substring(idx[2] + 1, idx[3]).toInt();
+
+    // Arrays for current values and update functions
+    int *vars[4] = {&_arm0, &_arm1, &_arm2, &_arm3};
+    int idxs[4] = {0, 2, 4, 5};
+
+    // checking if value has changed and if yes set it
+    for (int i = 0; i < 4; i++) {
+        if (*vars[i] != vals[i]) {
+            *vars[i] = vals[i];
+            Servo::set(idxs[i], *vars[i]);
+            // for arm0 and 1 make mirrored signal
+            if (i == 0 || i == 1) {
+                Servo::set(1 + idxs[i], 180 - *vars[i]);
+            }
+        }
     }
 }
 
@@ -162,9 +217,9 @@ String ESP32ble::getSensorTemp() const {
 void ESP32ble::setSensorTemp(const String &value) {
     _temp = value;
 
-    if (_pCharacteristicSensorTemp) {
-        _pCharacteristicSensorTemp->setValue(getSensorTemp());
-        _pCharacteristicSensorTemp->notify();
+    if (_pCharSensorTemp) {
+        _pCharSensorTemp->setValue(getSensorTemp());
+        _pCharSensorTemp->notify();
     }
 }
 
@@ -176,9 +231,9 @@ String ESP32ble::getSensorHumidity() const {
 void ESP32ble::setSensorHumidity(const String &value) {
     _humidity = value;
 
-    if (_pCharacteristicSensorHumidity) {
-        _pCharacteristicSensorHumidity->setValue(getSensorHumidity());
-        _pCharacteristicSensorHumidity->notify();
+    if (_pCharSensorHumidity) {
+        _pCharSensorHumidity->setValue(getSensorHumidity());
+        _pCharSensorHumidity->notify();
     }
 }
 
@@ -190,23 +245,51 @@ String ESP32ble::getSensorPressure() const {
 void ESP32ble::setSensorPressure(const String &value) {
     _pressure = value;
 
-    if (_pCharacteristicSensorPressure) {
-        _pCharacteristicSensorPressure->setValue(getSensorPressure());
-        _pCharacteristicSensorPressure->notify();
+    if (_pCharSensorPressure) {
+        _pCharSensorPressure->setValue(getSensorPressure());
+        _pCharSensorPressure->notify();
     }
 }
 
-// Gas
-String ESP32ble::getSensorGas() const {
-    return String(_gas);
+// Gas Resistance
+String ESP32ble::getSensorGasRes() const {
+    return String(_gas_res);
 }
 
-void ESP32ble::setSensorGas(const String &value) {
-    _gas = value;
+void ESP32ble::setSensorGasRes(const String &value) {
+    _gas_res = value;
 
-    if (_pCharacteristicSensorGas) {
-        _pCharacteristicSensorGas->setValue(getSensorGas());
-        _pCharacteristicSensorGas->notify();
+    if (_pCharSensorGasRes) {
+        _pCharSensorGasRes->setValue(getSensorGasRes());
+        _pCharSensorGasRes->notify();
+    }
+}
+
+// Gas Index
+String ESP32ble::getSensorGasIndex() const {
+    return String(_gas_index);
+}
+
+void ESP32ble::setSensorGasIndex(const String &value) {
+    _gas_index = value;
+
+    if (_pCharSensorGasIndex) {
+        _pCharSensorGasIndex->setValue(getSensorGasIndex());
+        _pCharSensorGasIndex->notify();
+    }
+}
+
+// Gas Resistance
+String ESP32ble::getSensorStatus() const {
+    return String(_status);
+}
+
+void ESP32ble::setSensorStatus(const String &value) {
+    _status = value;
+
+    if (_pCharSensorStatus) {
+        _pCharSensorStatus->setValue(getSensorStatus());
+        _pCharSensorStatus->notify();
     }
 }
 
@@ -238,11 +321,11 @@ void ESP32ble::setup(const String &name) {
 
 
     // Create a BLE CmdDriveState Characteristic
-    _pCharacteristicCmdDriveState = pCmdService->createCharacteristic(
+    _pCharCmdDriveState = pCmdService->createCharacteristic(
         UUID_CHAR_CMD_DRIVE_STATE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicCmdDriveState->setCallbacks(new CmdDriveStateCallbacks());
+    _pCharCmdDriveState->setCallbacks(new CmdDriveStateCallbacks());
 
 
     // Robotarm
@@ -255,11 +338,11 @@ void ESP32ble::setup(const String &name) {
     pCmdArmCharacteristic->setCallbacks(new CmdArmCallbacks());
 
     // Create a BLE ARM_STATE Characteristic
-    _pCharacteristicCmdArmState = pCmdService->createCharacteristic(
+    _pCharCmdArmState = pCmdService->createCharacteristic(
         UUID_CHAR_CMD_ARM_STATE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicCmdArmState->setCallbacks(new CmdArmStateCallbacks());
+    _pCharCmdArmState->setCallbacks(new CmdArmStateCallbacks());
 
 
     // Start the CMD Service
@@ -268,32 +351,46 @@ void ESP32ble::setup(const String &name) {
 
     // Sensor
     // Create a BLE Sensor Temp Characteristic
-    _pCharacteristicSensorTemp = pSensorService->createCharacteristic(
+    _pCharSensorTemp = pSensorService->createCharacteristic(
         UUID_CHAR_SENSOR_TEMP,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicSensorTemp->setCallbacks(new SensorTempCallbacks());
+    _pCharSensorTemp->setCallbacks(new SensorTempCallbacks());
 
     // Create a BLE Sensor Humidity Characteristic
-    _pCharacteristicSensorHumidity = pSensorService->createCharacteristic(
+    _pCharSensorHumidity = pSensorService->createCharacteristic(
         UUID_CHAR_SENSOR_HUMIDITY,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicSensorHumidity->setCallbacks(new SensorHumidityCallbacks());
+    _pCharSensorHumidity->setCallbacks(new SensorHumidityCallbacks());
 
     // Create a BLE Sensor Pressure Characteristic
-    _pCharacteristicSensorPressure = pSensorService->createCharacteristic(
+    _pCharSensorPressure = pSensorService->createCharacteristic(
         UUID_CHAR_SENSOR_PRESSURE,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicSensorPressure->setCallbacks(new SensorPressureCallbacks());
+    _pCharSensorPressure->setCallbacks(new SensorPressureCallbacks());
 
-    // Create a BLE Sensor Gas Characteristic
-    _pCharacteristicSensorGas = pSensorService->createCharacteristic(
-        UUID_CHAR_SENSOR_GAS,
+    // Create a BLE Sensor Gas Resistance Characteristic
+    _pCharSensorGasRes = pSensorService->createCharacteristic(
+        UUID_CHAR_SENSOR_GAS_RES,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
     );
-    _pCharacteristicSensorGas->setCallbacks(new SensorGasCallbacks());
+    _pCharSensorGasRes->setCallbacks(new SensorGasResCallbacks());
+
+    // Create a BLE Sensor Gas Index Characteristic
+    _pCharSensorGasIndex = pSensorService->createCharacteristic(
+        UUID_CHAR_SENSOR_GAS_INDEX,
+        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+    );
+    _pCharSensorGasIndex->setCallbacks(new SensorGasIndexCallbacks());
+
+    // Create a BLE Sensor Status Characteristic
+    _pCharSensorStatus = pSensorService->createCharacteristic(
+        UUID_CHAR_SENSOR_STATUS,
+        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+    );
+    _pCharSensorStatus->setCallbacks(new SensorGasIndexCallbacks());
 
 
     // Start the Sensor Service

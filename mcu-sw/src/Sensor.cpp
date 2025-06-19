@@ -1,70 +1,83 @@
 #include "../lib/Sensor.h"
+#include "../lib/main.h"
 
 Sensor sensor;
 
-Adafruit_BME680 bme680(&I2CBUS);
+Bme68x bme680;
+
+#define NEW_GAS_MEAS (BME68X_GASM_VALID_MSK | BME68X_HEAT_STAB_MSK | BME68X_NEW_DATA_MSK)
 
 void Sensor::setup(int LED) {
+    // Sensor itself
+    bme680.begin(0x77, I2CBUS);
+    if (bme680.checkStatus()) {
+        if (bme680.checkStatus() == BME68X_ERROR) {
+            Serial.println("Sensor error:" + bme680.statusString());
+            return;
+        }
+        if (bme680.checkStatus() == BME68X_WARNING) {
+            Serial.println("Sensor Warning:" + bme680.statusString());
+        }
+    }
+    // All default values provided by Bosch Sensortec Library
+    /* Set the default configuration for temperature, pressure and humidity */
+    bme680.setTPH();
+    /* Heater temperature in degree Celsius */
+    uint16_t tempProf[10] = {
+        320, 100, 100, 100, 200, 200, 200, 320, 320,
+        320
+    };
+    /* Multiplier to the shared heater duration */
+    uint16_t mulProf[10] = {5, 2, 10, 30, 5, 5, 5, 5, 5, 5};
+    /* Shared heating duration in milliseconds */
+    uint16_t sharedHeaterDur = MEAS_DUR - (bme680.getMeasDur(BME68X_PARALLEL_MODE) / 1000);
+
+    bme680.setHeaterProf(tempProf, mulProf, sharedHeaterDur, 10);
+    // All measurements are taken in Parallel instead of sequentially
+    bme680.setOpMode(BME68X_PARALLEL_MODE);
+
+    // LED on Sensor board
     _led = LED;
-    bme680.begin();
-    // Set up oversampling and filter initialization
-    bme680.setTemperatureOversampling(BME680_OS_8X);
-    bme680.setHumidityOversampling(BME680_OS_2X);
-    bme680.setPressureOversampling(BME680_OS_4X);
-    bme680.setIIRFilterSize(BME680_FILTER_SIZE_3);
-    bme680.setGasHeater(320, 150); // 320*C for 150 ms
     pinMode(LED, OUTPUT);
 }
 
-// Start a non-blocking read operation
-bool Sensor::beginRead() {
-    if (!_reading_started) {
-        digitalWrite(_led, HIGH);  // Turn on activity LED
-        _endTime = bme680.beginReading();
-        if (_endTime == 0) {
-            Serial.println("BME680 read failed - Check Wiring");
-            digitalWrite(_led, LOW);
-            return false;
-        }
-        _reading_started = true;
-        return true;
-    }
-    return false;
-}
+bool Sensor::read() {
+    Serial.println("Sensor read trying");
+    if (xSemaphoreTake(i2cMutex, portMAX_DELAY) == pdTRUE) {
+        Serial.println("Sensor read started");
+        bme68xData bme680data;
+        uint8_t nFieldsLeft = 0;
+        bool result = false;
 
-// Check if reading is complete and process data if it is
-bool Sensor::endRead() {
-    if (_reading_started) {
-        if (bme680.endReading()) {
-            // Process data
-            _temp = float2string(bme680.temperature);
-            _pressure = float2string(bme680.pressure / 100.0); // Convert to hPa
-            _humidity = float2string(bme680.humidity);
-            _gas = float2string(bme680.gas_resistance / 1000.0); // Convert to Resistence
-            _reading_started = false;
-            digitalWrite(_led, LOW);  // Turn off activity LED
-            return true;
+        if (bme680.fetchData()) {
+            do {
+                nFieldsLeft = bme680.getData(bme680data);
+                if (bme680data.status == NEW_GAS_MEAS) {
+                    _temp = float2string(bme680data.temperature);
+                    _pressure = float2string(bme680data.pressure);
+                    _humidity = float2string(bme680data.humidity);
+                    _gas_res = float2string(bme680data.gas_resistance);
+                    _status = float2string(bme680data.status);
+                    _gas_index = float2string(bme680data.gas_index);
+                }
+            } while (nFieldsLeft);
+            result = true;
         }
-    }
-    return false;
-}
+        // Return for other counters that I2C is now available
+        xSemaphoreGive(i2cMutex);
+        return result;
 
-// Keep the original read method for compatibility, but implement it as non-blocking
-void Sensor::read() {
-    // For compatibility with existing code, but now uses non-blocking approach
-    if (!_reading_started) {
-        beginRead();
     } else {
-        endRead();
+        Serial.println("Sensor read failed");
     }
+    return false;
 }
-
 
 
 String Sensor::float2string(float value) {
     // 15 Characters -1 for null and -1 for -x
     char buffer[16];
-    // use buffer as save space
+    // use buffer as safe space
     // 3 ==> overall minimum 3 digits including decimal point
     // 2 ==> after decimal point 2 digits
     // f ==> convert float to String

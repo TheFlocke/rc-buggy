@@ -1,4 +1,6 @@
 #include "NimBLEDevice.h"
+#include "../lib/Servo.h"
+#include "../lib/Stepper.h"
 
 // See the following for generating UUIDs: https://www.uuidgenerator.net/
 // CMD Service
@@ -12,7 +14,9 @@
 #define UUID_CHAR_SENSOR_TEMP                   "24c53354-de00-42ac-926c-31f805e5d2f5"
 #define UUID_CHAR_SENSOR_PRESSURE               "545343fb-93a0-4415-9e2b-6a4c8e2835c4"
 #define UUID_CHAR_SENSOR_HUMIDITY               "618c8e95-e436-4a86-9d7d-17c3db9992d0"
-#define UUID_CHAR_SENSOR_GAS                    "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1"
+#define UUID_CHAR_SENSOR_GAS_RES                "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1"
+#define UUID_CHAR_SENSOR_GAS_INDEX              "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1" // Neu generieren!!
+#define UUID_CHAR_SENSOR_STATUS                 "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1" // Neu generieren!!
 
 
 class ESP32ble {
@@ -21,20 +25,22 @@ class ESP32ble {
     bool _connected = false;
     bool _lastConnectionState = false;
     // everything for the movement of the rover
+    int _speed0 = 0;
     int _speed1 = 0;
-    int _speed2 = 0;
-    int _wheel1 = 45;
-    int _wheel2 = 45;
+    int _wheel0 = 90;
+    int _wheel1 = 90;
     // everything for the movement of the arm (default set to home)
-    int _arm1 = 45;
-    int _arm2 = 45;
-    int _arm3 = 45;
-    int _arm4 = 45;
+    int _arm0 = 90;
+    int _arm1 = 90;
+    int _arm2 = 90;
+    int _arm3 = 90;
     // everything from the sensor
-    String _temp{"-1"};
-    String _pressure{"-1"};
-    String _humidity{"-1"};
-    String _gas{"-1"};
+    String _temp{"N/A"};
+    String _pressure{"N/A"};
+    String _humidity{"N/A"};
+    String _gas_res{"N/A"};
+    String _gas_index{"N/A"};
+    String _status{"N/A"};
     // ESP32 handle
     unsigned long _disconnectTime = 0;
     bool _waitingToAdvertise = false;
@@ -42,14 +48,16 @@ class ESP32ble {
     NimBLEServer *_pServer = nullptr;
 
     // CMD Service
-    NimBLECharacteristic *_pCharacteristicCmdDriveState = nullptr;
-    NimBLECharacteristic *_pCharacteristicCmdArmState = nullptr;
+    NimBLECharacteristic *_pCharCmdDriveState = nullptr;
+    NimBLECharacteristic *_pCharCmdArmState = nullptr;
 
     // Sensor Service
-    NimBLECharacteristic *_pCharacteristicSensorTemp = nullptr;
-    NimBLECharacteristic *_pCharacteristicSensorHumidity = nullptr;
-    NimBLECharacteristic *_pCharacteristicSensorPressure = nullptr;
-    NimBLECharacteristic *_pCharacteristicSensorGas = nullptr;
+    NimBLECharacteristic *_pCharSensorTemp = nullptr;
+    NimBLECharacteristic *_pCharSensorHumidity = nullptr;
+    NimBLECharacteristic *_pCharSensorPressure = nullptr;
+    NimBLECharacteristic *_pCharSensorGasRes = nullptr;
+    NimBLECharacteristic *_pCharSensorGasIndex = nullptr;
+    NimBLECharacteristic *_pCharSensorStatus = nullptr;
 
 public:
     void setup(const String &name);
@@ -62,46 +70,59 @@ public:
 
     // Wheels/CMD
     void setDrive(const String &value);
+
     String getDrive() const;
 
     // Arm
     String getArm() const;
+
     void setArm(const String &value);
 
     // Sensor
     // Temperature
     String getSensorTemp() const;
+
     void setSensorTemp(const String &value);
 
     // Humidity
     String getSensorHumidity() const;
+
     void setSensorHumidity(const String &value);
 
     // Pressure
     String getSensorPressure() const;
+
     void setSensorPressure(const String &value);
 
-    // Gas
-    String getSensorGas() const;
-    void setSensorGas(const String &value);
+    // Gas Res
+    String getSensorGasRes() const;
 
+    void setSensorGasRes(const String &value);
+
+    // Gas Index
+    String getSensorGasIndex() const;
+
+    void setSensorGasIndex(const String &value);
+
+    // Gas Index
+    String getSensorStatus() const;
+
+    void setSensorStatus(const String &value);
 
 
     // Get variables for later use
     //-255 ... 255
-    int getSpeed0() const { return _speed1; }
-    int getSpeed1() const { return _speed2; }
+    int getSpeed0() const { return _speed0; }
+    int getSpeed1() const { return _speed1; }
     // Einstellungswert der Stollen
-    int getWheel0() const { return _wheel1; }
-    int getWheel1() const { return _wheel2; }
+    int getWheel0() const { return _wheel0; }
+    int getWheel1() const { return _wheel1; }
     // Einstellungswert der einzelnen Armelemente zwischen 0 bis 180
     // Grenzwerte sind zur Sicherheit festgelegt, da sonst die Motoren durch Dauerlast durchbrennen oder der Arm kaput geht
-    int getArm0() const { return _arm1; }
-    int getArm1() const { return _arm2; }
-    int getArm2() const { return _arm3; }
-    int getArm3() const { return _arm4; }
-
-
+    int getArm0() const { return _arm0; }
+    int getArm1() const { return _arm1; }
+    int getArm2() const { return _arm2; }
+    int getArm3() const { return _arm3; }
 };
 
 extern ESP32ble esp32ble;
