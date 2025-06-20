@@ -139,11 +139,12 @@ void ESP32ble::setCMD(const String &cmd) {
 void ESP32ble::setSensor(int id, const String &value) {
     if (id < 0 || id >= 6) return; // Safety check
 
-    *sensorValues[id] = value;
-
-    if (_sensorCharacteristics[id]) {
-        _sensorCharacteristics[id]->setValue(getSensor(id));
-        _sensorCharacteristics[id]->notify();
+    if (*sensorValues[id] != value) {
+        *sensorValues[id] = value;
+        if (_sensorCharacteristics[id]) {
+            _sensorCharacteristics[id]->setValue(getSensor(id));
+            _sensorCharacteristics[id]->notify();
+        }
     }
 }
 
