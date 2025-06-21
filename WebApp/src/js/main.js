@@ -6,22 +6,26 @@ let versionDisplay;
 // BLE
 // Global variables to Handle Bluetooth
 let bleServer;
-let bleCmdService;
-let bleSensorService;
 let bleStateContainer;
 let bleServiceContainer;
 let bleServiceList;
 // Services
-// CMD
-let bleCharCmdDrive;
-let bleCharCmdDriveState;
-let bleCharCmdArm;
-let bleCharCmdArmState;
-// Sensor
+let bleServiceCmd;
+let bleServiceSensor;
+let bleServices = [];
+// Characteristics
+let bleCharCmd;
+let bleCharCmdState;
 let bleCharSensorTemp;
 let bleCharSensorPressure;
 let bleCharSensorHumidity;
-let bleCharSensorGas;
+let bleCharSensorIAQ;
+let bleCharSensorCO2;
+let bleCharSensorVOC;
+// arrays for Char
+let bleCharsCmd = [];
+let bleCharsSensor = [];
+let bleCharsList = [];
 // BLE History
 // Sent
 let bleSendHistory;
@@ -46,31 +50,98 @@ let waitTime = 15;
 
 
 // Define BLE Device Specs
-// CMD Service
-let UUID_SERVICE_CMD = "5eaf1079-e806-47a9-a1ec-d815bea94805"
-let UUID_CHAR_CMD_DRIVE = "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3"
-let UUID_CHAR_CMD_DRIVE_STATE = "bd6fbfde-385d-480f-b5eb-64d60cc7be9a"
-let UUID_CHAR_CMD_ARM = "99d69805-8efb-450e-ae78-c4ddba09f7f6"
-let UUID_CHAR_CMD_ARM_STATE = "f8765d0c-81b5-4780-85a4-44f0999f5474"
-// Sensor Service
-let UUID_SERVICE_SENSOR = "8da7a992-e263-4b78-abf2-bdb94808895c"
-let UUID_CHAR_SENSOR_TEMP = "24c53354-de00-42ac-926c-31f805e5d2f5"
-let UUID_CHAR_SENSOR_PRESSURE = "545343fb-93a0-4415-9e2b-6a4c8e2835c4"
-let UUID_CHAR_SENSOR_HUMIDITY = "618c8e95-e436-4a86-9d7d-17c3db9992d0"
-let UUID_CHAR_SENSOR_GAS = "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1"
+// Services
+let UUID_SERVICE_CMD = "5eaf1079-e806-47a9-a1ec-d815bea94805";
+let UUID_SERVICE_SENSOR = "8da7a992-e263-4b78-abf2-bdb94808895c";
+const UUIDS_SERVICE = [
+    UUID_SERVICE_CMD,
+    UUID_SERVICE_SENSOR
+];
+// Chars
+let UUID_CHAR_CMD = "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3";
+let UUID_CHAR_CMD_STATE = "bd6fbfde-385d-480f-b5eb-64d60cc7be9a";
+let UUID_CHAR_SENSOR_TEMP = "24c53354-de00-42ac-926c-31f805e5d2f5";
+let UUID_CHAR_SENSOR_PRESSURE = "545343fb-93a0-4415-9e2b-6a4c8e2835c4";
+let UUID_CHAR_SENSOR_HUMIDITY = "618c8e95-e436-4a86-9d7d-17c3db9992d0";
+let UUID_CHAR_SENSOR_IAQ = "aa4ce7cf-fff0-4d54-b4ec-fb24920b35c1";
+let UUID_CHAR_SENSOR_CO2 = "3b9e4e45-42f2-4892-8d63-35f4a4bc8093";
+let UUID_CHAR_SENSOR_VOC = "988b016d-91a0-4830-ae55-650ef2bb9c8d";
+const UUIDS_CHAR_CMD = [
+    UUID_CHAR_CMD,
+    UUID_CHAR_CMD_STATE
+];
+const UUIDS_CHAR_SENSOR = [
+    UUID_CHAR_SENSOR_TEMP,
+    UUID_CHAR_SENSOR_PRESSURE,
+    UUID_CHAR_SENSOR_HUMIDITY,
+    UUID_CHAR_SENSOR_IAQ,
+    UUID_CHAR_SENSOR_CO2,
+    UUID_CHAR_SENSOR_VOC
+];
+const UUIDS_CHAR_LIST = [
+    UUIDS_CHAR_CMD,
+    UUIDS_CHAR_SENSOR
+];
+// How many Characteristics are existing (numbers)
+const bleCharNumCmd = 2;
+const bleCharNumSensor = 6;
+const bleCharNum = [
+    bleCharNumCmd,
+    bleCharNumSensor
+];
+// also for Services
+const bleServiceNum = 2;
 
 
 // Values of each char
 // CMD
-let charCmdDrive;
-let charCmdDriveState;
-let charCmdArm;
-let charCmdArmState;
+let valCmd;
+let valCmdState;
 // Sensor
-let charSensorTemp;
-let charSensorPressure;
-let charSensorHumidity;
-let charSensorGas;
+let valSensorTemp;
+let valSensorPressure;
+let valSensorHumidity;
+let valSensorIAQ;
+let valSensorCO2;
+let valSensorVOC;
+let valuesCmd = [
+    valCmd,
+    valCmdState
+];
+let valuesSensor = [
+    valSensorTemp,
+    valSensorPressure,
+    valSensorHumidity,
+    valSensorIAQ,
+    valSensorCO2,
+    valSensorVOC
+];
+const valuesList = [
+    valuesCmd,
+    valuesSensor
+];
+// Names for Logging (to make code more efficient)
+const serviceNames = [
+    String("bleServiceCmd"),
+    String("bleServiceSensor")
+];
+const charNamesCmd = [
+    String("bleCharCmd"),
+    String("bleCharCmdState")
+];
+const charNamesSensor = [
+    String("bleCharSensorTemp"),
+    String("bleCharSensorPressure"),
+    String("bleCharSensorHumidity"),
+    String("bleCharSensorIAQ"),
+    String("bleCharSensorCO2"),
+    String("bleCharSensorVOC")
+];
+const charNamesList = [
+    charNamesCmd,
+    charNamesSensor,
+]
+
 // for sending the last value
 // CMD
 let sendingDrive = false;
@@ -78,7 +149,6 @@ let pendingDriveValue = null;
 // Arm
 let sendingArm = false;
 let pendingArmValue = null;
-
 
 
 window.onload = () => {
@@ -90,15 +160,15 @@ window.onload = () => {
     bleServiceContainer = document.getElementById('bleService');
     bleServiceList = document.getElementById('bleServiceList');
     // CMD
-    bleCharCmdDrive = document.getElementById('bleCharCmdDrive');
-    bleCharCmdDriveState = document.getElementById('bleCharCmdDriveState');
-    bleCharCmdArm = document.getElementById('bleCharCmdArm');
-    bleCharCmdArmState = document.getElementById('bleCharCmdArmState');
+    bleCharCmd = document.getElementById('bleCharCmd');
+    bleCharCmdState = document.getElementById('bleCharCmdState');
     // Sensor
     bleCharSensorTemp = document.getElementById('bleCharSensorTemp');
     bleCharSensorPressure = document.getElementById('bleCharSensorPressure');
     bleCharSensorHumidity = document.getElementById('bleCharSensorHumidity');
-    bleCharSensorGas = document.getElementById('bleCharSensorGas');
+    bleCharSensorIAQ = document.getElementById('bleCharSensorIAQ');
+    bleCharSensorCO2 = document.getElementById('bleCharSensorCO2');
+    bleCharSensorVOC = document.getElementById('bleCharSensorVOC');
     // History (on main page)
     // Values
     // Sent
@@ -116,6 +186,28 @@ window.onload = () => {
     errorMessageContainer = document.getElementById('errors');
     infoMessageContainer = document.getElementById('info');
     versionDisplay = document.getElementById('version');
+    // init arrays after vars are assigned so they are undifined
+    bleCharsCmd = [
+        bleCharCmd,
+        bleCharCmdState
+    ];
+    bleCharsSensor = [
+        bleCharSensorTemp,
+        bleCharSensorPressure,
+        bleCharSensorHumidity,
+        bleCharSensorIAQ,
+        bleCharSensorCO2,
+        bleCharSensorVOC
+    ];
+    bleCharsList = [
+        bleCharsCmd,
+        bleCharsSensor
+    ];
+    bleServices = [
+        bleServiceCmd,
+        bleServiceSensor
+    ];
+
     // Pages
     page0 = document.getElementById("swPage0");
     page1 = document.getElementById("swPage1");
@@ -150,6 +242,7 @@ function togglePage0() {
     document.getElementById('speedController').style.visibility = 'visible';
     document.getElementById('settings').style.visibility = 'hidden';
 }
+
 function togglePage1() {
     document.getElementById('sliderContainer').style.display = 'none';
     document.getElementById('armController').style.visibility = 'visible';
@@ -198,15 +291,10 @@ async function connectToDevice() {
     bleStateContainer.classList.add("error");
     // CMD
     // Drive
-    bleCharCmdDrive.classList.remove("info");
-    bleCharCmdDrive.classList.add("error");
-    bleCharCmdDriveState.classList.remove("info");
-    bleCharCmdDriveState.classList.add("error");
-    // Arm
-    bleCharCmdArm.classList.remove("info");
-    bleCharCmdArm.classList.add("error");
-    bleCharCmdArmState.classList.remove("info");
-    bleCharCmdArmState.classList.add("error");
+    bleCharCmd.classList.remove("info");
+    bleCharCmd.classList.add("error");
+    bleCharCmdState.classList.remove("info");
+    bleCharCmdState.classList.add("error");
 
     errorMessageContainer.innerHTML = "";
 
@@ -231,124 +319,48 @@ async function connectToDevice() {
         bleServiceList.innerHTML = "<div>services: <ul>" + html + "</ul></div>";
 
         // Connect to Services
-        // try to connect to CMD Service
-        infoMessageContainer.innerHTML = "retrieve CMD service " + UUID_SERVICE_CMD;
-        bleCmdService = await bleServer.getPrimaryService(UUID_SERVICE_CMD);
-
-        // try to connect to Sensor Service
-        infoMessageContainer.innerHTML = "retrieve Sensor service " + UUID_SERVICE_SENSOR;
-        bleSensorService = await bleServer.getPrimaryService(UUID_SERVICE_SENSOR);
-
-        // If connected, send log
-        // CMD Service
-        bleServiceContainer.innerHTML = 'Verbunden mit CMD Service ' + bleCmdService.uuid;
-        bleServiceContainer.classList.remove("error");
-        bleServiceContainer.classList.add("info");
-
-        // Sensor Service
-        bleServiceContainer.innerHTML = 'Verbunden mit Sensor Service ' + bleSensorService.uuid;
+        // try to connect to CMD and Sensor Service (in parallel for more efficency)
+        infoMessageContainer.innerHTML = "retrieving services...";
+        const servicePromises = Array.from({length: bleServiceNum}, (_, id) => (async () => {
+            bleServices[id] = bleServer.getPrimaryService(UUIDS_SERVICE[id]);
+            bleServiceContainer.innerHTML = "Connected to " + serviceNames[id];
+        })());
+        await Promise.all(servicePromises);
+        infoMessageContainer.innerHTML = "All services retrieved and Connected successfully.";
         bleServiceContainer.classList.remove("error");
         bleServiceContainer.classList.add("info");
 
         // Load Characteristics
-        // Service: CMD
+        // First Load Services sequentially and inside the service load the Characteristics parallel
         // Drive
-        infoMessageContainer.innerHTML = "retrieve char CMD Drive " + UUID_CHAR_CMD_DRIVE;
-        charCmdDrive = await bleCmdService.getCharacteristic(UUID_CHAR_CMD_DRIVE);
+        infoMessageContainer.innerHTML = "retrieving CMD characteristics...";
+        for (let idx = 0; idx < 2; idx++) {
+            const charPromises = Array.from({length: bleCharNum[idx]}, (_, id) => (async () => {
+                    valuesList[idx][id] = await bleServices[idx].getCharacteristic(UUIDS_CHAR_LIST[idx][id]);
+                    bleCharsList[idx][id].innerHTML = "char " + charNamesList[idx][id] + " OK:" + valuesList[idx][id];
+                    bleCharsList[idx][id].classList.remove("error");
+                    bleCharsList[idx][id].classList.add("info");
+            })());
+            await Promise.all(charPromises); // Wait for all 8 characteristics to be retrieved for this service
+        }
+        infoMessageContainer.innerHTML = "finished retrieving characteristics...";
 
-        bleCharCmdDrive.innerHTML = "char CMD Drive OK: " + charCmdDrive.uuid;
-        bleCharCmdDrive.classList.remove("error");
-        bleCharCmdDrive.classList.add("info");
-
-        // Drive State
-        infoMessageContainer.innerHTML = "retrieve char CMD DRIVE_STATE " + UUID_CHAR_CMD_DRIVE_STATE;
-        charCmdDriveState = await bleCmdService.getCharacteristic(UUID_CHAR_CMD_DRIVE_STATE);
-
-        bleCharCmdDriveState.innerHTML = "char CMD Drive_State OK: " + charCmdDriveState.uuid;
-        bleCharCmdDriveState.classList.remove("error");
-        bleCharCmdDriveState.classList.add("info");
-
-        // Arm
-        bleCharCmdArm.innerHTML = "retrieve char CMD ARM " + UUID_CHAR_CMD_ARM;
-        charCmdArm = await bleCmdService.getCharacteristic(UUID_CHAR_CMD_ARM);
-
-        bleCharCmdArm.innerHTML = "char CMD Arm OK: " + charCmdArm.uuid;
-        bleCharCmdArm.classList.remove('error');
-        bleCharCmdArm.classList.add('info');
-
-        // Arm State
-        bleCharCmdArmState.innerHTML = "retrieve char CMD ARM_STATE " + UUID_CHAR_CMD_ARM_STATE;
-        charCmdArmState = await bleCmdService.getCharacteristic(UUID_CHAR_CMD_ARM_STATE);
-
-        bleCharCmdArmState.innerHTML = "char CMD Arm_State  OK: " + charCmdArmState.uuid;
-        bleCharCmdArmState.classList.remove("error");
-        bleCharCmdArmState.classList.add("info");
-
-        // Service: Sensor
-        // Temp
-        infoMessageContainer.innerHTML = "retrieve char Sensor Temp " + UUID_CHAR_SENSOR_TEMP;
-        charSensorTemp = await bleSensorService.getCharacteristic(UUID_CHAR_SENSOR_TEMP);
-
-        bleCharSensorTemp.innerHTML = "char Sensor Temp OK: " + charSensorTemp.uuid;
-        bleCharSensorTemp.classList.remove("error");
-        bleCharSensorTemp.classList.add("info");
-
-        // Pressure
-        infoMessageContainer.innerHTML = "retrieve char Sensor Pressure " + UUID_CHAR_SENSOR_PRESSURE;
-        charSensorPressure = await bleSensorService.getCharacteristic(UUID_CHAR_SENSOR_PRESSURE);
-
-        bleCharSensorPressure.innerHTML = "char Sensor Pressure OK: " + charSensorPressure.uuid;
-        bleCharSensorPressure.classList.remove("error");
-        bleCharSensorPressure.classList.add("info");
-
-        // Humidity
-        infoMessageContainer.innerHTML = "retrieve char Sensor Humidity " + UUID_CHAR_SENSOR_HUMIDITY;
-        charSensorHumidity = await bleSensorService.getCharacteristic(UUID_CHAR_SENSOR_HUMIDITY);
-
-        bleCharSensorHumidity.innerHTML = "char Sensor Humidity OK: " + charSensorHumidity.uuid;
-        bleCharSensorHumidity.classList.remove("error");
-        bleCharSensorHumidity.classList.add("info");
-
-        // Gas
-        infoMessageContainer.innerHTML = "retrieve char Sensor Gas " + UUID_CHAR_SENSOR_GAS;
-        charSensorGas = await bleSensorService.getCharacteristic(UUID_CHAR_SENSOR_GAS);
-
-        bleCharSensorGas.innerHTML = "char Sensor Gas OK: " + charSensorGas.uuid;
-        bleCharSensorGas.classList.remove("error");
-        bleCharSensorGas.classList.add("info");
 
         // Listeners for BLE Notify
         // CMD
         // Drive_State
-        charCmdDriveState.addEventListener('characteristicvaluechanged', handleCmdCharChange);
-        await charCmdDriveState.startNotifications();
-        charCmdDriveState.readValue();
+        valCmdState.addEventListener('characteristicvaluechanged', handleCmdCharChange);
+        await valCmdState.startNotifications();
+        valCmdState.readValue();
 
-        // Arm_State
-        charCmdArmState.addEventListener('characteristicvaluechanged', handleCmdCharChange)
-        await charCmdArmState.startNotifications();
-        charCmdArmState.readValue();
 
         // Sensor
-        // Temp
-        charSensorTemp.addEventListener('characteristicvaluechanged', handleSensorCharChange)
-        await charSensorTemp.startNotifications();
-        charSensorTemp.readValue();
-
-        // Pressure
-        charSensorPressure.addEventListener('characteristicvaluechanged', handleSensorCharChange)
-        await charSensorPressure.startNotifications();
-        charSensorPressure.readValue();
-
-        // Humidity
-        charSensorHumidity.addEventListener('characteristicvaluechanged', handleSensorCharChange)
-        await charSensorHumidity.startNotifications();
-        charSensorHumidity.readValue();
-
-        // Gas
-        charSensorGas.addEventListener('characteristicvaluechanged', handleSensorCharChange)
-        await charSensorGas.startNotifications();
-        charSensorGas.readValue();
+        const valPromises = Array.from({length: bleCharNum[1]}, (_, id) => (async () => {
+            valuesList[1][id].addEventListener("characteristicvaluechanged", handleSensorCharChange);
+            await valuesList[1][id].startNotifications();
+            valuesList[1][id].readValue();
+        })());
+        await Promise.all(valPromises)
 
 
         infoMessageContainer.innerHTML = "erfolgreich verbunden";
@@ -369,58 +381,27 @@ async function connectToDevice() {
     }
 }
 
-function onDisconnected() {
+async function onDisconnected() {
     disconnectButton.style.display = "none";
     connectButton.style.display = "block";
 
     bleServiceContainer.classList.remove("info");
     bleServiceContainer.classList.add("error");
-    bleServiceContainer.innerHTML = "Kein Service";
+    bleServiceContainer.innerHTML = "No Services";
 
     bleStateContainer.classList.remove("info");
     bleStateContainer.classList.add("error");
-    bleStateContainer.innerHTML = "Nicht verbunden";
+    bleStateContainer.innerHTML = "Not Connected";
 
     // Char
-    // CMD
-    // Drive
-    bleCharCmdDrive.classList.remove("info");
-    bleCharCmdDrive.classList.add("error");
-    bleCharCmdDrive.innerHTML = "Kein CMD Drive";
-
-    bleCharCmdDriveState.classList.remove("info");
-    bleCharCmdDriveState.classList.add("error");
-    bleCharCmdDriveState.innerHTML = "Kein CMD Drive State";
-
-    // Arm
-    bleCharCmdArm.classList.remove("info");
-    bleCharCmdArm.classList.add("error");
-    bleCharCmdArm.innerHTML = "Kein CMD Arm";
-
-    bleCharCmdArmState.classList.remove("info");
-    bleCharCmdArmState.classList.add("error");
-    bleCharCmdArmState.innerHTML = "Kein CMD Arm State";
-
-    // Sensor
-    // Temp
-    bleCharSensorTemp.classList.remove("info");
-    bleCharSensorTemp.classList.add("error");
-    bleCharSensorTemp.innerHTML = "Kein Sensor Temp";
-
-    // Pressure
-    bleCharSensorPressure.classList.remove("info");
-    bleCharSensorPressure.classList.add("error");
-    bleCharSensorPressure.innerHTML = "Kein Sensor Pressure";
-
-    // Humidity
-    bleCharSensorHumidity.classList.remove("info");
-    bleCharSensorHumidity.classList.add("error");
-    bleCharSensorHumidity.innerHTML = "Kein Sensor Humidity";
-
-    // Gas
-    bleCharSensorGas.classList.remove("info");
-    bleCharSensorGas.classList.add("error");
-    bleCharSensorGas.innerHTML = "Kein Sensor Gas";
+    for (let idx = 0; idx < 2; idx++) {
+        const charPromises = Array.from({length: bleCharNum[idx]}, (_, id) => (async () => {
+            bleCharsList[idx][id].classList.remove("info");
+            bleCharsList[idx][id].classList.add("error");
+            bleCharsList[idx][id].innerHTML = "Kein " + charNamesList[idx][id];
+        })());
+        await Promise.all(charPromises); // Wait for all 8 characteristics to be retrieved for this service
+    }
 
     bleServiceList.innerHTML = "";
     document.getElementById('connection').innerHTML = "nicht verbunden";
@@ -467,7 +448,7 @@ export async function writeCmdDrive(value) {
         const uint8Array = textEncoder.encode(value);
         sentTimestamp.innerHTML = getDateTime();
         try {
-            await charCmdDrive.writeValue(uint8Array);
+            await valCmd.writeValue(uint8Array);
             latestValueSent.innerHTML = value;
             const div = document.createElement('div');
             const header = document.createElement('h1');
@@ -559,8 +540,8 @@ export async function writeCmdArm(value) {
 function disconnectDevice() {
     console.log("Disconnect Device.");
     if (bleServer && bleServer.connected) {
-        if (charCmdDrive) {
-            charCmdDrive.stopNotifications()
+        if (valCmd) {
+            valCmd.stopNotifications()
                 .then(() => {
                     console.log("Notifications Stopped");
                     return bleServer.disconnect();
