@@ -42,21 +42,22 @@ let safeArea = {
 }
 
 
-window.handleSpeedInput = function (motor) {
+window.handleSpeedInput = function (id) {
     // noinspection JSDeprecatedSymbols
     const speed = event.target.value;
-    currentSpeed[motor] = speed
-    console.log("Motor: " + motor + " -- Current speed:", speed);
+    currentSpeed[id] = speed
+    writeCmdDrive(id + ':' + currentSpeed[id])
 
-    writeCmdDrive(currentSpeed.speed0 + ':' + currentSpeed.speed1 + ':' + currentSpeed.wheel0 + ':' + currentSpeed.wheel1)
+    console.log("ID: " + id + " -- Current speed:", speed);
 };
 
-window.handleSpeedRelease = function (motor) {
+window.handleSpeedRelease = function (id) {
     // noinspection JSDeprecatedSymbols
     event.target.value = 0;  // Snap back to 0
-    currentSpeed[motor] = 0
-    writeCmdDrive(currentSpeed.speed0 + ':' + currentSpeed.speed1 + ':' + currentSpeed.wheel0 + ':' + currentSpeed.wheel1)
-    console.log("Motor: " + motor + " -- Speed reset to 0");
+    currentSpeed[id] = 0
+    writeCmdDrive(id + ':' + currentSpeed[id])
+
+    console.log("ID: " + id + " -- Speed reset to 0");
 };
 
 window.handleDegreeInput = function (part, number, limit, event) {
@@ -206,18 +207,19 @@ document.addEventListener('DOMContentLoaded', function () {
             if (armClass === 0) {
                 document.querySelector('.arm0-rotate').style.transform = `rotate(${calculateDegrees(angle, 0)}deg)`;
                 current.arm0 = calculateDegrees(angle, 0);
-                writeCmdArm(current.arm0 + ':' + current.arm1 + ':' + current.arm2 + ':' + current.arm3);
+                writeCmdArm(4 + ":" + current.arm0);
             } else if (armClass === 1) {
                 document.querySelector('.arm1-rotate').style.transform = `rotate(${(calculateDegrees(angle, 1)) * -1}deg)`;
                 current.arm1 = calculateDegrees(angle, 1);
-                writeCmdArm(current.arm0 + ':' + current.arm1 + ':' + current.arm2 + ':' + current.arm3);
+                writeCmdArm(5 + ":" + current.arm1);
             } else if (armClass === 2) {
                 document.querySelector('.arm2-rotate').style.transform = `rotate(${calculateDegrees(angle, 2) - 90}deg)`;
                 current.arm2 = calculateDegrees(angle, 2);
-                writeCmdArm(current.arm0 + ':' + current.arm1 + ':' + current.arm2 + ':' + current.arm3);
+                writeCmdArm(6 + ":" + current.arm2);
             } else if (armClass === 3) {
                 current.arm3 = calculateDegrees(angle, 3, 'notmain');
-                writeCmdArm(current.arm0 + ':' + current.arm1 + ':' + current.arm2 + ':' + current.arm3);            }
+                writeCmdArm(7 + ":" + current.arm3);
+            }
         }
 
         function onEnd() {

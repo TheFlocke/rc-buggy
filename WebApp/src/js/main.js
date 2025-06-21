@@ -363,10 +363,10 @@ async function connectToDevice() {
         await Promise.all(valPromises)
 
 
-        infoMessageContainer.innerHTML = "erfolgreich verbunden";
-        document.getElementById('connection').innerHTML = 'Verbunden mit ' + device.name;
+        infoMessageContainer.innerHTML = "successfully connected";
+        document.getElementById('connection').innerHTML = 'Connected with ' + device.name;
 
-        bleStateContainer.innerHTML = 'Verbunden mit ' + device.name;
+        bleStateContainer.innerHTML = 'Connected with ' + device.name;
         bleStateContainer.classList.remove("error");
         bleStateContainer.classList.add("info");
 
