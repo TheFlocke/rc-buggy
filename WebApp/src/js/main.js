@@ -222,7 +222,7 @@ window.onload = () => {
     swPage2.addEventListener('click', () => togglePage2());
 
     if (!navigator.bluetooth) {
-        errorMessageContainer.innerHTML = "Web Bluetooth API ist für diesen Browser nicht verfügbar!";
+        errorMessageContainer.innerHTML = "Web Bluetooth API is for this Browser not available!";
     }
 
     // Connect Button (search for BLE Devices only if BLE is available)
@@ -404,7 +404,7 @@ async function onDisconnected() {
     }
 
     bleServiceList.innerHTML = "";
-    document.getElementById('connection').innerHTML = "nicht verbunden";
+    document.getElementById('connection').innerHTML = "not connected";
 }
 
 function handleCmdCharChange(event) {
