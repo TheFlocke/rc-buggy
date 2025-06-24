@@ -247,21 +247,21 @@ async function connectToDevice() {
                 try {
                     bleCharsList[idx][id] = await bleServices[idx].getCharacteristic(UUIDS_CHAR_LIST[idx][id]);
                 } catch (error) {
-                    let errorMsg = `Error while loading ${String(id)} out of ${UUIDS_CHAR_LIST[idx].length} characteristics of Service ${String(idx)}`;
+                    let errorMsg = `Error while loading ${String(id)} out of ${UUIDS_CHAR_LIST[idx].length} characteristics of Service ${String(idx)}.`;
                     setError(errorMsg);
                     htmlBleCharContainer.innerHTML = errorMsg;
                     htmlBleCharContainer.classList.add("error");
                 }
             });
             await Promise.all(charPromises);
-            htmlBleCharContainer.innerHTML = `${bleCharsList[idx].length} chars loaded of ${bleServices.length} Services` ;
+            htmlBleCharContainer.innerHTML = `${bleCharsList[idx].length} chars loaded of ${bleServices.length} Services.` ;
             htmlBleCharContainer.classList.remove("error");
             htmlBleCharContainer.classList.add("info");
         }
 
         setInfo("Finished retrieving characteristics.");
 
-        setInfo("Adding listeners to BLE RX");
+        setInfo("Adding listeners to BLE RX.");
         // Listeners for BLE Notify
         // CMD
         // Drive_State
@@ -284,9 +284,9 @@ async function connectToDevice() {
 
 
         setInfo("successfully connected");
-        document.getElementById('connection').innerHTML = 'Connected with ' + device.name;
+        document.getElementById('connection').innerHTML = `Connected with ${device.name}.`;
 
-        htmlBleStateContainer.innerHTML = 'Connected with ' + device.name;
+        htmlBleStateContainer.innerHTML = `Connected with ${device.name}`;
         htmlBleStateContainer.classList.remove("error");
         htmlBleStateContainer.classList.add("info");
 
@@ -316,7 +316,7 @@ async function onDisconnected() {
 
     htmlBleCharContainer.classList.remove("info");
     htmlBleCharContainer.classList.add("error");
-    htmlBleCharContainer.innerHTML = "Not Characteristics";
+    htmlBleCharContainer.innerHTML = "No Characteristics";
 
     bleServices.innerHTML = "";
     document.getElementById('connection').innerHTML = "not connected";
