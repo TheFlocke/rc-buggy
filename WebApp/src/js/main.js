@@ -1,15 +1,12 @@
 export const version = "0.5";
+import {setError, setInfo} from './debug.js'
+
 /*
 *            !!!IMPORTANT!!!
 *   Only these values need to be changed.
 *   The other are part of the whole program!
 */
 // Define BLE Device Specs
-// How many Characteristics are existing (numbers)
-const bleCharNumCmd = 2;
-const bleCharNumSensor = 6;
-// also for Services
-const bleServiceNum = 2;
 // Services
 const UUID_SERVICE_CMD = "5eaf1079-e806-47a9-a1ec-d815bea94805";
 const UUID_SERVICE_SENSOR = "8da7a992-e263-4b78-abf2-bdb94808895c";
@@ -44,11 +41,6 @@ const UUIDS_CHAR_LIST = [
     UUIDS_CHAR_CMD,
     UUIDS_CHAR_SENSOR
 ];
-// add additional Services in this array
-const bleCharNum = [
-    bleCharNumCmd,
-    bleCharNumSensor
-];
 
 
 
@@ -67,42 +59,28 @@ let retrievedValue;
 let latestValueSent;
 let sentTimestamp;
 let retrievedTimestamp;
-let errorMessageContainer;
-let infoMessageContainer;
+export let errorMessageContainer;
+export let infoMessageContainer;
 // For ble info at the Top
-let bleStateContainer;
-let bleServiceContainer;
+let htmlBleStateContainer;
+let htmlBleServiceContainer;
+let htmlBleCharContainer;
 let connectButton;
 let disconnectButton;
 let versionDisplay;
-// also for BLE info (main page middle info)
-let waitTime = 15; // Sent wait time in ms
-let htmlBleServer;
-// Services
-let htmlBleServiceCmd;
-let htmlBleServiceSensor;
-// Characteristics
-let htmlBleCharCmd;
-let htmlBleCharCmdState;
-let htmlBleCharSensorTemp;
-let htmlBleCharSensorPressure;
-let htmlBleCharSensorHumidity;
-let htmlBleCharSensorIAQ;
-let htmlBleCharSensorCO2;
-let htmlBleCharSensorVOC;
-// arrays
-let htmlBleServices = [];
-let htmlBleCharsCmd = [];
-let htmlBleCharsSensor = [];
-let htmlBleCharsList = [];
+
 
 
 
 // Everything used for BLE
 // BLE chars (defined by UUIDS and numbering up top)
+let waitTime = 15; // Sent wait time in ms
+let bleServer;
 let bleCharsCmd = [
 ];
 let bleCharsSensor = [
+];
+let bleServices = [
 ];
 const bleCharsList = [
     bleCharsCmd,
@@ -117,23 +95,14 @@ let pendingValue = null;
 
 
 window.onload = () => {
+    // for offline Cache
     registerServiceWorker();
 
     connectButton = document.getElementById('connectBleButton');
     disconnectButton = document.getElementById('disconnectBleButton');
-    bleStateContainer = document.getElementById('bleState');
-    bleServiceContainer = document.getElementById('bleService');
-    htmlBleServices = document.getElementById('bleServiceList');
-    // CMD
-    htmlBleCharCmd = document.getElementById('bleCharCmd');
-    htmlBleCharCmdState = document.getElementById('bleCharCmdState');
-    // Sensor
-    htmlBleCharSensorTemp = document.getElementById('bleCharSensorTemp');
-    htmlBleCharSensorPressure = document.getElementById('bleCharSensorPressure');
-    htmlBleCharSensorHumidity = document.getElementById('bleCharSensorHumidity');
-    htmlBleCharSensorIAQ = document.getElementById('bleCharSensorIAQ');
-    htmlBleCharSensorCO2 = document.getElementById('bleCharSensorCO2');
-    htmlBleCharSensorVOC = document.getElementById('bleCharSensorVOC');
+    htmlBleStateContainer = document.getElementById('htmlBleState');
+    htmlBleServiceContainer = document.getElementById('htmlBleService');
+    htmlBleCharContainer =document.getElementById('htmlBleChar');
     // History (on main page)
     // Values
     // Sent
@@ -151,27 +120,6 @@ window.onload = () => {
     errorMessageContainer = document.getElementById('errors');
     infoMessageContainer = document.getElementById('info');
     versionDisplay = document.getElementById('version');
-    // init arrays after vars are assigned so they are undefined
-    htmlBleCharsCmd = [
-        htmlBleCharCmd,
-        htmlBleCharCmdState
-    ];
-    htmlBleCharsSensor = [
-        htmlBleCharSensorTemp,
-        htmlBleCharSensorPressure,
-        htmlBleCharSensorHumidity,
-        htmlBleCharSensorIAQ,
-        htmlBleCharSensorCO2,
-        htmlBleCharSensorVOC
-    ];
-    htmlBleCharsList = [
-        htmlBleCharsCmd,
-        htmlBleCharsSensor
-    ];
-    htmlBleServices = [
-        htmlBleServiceCmd,
-        htmlBleServiceSensor
-    ];
 
     // Pages
     page0 = document.getElementById("swPage0");
@@ -187,7 +135,7 @@ window.onload = () => {
     swPage2.addEventListener('click', () => togglePage2());
 
     if (!navigator.bluetooth) {
-        errorMessageContainer.innerHTML = "Web Bluetooth API is for this Browser not available!";
+        setError("Web Bluetooth API is for this Browser not available!");
     }
 
     // Connect Button (search for BLE Devices only if BLE is available)
@@ -244,27 +192,20 @@ async function registerServiceWorker() {
             }
         }
     } catch (error) {
-        console.error("Error creating service worker: ", error);
-        errorMessageContainer.innerHTML = "Error creating service worker: " + error;
+        setError("Error creating service worker: " + error);
     }
 }
 
 async function connectToDevice() {
-    bleServiceContainer.classList.remove("info");
-    bleServiceContainer.classList.add("error");
-    bleStateContainer.classList.remove("info");
-    bleStateContainer.classList.add("error");
-    // CMD
-    // Drive
-    htmlBleCharCmd.classList.remove("info");
-    htmlBleCharCmd.classList.add("error");
-    htmlBleCharCmdState.classList.remove("info");
-    htmlBleCharCmdState.classList.add("error");
-
-    errorMessageContainer.innerHTML = "";
+    htmlBleServiceContainer.classList.remove("info");
+    htmlBleServiceContainer.classList.add("error");
+    htmlBleStateContainer.classList.remove("info");
+    htmlBleStateContainer.classList.add("error");
+    htmlBleCharContainer.classList.remove("info");
+    htmlBleCharContainer.classList.add("error");
 
     try {
-        infoMessageContainer.innerHTML = "select device";
+        setInfo("selecting device...");
         const device = await navigator.bluetooth.requestDevice({
             filters: [
                 {services: [UUID_SERVICE_CMD]}
@@ -274,52 +215,53 @@ async function connectToDevice() {
 
         device.addEventListener('gattservicedisconnected', onDisconnected);
 
-        infoMessageContainer.innerHTML = "connecting GATT server";
-        htmlBleServer = await device.gatt.connect();
+        setInfo("Connecting to BLE server...");
+        bleServer = await device.gatt.connect();
 
-        infoMessageContainer.innerHTML = "retrieve service list";
-        let servicelist = await htmlBleServer.getPrimaryServices();
+        setInfo("Retrieve service list...");
+        let servicelist = await bleServer.getPrimaryServices();
         let html = "";
         servicelist.forEach(service => html += "<li>" + (service.isPrimary ? "Primär" : "Zusatz") + ": " + service.uuid + "</li>")
-        htmlBleServices.innerHTML = "<div>services: <ul>" + html + "</ul></div>";
+        htmlBleServiceContainer.innerHTML = "<div>services: <ul>" + html + "</ul></div>";
 
         // Connect to Services
         // try to connect to CMD and Sensor Service (in parallel for more efficency)
-        infoMessageContainer.innerHTML = "retrieving services...";
+        setInfo("connecting to services...");
 
-        const servicePromises = Array.from({length: bleServiceNum}, (_, id) => (async () => {
-            htmlBleServices[id] = await htmlBleServer.getPrimaryService(UUIDS_SERVICE[id]);
-            bleServiceContainer.innerHTML = "Connected to ";
+        const servicePromises = Array.from({length: UUIDS_SERVICE.length}, (_, id) => (async () => {
+            bleServices[id] = await bleServer.getPrimaryService(UUIDS_SERVICE[id]);
         })());
         await Promise.all(servicePromises);
 
-        infoMessageContainer.innerHTML = "All services retrieved and Connected successfully.";
-        bleServiceContainer.classList.remove("error");
-        bleServiceContainer.classList.add("info");
+        setInfo("All services retrieved and Connected successfully.");
+        htmlBleServiceContainer.innerHTML = `Connected to ${bleServices.length} Services.`   ;
+        htmlBleServiceContainer.classList.remove("error");
+        htmlBleServiceContainer.classList.add("info");
 
         // Load Characteristics
         // First Load Services sequentially and inside the service load the Characteristics parallel
         // Drive
-        infoMessageContainer.innerHTML = "retrieving CMD characteristics...";
+        setInfo("Retrieving CMD characteristics...");
         for (let idx = 0; idx < 2; idx++) {
-            const charPromises = Array.from({length: bleCharNum[idx]}, async (_, id) => {
+            const charPromises = Array.from({length: UUIDS_CHAR_LIST[idx].length}, async (_, id) => {
                 try {
-                    const characteristic = await htmlBleServices[idx].getCharacteristic(UUIDS_CHAR_LIST[idx][id]);
-                    bleCharsList[idx][id] = characteristic;
-                  //  htmlBleCharsList[idx][id].innerHTML = "char " + charNamesList[idx][id] + " OK:" + characteristic.uuid;
-                    htmlBleCharsList[idx][id].classList.remove("error");
-                    htmlBleCharsList[idx][id].classList.add("info");
+                    bleCharsList[idx][id] = await bleServices[idx].getCharacteristic(UUIDS_CHAR_LIST[idx][id]);
                 } catch (error) {
-                  //  htmlBleCharsList[idx][id].innerHTML = "Error loading " + charNamesList[idx][id];
-                    htmlBleCharsList[idx][id].classList.add("error");
+                    let errorMsg = `Error while loading ${String(id)} out of ${UUIDS_CHAR_LIST[idx].length} characteristics of Service ${String(idx)}`;
+                    setError(errorMsg);
+                    htmlBleCharContainer.innerHTML = errorMsg;
+                    htmlBleCharContainer.classList.add("error");
                 }
             });
             await Promise.all(charPromises);
+            htmlBleCharContainer.innerHTML = `${bleCharsList[idx].length} chars loaded of ${bleServices.length} Services` ;
+            htmlBleCharContainer.classList.remove("error");
+            htmlBleCharContainer.classList.add("info");
         }
 
-        infoMessageContainer.innerHTML = "finished retrieving characteristics...";
+        setInfo("Finished retrieving characteristics.");
 
-
+        setInfo("Adding listeners to BLE RX");
         // Listeners for BLE Notify
         // CMD
         // Drive_State
@@ -329,25 +271,24 @@ async function connectToDevice() {
 
 
         // Sensor
-        const listenerPromises = Array.from({length: bleCharNum[1]}, async (_, id) => {
+        const listenerPromises = Array.from({length: UUIDS_CHAR_SENSOR.length}, async (_, id) => {
             try {
                 bleCharsList[1][id].addEventListener("characteristicvaluechanged", handleCharChange);
                 await bleCharsList[1][id].startNotifications();
                 await bleCharsList[1][id].readValue();
             } catch (error) {
-               // valuesList[1][id].innerHTML = "Error adding Listener " + charNamesList[1][id];
-                bleCharsList[1][id].classList.add("error");
+                setError(`Error adding Listener for  Characteristic: ${id} for Service: 1`);
             }
         });
         await Promise.all(listenerPromises);
 
 
-        infoMessageContainer.innerHTML = "successfully connected";
+        setInfo("successfully connected");
         document.getElementById('connection').innerHTML = 'Connected with ' + device.name;
 
-        bleStateContainer.innerHTML = 'Connected with ' + device.name;
-        bleStateContainer.classList.remove("error");
-        bleStateContainer.classList.add("info");
+        htmlBleStateContainer.innerHTML = 'Connected with ' + device.name;
+        htmlBleStateContainer.classList.remove("error");
+        htmlBleStateContainer.classList.add("info");
 
         disconnectButton.style.display = "block";
         connectButton.style.display = "none";
@@ -356,33 +297,28 @@ async function connectToDevice() {
 
 
     } catch (error) {
-        errorMessageContainer.innerHTML = error;
+        setError(error);
     }
 }
 
 async function onDisconnected() {
+   setInfo("BLE Client disconnected.");
     disconnectButton.style.display = "none";
     connectButton.style.display = "block";
 
-    bleServiceContainer.classList.remove("info");
-    bleServiceContainer.classList.add("error");
-    bleServiceContainer.innerHTML = "No Services";
+    htmlBleServiceContainer.classList.remove("info");
+    htmlBleServiceContainer.classList.add("error");
+    htmlBleServiceContainer.innerHTML = "No Services";
 
-    bleStateContainer.classList.remove("info");
-    bleStateContainer.classList.add("error");
-    bleStateContainer.innerHTML = "Not Connected";
+    htmlBleStateContainer.classList.remove("info");
+    htmlBleStateContainer.classList.add("error");
+    htmlBleStateContainer.innerHTML = "Not Connected";
 
-    // Char
-    for (let idx = 0; idx < 2; idx++) {
-        const charPromises = Array.from({length: bleCharNum[idx]}, (_, id) => (async () => {
-            htmlBleCharsList[idx][id].classList.remove("info");
-            htmlBleCharsList[idx][id].classList.add("error");
-          //  htmlBleCharsList[idx][id].innerHTML = "Kein " + charNamesList[idx][id];
-        })());
-        await Promise.all(charPromises); // Wait for all 8 characteristics to be retrieved for this service
-    }
+    htmlBleCharContainer.classList.remove("info");
+    htmlBleCharContainer.classList.add("error");
+    htmlBleCharContainer.innerHTML = "Not Characteristics";
 
-    htmlBleServices.innerHTML = "";
+    bleServices.innerHTML = "";
     document.getElementById('connection').innerHTML = "not connected";
 }
 
@@ -400,7 +336,7 @@ export async function writeCmd(value) {
     }
     sending = true;
     let sent = "failed";
-    if (htmlBleServer && htmlBleServer.connected) {
+    if (bleServer && bleServer.connected) {
         const textEncoder = new TextEncoder();
         const uint8Array = textEncoder.encode(value);
         sentTimestamp.innerHTML = getDateTime();
@@ -421,10 +357,10 @@ export async function writeCmd(value) {
             }
             sent = "ok";
         } catch (error) {
-            console.error("Error writing to the CMD characteristic: ", error);
+            setError("Error writing to the CMD characteristic: ", error);
         }
     } else {
-        console.error("Bluetooth is not connected. Cannot write to characteristic.")
+        setError("Bluetooth is not connected. Cannot write to characteristic.")
         onDisconnected();
         sent = "disconnected"
     }
@@ -444,12 +380,12 @@ export async function writeCmd(value) {
 
 function disconnectDevice() {
     console.log("Disconnect Device.");
-    if (htmlBleServer && htmlBleServer.connected) {
+    if (bleServer && bleServer.connected) {
         if (bleCharCmd) {
             bleCharCmd.stopNotifications()
                 .then(() => {
                     console.log("Notifications Stopped");
-                    return htmlBleServer.disconnect();
+                    return bleServer.disconnect();
                 })
                 .then(() => {
                     onDisconnected();
@@ -462,7 +398,7 @@ function disconnectDevice() {
         }
     } else {
         // Throw an error if Bluetooth is not connected
-        console.error("Bluetooth is not connected.");
+        setError("Bluetooth is not connected.");
         window.alert("Bluetooth is not connected.")
     }
 }
