@@ -61,6 +61,8 @@ let htmlBleCharContainer;
 let connectButton;
 let disconnectButton;
 let versionDisplay;
+// Changes Color on connection status
+let connectionStatus;
 
 
 
@@ -107,6 +109,8 @@ window.onload = () => {
     errorMessageContainer = document.getElementById('errors');
     infoMessageContainer = document.getElementById('info');
     versionDisplay = document.getElementById('version');
+    // Changes Color on connection status
+    connectionStatus = document.getElementById('orientation_frame');
 
     // Pages
     page0 = document.getElementById("swPage0");
@@ -275,6 +279,8 @@ async function connectToDevice() {
 
         document.getElementById('status').style.display = "block";
 
+        connectionStatus.classList.remove("stopped");
+        connectionStatus.classList.add("running");
 
     } catch (error) {
         setError(error);
@@ -300,6 +306,9 @@ async function onDisconnected() {
 
     bleServices.innerHTML = "";
     document.getElementById('connection').innerHTML = "not connected";
+
+    connectionStatus.classList.remove("running");
+    connectionStatus.classList.add("stopped");
 }
 
 function handleCharChange(event) {

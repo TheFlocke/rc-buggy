@@ -109,7 +109,7 @@ h1 {
 
 #status{
   padding:1em;
-  font-size:90%;
+  font-size:190%;
   font-weight: bold;
     font-family: "Courier New", serif;
   background-color: rgba(200,200,200,0.9);
@@ -216,7 +216,7 @@ h1 {
 }
 
 /* Arms: two rows, two columns */
-.safe-arm0, .safe-arm1, .safe-arm2, .safe-arm3 {
+.safe-arm0, .safe-arm1, .safe-arm2 {
     display: inline-block;
     vertical-align: top;
     width: 48%;
@@ -375,9 +375,6 @@ input[type=range][orient=vertical] {
     display: flex;
 }
 
-.historyReceived, .historySent {
-    width: 50%;
-}
 
 .entry {
     width: 90%;
