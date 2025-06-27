@@ -82,7 +82,7 @@ const bleCharsList = [
     bleCharsSensor
 ];
 
-// for sending the last value to make BLE more burst type ==> efficent
+// for sending the last value to make BLE more burst type ==> efficient
 // CMD
 let sending = false;
 let pendingValue = null;

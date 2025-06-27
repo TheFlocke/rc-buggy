@@ -127,7 +127,6 @@ h1 {
 #status_scroll{
   margin-top:1em;
   flex: 1 1 auto;
-  overflow: scroll;
 }
 
 #status p {
