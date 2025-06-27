@@ -1,4 +1,4 @@
-export const version = "0.5.7";
+export const version = "0.6";
 import {setError, setInfo} from './debug.js'
 
 /*

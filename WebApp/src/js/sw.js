@@ -1,6 +1,6 @@
 ﻿let _cache =
     {
-        name:'rcrover-cache-v0.5.7',
+        name:`rcrover-cache-${version}`,
         urls: [
             '/index.html',
             '/src/styles.css',
