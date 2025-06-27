@@ -1,3 +1,5 @@
+import {updateIAQIcon} from "./sensor.js";
+
 export const version = "0.6";
 import {setError, setInfo} from './debug.js'
 
@@ -327,6 +329,9 @@ async function handleSensorChange(event, id) {
     retrievedValue.innerHTML = value;
     retrievedTimestamp.innerHTML = getDateTime();
     sensor_values[id].innerHTML = value;
+    if (id === 3) {
+        updateIAQIcon(value);
+    }
 
 }
 

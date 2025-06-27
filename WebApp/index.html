@@ -68,13 +68,15 @@
                     <div id="status_static">
                         <table>
                             <tr>
-                                <td><i class="fa-solid fa-computer"></i>&nbsp;<i class="fa-solid fa-arrow-right"></i>&nbsp;<i class="fa-solid fa-car-side"></i>
+                                <td><i class="fa-solid fa-computer"></i>&nbsp;<i class="fa-solid fa-arrow-right"></i>&nbsp;<i
+                                        class="fa-solid fa-car-side"></i>
                                 </td>
                                 <td id="sent_timestamp">-</td>
                                 <td id="valueSent">-</td>
                             </tr>
                             <tr>
-                                <td><i class="fa-solid fa-car-side"></i>&nbsp;<i class="fa-solid fa-arrow-right"></i>&nbsp;<i class="fa-solid fa-computer"></i>
+                                <td><i class="fa-solid fa-car-side"></i>&nbsp;<i class="fa-solid fa-arrow-right"></i>&nbsp;<i
+                                        class="fa-solid fa-computer"></i>
                                 </td>
                                 <td id="retrieved_timestamp">-</td>
                                 <td id="retrievedValue">-</td>
@@ -89,39 +91,43 @@
                         <p><span class="error" id="htmlBleService"></span></p>
                         <p><span class="error" id="htmlBleChar"></span></p>
                     </div>
-                    <div id="sensor_values">
-                        <table>
-                            <tr>
-                                <td><i class="fa-solid fa-temperature-three-quarters"></i></td>
-                                <td><i class="fa-solid fa-arrow-right"></i></td>
-                                <td><span id="sensor_temp">N/A</span>&nbsp;°C</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fa-solid fa-water"></i></td>
-                                <td><i class="fa-solid fa-arrow-right"></i></td>
-                                <td><span id="sensor_humidity">N/A</span>&nbsp;%</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fa-solid fa-cloud-arrow-down"></i></td>
-                                <td><i class="fa-solid fa-arrow-right"></i></td>
-                                <td><span id="sensor_pressure">N/A</span>&nbsp;hPA</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fa-solid fa-person-shelter"></i></td>
-                                <td><i class="fa-solid fa-arrow-right"></i></td>
-                                <td><span id="sensor_iaq">N/A</span></td>
-                            </tr>
-                            <tr>
-                                <td><i class="fa-solid fa-cloud"></i></td>
-                                <td><i class="fa-solid fa-arrow-right"></i></td>
-                                <td><span id="sensor_co2">N/A</span>&nbsp;ppm</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fa-solid fa-lungs"></i></td>
-                                <td><i class="fa-solid fa-arrow-right"></i></td>
-                                <td><span id="sensor_voc">N/A</span>&nbsp;µg/m³</td>
-                            </tr>
-                        </table>
+                    <div id="sensor_values" class="sensor-row">
+                        <div class="sensor-block">
+                            <i class="fa-solid fa-temperature-three-quarters sensor-icon"></i>
+                            <div class="sensor-block-value">
+                                <span id="sensor_temp">N/A</span>&nbsp;°C
+                            </div>
+                        </div>
+                        <div class="sensor-block">
+                            <i class="fa-solid fa-water sensor-icon"></i>
+                            <div class="sensor-block-value">
+                                <span id="sensor_humidity">N/A</span>&nbsp;%
+                            </div>
+                        </div>
+                        <div class="sensor-block">
+                            <i class="fa-solid fa-cloud-arrow-down sensor-icon"></i>
+                            <div class="sensor-block-value">
+                                <span id="sensor_pressure">N/A</span>&nbsp;hPA
+                            </div>
+                        </div>
+                        <div class="sensor-block">
+                            <i class="fa-solid fa-person-shelter sensor-icon" id="iaq_icon"></i>
+                            <div class="sensor-block-value">
+                                <span id="sensor_iaq">N/A</span>&nbsp;IAQ
+                            </div>
+                        </div>
+                        <div class="sensor-block">
+                            <i class="fa-solid fa-cloud sensor-icon"></i>
+                            <div class="sensor-block-value">
+                                <span id="sensor_co2">N/A</span>&nbsp;ppm
+                            </div>
+                        </div>
+                        <div class="sensor-block">
+                            <i class="fa-solid fa-lungs sensor-icon"></i>
+                            <div class="sensor-block-value">
+                                <span id="sensor_voc">N/A</span>&nbsp;µg/m³
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div>
