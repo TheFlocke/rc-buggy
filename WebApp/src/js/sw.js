@@ -3,12 +3,12 @@
         // version muss nur geändert werden, wenn sich die Struktur des Caches ändert,
         // ansonsten werden die aktuellen Dateien immer aus dem Netzwerk geladen!
         // Offline first, network second
-        name:'rcrover-cache-v0.5.6',
+        name:'rcrover-cache-v0.5.7',
         urls: [
             '/index.html',
             '/src/styles.css',
             '/src/js/main.js',
-            '/src/js/windows.js',
+            '/src/js/window.js',
             '/src/js/debug.js',
             '/img/arm_0.png',
             '/img/arm_1.png',
