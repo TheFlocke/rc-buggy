@@ -13,7 +13,6 @@
             '/img/arm_0.png',
             '/img/arm_1.png',
             '/img/arm_2.png',
-            '/img/arm_3.png',
             '/img/logo.png',
             '/img/logo-inverted.png',
             '/icons/apple-touch-icon.png',
