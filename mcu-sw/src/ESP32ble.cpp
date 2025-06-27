@@ -33,12 +33,13 @@ class CmdCallbacks : public NimBLECharacteristicCallbacks {
     }
 };
 
-class CmdStateCallbacks : public NimBLECharacteristicCallbacks {
-    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        pCharacteristic->setValue(esp32ble.getCMD());
-        pCharacteristic->notify();
-    }
-};
+// Only used for Debugging
+// class CmdStateCallbacks : public NimBLECharacteristicCallbacks {
+//     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
+//         pCharacteristic->setValue(esp32ble.getCMD());
+//         pCharacteristic->notify();
+//     }
+// };
 
 
 // Sensor Callbacks
@@ -182,13 +183,13 @@ void ESP32ble::setup(const String &name) {
     );
     pCmdCharacteristic->setCallbacks(new CmdCallbacks());
 
-
+    // only used for debugging
     // Create a BLE CmdState Characteristic
-    _pCharCmdState = pCmdService->createCharacteristic(
-        UUID_CHAR_CMD_STATE,
-        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
-    );
-    _pCharCmdState->setCallbacks(new CmdStateCallbacks());
+    // _pCharCmdState = pCmdService->createCharacteristic(
+    //     UUID_CHAR_CMD_STATE,
+    //     NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+    // );
+    // _pCharCmdState->setCallbacks(new CmdStateCallbacks());
 
 
     // Sensor
