@@ -3,12 +3,27 @@
         // version muss nur geändert werden, wenn sich die Struktur des Caches ändert,
         // ansonsten werden die aktuellen Dateien immer aus dem Netzwerk geladen!
         // Offline first, network second
-        name:'rcrover-cache-v1',
+        name:'rcrover-cache-v0.5',
         urls: [
             'index.html',
+            '/src/',
             '/src/styles.css',
+            '/src/js/',
             '/src/js/main.js',
+            '/src/js/windows.js',
+            '/img/',
+            '/img/arm_0.png',
+            '/img/arm_1.png',
+            '/img/arm_2.png',
+            '/img/arm_3.png',
+            '/img/logo.png',
             '/img/logo-inverted.png',
+            '/icons/',
+            '/icons/apple-touch-icon.png',
+            '/icons/favicon.ico',
+            '/icons/favicon.svg',
+            '/icons/favicon-96x96.png',
+            '/icons/site.webmanifest',
             '/icons/web-app-manifest-192x192.png',
             '/icons/web-app-manifest-512x512.png'
         ]
@@ -35,7 +50,7 @@ self.addEventListener('activate', function(event) {
         caches.keys().then(function(cacheNames) {
             return Promise.all(
                 cacheNames.map(function(cacheName) {
-                if (cacheName!=_cache.name) {
+                if (cacheName!==_cache.name) {
                     console.log(`    deleting cache ${cacheName}`);
                     return caches.delete(cacheName);
               }
@@ -79,8 +94,8 @@ self.addEventListener('fetch', event => {
 
 // get file from cache
 async function fromCache(request) {
-    var url=request.url;
-    if(url=="https://rc.theflocke.de") // wurzel kann auch ohne Dateiname angefragt werden
+    let url = request.url;
+    if(url==="https://rc.theflocke.de/") // wurzel kann auch ohne Dateiname angefragt werden
         url+="index.html";
 
     url = url + ((url.indexOf('?')>=0 ? "&" : "?") + "c="+_cache.name);

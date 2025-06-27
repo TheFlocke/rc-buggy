@@ -1,4 +1,4 @@
-import {writeCmdArm, writeCmdDrive} from './main.js'
+import {writeCmd} from './main.js'
 
 
 let currentSpeed = {
@@ -46,7 +46,7 @@ window.handleSpeedInput = function (id) {
     // noinspection JSDeprecatedSymbols
     const speed = event.target.value;
     currentSpeed[id] = speed
-    writeCmdDrive(id + ':' + currentSpeed[id])
+    writeCmd(id + ':' + currentSpeed[id])
 
     console.log("ID: " + id + " -- Current speed:", speed);
 };
@@ -55,7 +55,7 @@ window.handleSpeedRelease = function (id) {
     // noinspection JSDeprecatedSymbols
     event.target.value = 0;  // Snap back to 0
     currentSpeed[id] = 0
-    writeCmdDrive(id + ':' + currentSpeed[id])
+    writeCmd(id + ':' + currentSpeed[id])
 
     console.log("ID: " + id + " -- Speed reset to 0");
 };
@@ -207,18 +207,18 @@ document.addEventListener('DOMContentLoaded', function () {
             if (armClass === 0) {
                 document.querySelector('.arm0-rotate').style.transform = `rotate(${calculateDegrees(angle, 0)}deg)`;
                 current.arm0 = calculateDegrees(angle, 0);
-                writeCmdArm(4 + ":" + current.arm0);
+                writeCmd(4 + ":" + current.arm0);
             } else if (armClass === 1) {
                 document.querySelector('.arm1-rotate').style.transform = `rotate(${(calculateDegrees(angle, 1)) * -1}deg)`;
                 current.arm1 = calculateDegrees(angle, 1);
-                writeCmdArm(5 + ":" + current.arm1);
+                writeCmd(5 + ":" + current.arm1);
             } else if (armClass === 2) {
                 document.querySelector('.arm2-rotate').style.transform = `rotate(${calculateDegrees(angle, 2) - 90}deg)`;
                 current.arm2 = calculateDegrees(angle, 2);
-                writeCmdArm(6 + ":" + current.arm2);
+                writeCmd(6 + ":" + current.arm2);
             } else if (armClass === 3) {
                 current.arm3 = calculateDegrees(angle, 3, 'notmain');
-                writeCmdArm(7 + ":" + current.arm3);
+                writeCmd(7 + ":" + current.arm3);
             }
         }
 
