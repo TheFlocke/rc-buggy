@@ -1,7 +1,6 @@
-import {updateIAQIcon} from "./sensor.js";
-
-export const version = "0.6";
+export const version = "0.7";
 import {setError, setInfo} from './debug.js'
+import {updateIAQIcon} from "./sensor.js";
 
 /*
 *            !!!IMPORTANT!!!
