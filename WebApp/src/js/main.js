@@ -358,8 +358,8 @@ export async function writeCmd(value) {
 function disconnectDevice() {
     console.log("Disconnect Device.");
     if (bleServer && bleServer.connected) {
-        if (bleCharCmd) {
-            bleCharCmd.stopNotifications()
+        if (bleCharsList[0][0]) {
+            bleCharsList[0][0].stopNotifications()
                 .then(() => {
                     console.log("Notifications Stopped");
                     return bleServer.disconnect();
