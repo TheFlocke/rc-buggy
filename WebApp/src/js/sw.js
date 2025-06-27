@@ -3,9 +3,9 @@
         // version muss nur geändert werden, wenn sich die Struktur des Caches ändert,
         // ansonsten werden die aktuellen Dateien immer aus dem Netzwerk geladen!
         // Offline first, network second
-        name:'rcrover-cache-v0.5.5',
+        name:'rcrover-cache-v0.5.6',
         urls: [
-            'index.html',
+            '/index.html',
             '/src/styles.css',
             '/src/js/main.js',
             '/src/js/windows.js',
