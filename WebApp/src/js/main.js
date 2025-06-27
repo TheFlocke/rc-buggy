@@ -12,7 +12,6 @@ const UUID_SERVICE_CMD = "5eaf1079-e806-47a9-a1ec-d815bea94805";
 const UUID_SERVICE_SENSOR = "8da7a992-e263-4b78-abf2-bdb94808895c";
 // Chars
 const UUID_CHAR_CMD = "7cb6bbe0-f35e-4a34-a8e2-6731102e12e3";
-const UUID_CHAR_CMD_STATE = "bd6fbfde-385d-480f-b5eb-64d60cc7be9a";
 const UUID_CHAR_SENSOR_TEMP = "24c53354-de00-42ac-926c-31f805e5d2f5";
 const UUID_CHAR_SENSOR_PRESSURE = "545343fb-93a0-4415-9e2b-6a4c8e2835c4";
 const UUID_CHAR_SENSOR_HUMIDITY = "618c8e95-e436-4a86-9d7d-17c3db9992d0";
@@ -27,7 +26,6 @@ const UUIDS_SERVICE = [
 ];
 const UUIDS_CHAR_CMD = [
     UUID_CHAR_CMD,
-    UUID_CHAR_CMD_STATE
 ];
 const UUIDS_CHAR_SENSOR = [
     UUID_CHAR_SENSOR_TEMP,
@@ -45,11 +43,6 @@ const UUIDS_CHAR_LIST = [
 
 
 // values that are used for HTML DOM
-// BLE History
-// Sent
-let bleSendHistory;
-// Received
-let bleReceiveHistory;
 // Pages
 let page0;
 let page1;
@@ -103,12 +96,6 @@ window.onload = () => {
     htmlBleStateContainer = document.getElementById('htmlBleState');
     htmlBleServiceContainer = document.getElementById('htmlBleService');
     htmlBleCharContainer =document.getElementById('htmlBleChar');
-    // History (on main page)
-    // Values
-    // Sent
-    bleSendHistory = document.getElementById('sendHistory');
-    // Received
-    bleReceiveHistory = document.getElementById('receiveHistory');
     // Info boxes (Top left)
     // Sent
     latestValueSent = document.getElementById('valueSent');
@@ -262,13 +249,6 @@ async function connectToDevice() {
         setInfo("Finished retrieving characteristics.");
 
         setInfo("Adding listeners to BLE RX.");
-        // Listeners for BLE Notify
-        // CMD
-        // Drive_State
-        bleCharsList[0][1].addEventListener('characteristicvaluechanged', handleCharChange);
-        await bleCharsList[0][1].startNotifications();
-        await bleCharsList[0][1].readValue();
-
 
         // Sensor
         const listenerPromises = Array.from({length: UUIDS_CHAR_SENSOR.length}, async (_, id) => {
@@ -343,18 +323,6 @@ export async function writeCmd(value) {
         try {
             await bleCharsList[0][0].writeValue(uint8Array);
             latestValueSent.innerHTML = value;
-            const div = document.createElement('div');
-            const header = document.createElement('h1');
-            const text = document.createElement('p');
-            header.innerHTML = 'CMD Drive';
-            text.innerHTML = value;
-            div.appendChild(header)
-            div.appendChild(text)
-            div.classList.add('entry')
-            bleSendHistory.prepend(div)
-            if (bleSendHistory.children.length > 1) {
-                bleSendHistory.removeChild(bleSendHistory.lastElementChild);
-            }
             sent = "ok";
         } catch (error) {
             setError("Error writing to the CMD characteristic: ", error);
