@@ -171,6 +171,10 @@ h1 {
     transition: background 0.2s;
 }
 
+.iaq-disconnected {
+    color: #3498db;
+}
+
 .iaq-good {
     color: #4caf50;
 }

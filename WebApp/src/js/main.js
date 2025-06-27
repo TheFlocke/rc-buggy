@@ -320,6 +320,11 @@ async function onDisconnected() {
 
     connectionStatus.classList.remove("running");
     connectionStatus.classList.add("stopped");
+
+    for (let i = 0; i < 6; i++) {
+        sensor_values[i].innerHTML = String("N/A");
+    }
+    updateIAQIcon(-1);
 }
 
 async function handleSensorChange(event, id) {
