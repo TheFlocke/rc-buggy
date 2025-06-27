@@ -63,6 +63,9 @@ let disconnectButton;
 let versionDisplay;
 // Changes Color on connection status
 let connectionStatus;
+// Sensor values as array
+let sensor_values = [
+];
 
 
 
@@ -105,10 +108,17 @@ window.onload = () => {
     // retrieved
     retrievedValue = document.getElementById('retrievedValue');
     retrievedTimestamp = document.getElementById('retrieved_timestamp');
-
     errorMessageContainer = document.getElementById('errors');
     infoMessageContainer = document.getElementById('info');
     versionDisplay = document.getElementById('version');
+    // Sensor Values
+    sensor_values[0] = document.getElementById('sensor_temp');
+    sensor_values[1] = document.getElementById('sensor_humidity');
+    sensor_values[2] = document.getElementById('sensor_pressure');
+    sensor_values[3] = document.getElementById('sensor_iaq');
+    sensor_values[4] = document.getElementById('sensor_co2');
+    sensor_values[5] = document.getElementById('sensor_voc');
+
     // Changes Color on connection status
     connectionStatus = document.getElementById('orientation_frame');
 
@@ -257,7 +267,7 @@ async function connectToDevice() {
         // Sensor
         const listenerPromises = Array.from({length: UUIDS_CHAR_SENSOR.length}, async (_, id) => {
             try {
-                bleCharsList[1][id].addEventListener("characteristicvaluechanged", handleCharChange);
+                bleCharsList[1][id].addEventListener("characteristicvaluechanged",event => handleSensorChange(event, id));
                 await bleCharsList[1][id].startNotifications();
                 await bleCharsList[1][id].readValue();
             } catch (error) {
@@ -311,10 +321,13 @@ async function onDisconnected() {
     connectionStatus.classList.add("stopped");
 }
 
-function handleCharChange(event) {
-    console.log(event.target.value)
-    retrievedValue.innerHTML = new TextDecoder().decode(event.target.value);
+async function handleSensorChange(event, id) {
+    const value = new TextDecoder().decode(event.target.value);
+    console.log(`Sensor Value: ${id} ==> ${value}`);
+    retrievedValue.innerHTML = value;
     retrievedTimestamp.innerHTML = getDateTime();
+    sensor_values[id].innerHTML = value;
+
 }
 
 export async function writeCmd(value) {
