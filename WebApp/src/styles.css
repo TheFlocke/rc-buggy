@@ -308,18 +308,52 @@ h1 {
     z-index: 15; /* Ensure sliders are on top */
 }
 
-/* Adjust the vertical sliders to be more proportional to the screen */
-input[type=range][orient=vertical] {
-    writing-mode: bt-lr;
-    -webkit-appearance: slider-vertical;
-    width: 8vw;
+input[type="range"][orient="vertical"] {
+    writing-mode: vertical-lr;   /* Modern browsers */
+    direction: rtl;              /* Ensures low value at the bottom, high at the top */
+    width: 8vw;       /* Adjust as needed */
     height: 70vh; /* Reduced from 90vh */
-    margin: 15vh 0; /* Increased from 5vh to center vertically */
+    margin: 20vh 0; /* Increased from 5vh to center vertically */
     position: absolute;
+    background: transparent;
     top: 0;
     pointer-events: auto;
+    appearance: none;
 }
 
+input[type="range"][orient="vertical"]::-webkit-slider-runnable-track {
+    height: 8px;
+    background: #595959;
+    border-radius: 20px;
+}
+
+input[type="range"][orient="vertical"]::-moz-range-track {
+    height: 8px;
+    background: #595959;
+    border-radius: 20px;
+}
+
+input[type="range"][orient="vertical"]::-ms-fill-lower,
+input[type="range"][orient="vertical"]::-ms-fill-upper {
+    background: #595959;
+    border-radius: 20px;
+}
+
+input[type="range"][orient="vertical"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 64px;
+    height: 64px;
+    background: #222;
+    border: 3px solid #3498db;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: border 0.2s;
+}
+
+input[type="range"][orient="vertical"]:focus::-webkit-slider-thumb {
+    border: 3px solid #4caf50;
+}
 
 #speedDial0 {
     left: 10px;
@@ -335,12 +369,7 @@ input[type=range][orient=vertical] {
     left: 0;
 
     width: 100%;
-
-    /* Optional: make all images fill the container */
-    /* Optional: pointer-events: none; if you want clicks to pass through */
 }
-
-/* Example: Custom positions for each layer */
 .arm0 {
     z-index: 1;
 
@@ -356,9 +385,8 @@ input[type=range][orient=vertical] {
     top: 250px;
 
     bottom: auto;
-    transform-origin: 270px 82px; /* Using standard transform-origin with x-offset */
+    transform-origin: 270px 82px;
     transform: rotate(0deg);
-    /* top: 0; left: 0; default, adjust if needed */
 }
 
 .arm1 {
@@ -366,11 +394,11 @@ input[type=range][orient=vertical] {
 }
 
 .arm1-rotate {
-    position: relative; /* Creates a positioning context */
+    position: relative;
     z-index: 2;
     top: -105px;
 
-    transform-origin: 26px 22px; /* Using standard transform-origin with x and y offsets */
+    transform-origin: 26px 22px;
     transform: rotate(-6deg);
 }
 
@@ -379,7 +407,7 @@ input[type=range][orient=vertical] {
     z-index: 2;
     left: 255px;
     top: -52px;
-    transform-origin: 22px 22px; /* Using standard transform-origin with x-offset */
+    transform-origin: 22px 22px;
     transform: rotate(-90deg);
 }
 
@@ -390,20 +418,17 @@ input[type=range][orient=vertical] {
     width: auto !important;
 }
 
-
-/* Reposition dot containers to be in a row at the bottom */
 .dot-container {
-    position: relative; /* Change from absolute */
-    width: 120px; /* Slightly smaller */
+    position: relative;
+    width: 120px;
     height: 120px;
     border: 1px dashed #ccc;
     border-radius: 50%;
     pointer-events: none;
-    display: inline-block; /* Allow horizontal arrangement */
-    margin: 0 10px; /* Add spacing between dots */
+    display: inline-block;
+    margin: 0 10px;
 }
 
-/* Ensure the draggable dots are centered in their containers */
 .draggable-dot {
     position: absolute;
     width: 50px;
@@ -417,10 +442,9 @@ input[type=range][orient=vertical] {
     pointer-events: auto;
 }
 
-/* Position each dot container relative to its arm */
-/* Reset individual dot container positioning */
+
 .arm0-dot-container, .arm1-dot-container, .arm2-dot-container, .arm3-dot-container {
-    top: auto; /* Remove top positioning */
+    top: auto;
 }
 
 
