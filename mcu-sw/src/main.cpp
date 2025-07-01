@@ -35,11 +35,11 @@ constexpr int STEP1_STEP = 7;
 */
 
 constexpr int ACT_LED = 20; // Activity LED for the Sensor PCB
-constexpr int I2C_SDA = 16;
-constexpr int I2C_SCL = 15;
+constexpr int I2C_SDA = 1;
+constexpr int I2C_SCL = 2;
 // GPIO Ports used to control the TMC2209
-constexpr int UART_TX = 20;
-constexpr int UART_RX = 21;
+constexpr int UART_TX = 15;
+constexpr int UART_RX = 16;
 constexpr int STEP0_DIR = 4;
 constexpr int STEP1_DIR = 6;
 constexpr int STEP0_STEP = 5;
