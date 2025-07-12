@@ -122,7 +122,8 @@ void ESP32ble::setCMD(const String &cmd) {
         // connect Value to corresponding ID
         if (id <= 1) {
             stepper.set(idxs[id], *cmdValues[id]);
-        } else if (id <= 7) {
+        }
+        if (id >= 2) {
             Servo::set(idxs[id], *cmdValues[id]);
             if (idxs[id] == 1 || idxs[id] == 3) {
                 Servo::set(idxs[id + 1], 180 - *cmdValues[id]);
