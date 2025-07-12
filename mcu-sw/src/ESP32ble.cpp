@@ -21,7 +21,7 @@ String co2{"N/A"};
 String voc{"N/A"};
 
 
-int *cmdValues[8] = {&speed0, &speed1, &wheel0, &wheel1, &arm0, &arm1, &arm2, &arm3};
+int *cmdValues[8] = {&speed0, &speed1, &arm0, &arm1, &arm2, &arm3, &wheel0, &wheel1};
 String *sensorValues[6] = {&temp, &pressure, &humidity, &iaq, &co2, &voc};
 
 
@@ -34,12 +34,12 @@ class CmdCallbacks : public NimBLECharacteristicCallbacks {
 };
 
 // Only used for Debugging
-// class CmdStateCallbacks : public NimBLECharacteristicCallbacks {
-//     void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-//         pCharacteristic->setValue(esp32ble.getCMD());
-//         pCharacteristic->notify();
-//     }
-// };
+class CmdStateCallbacks : public NimBLECharacteristicCallbacks {
+    void onRead(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
+        pCharacteristic->setValue(esp32ble.getCMD());
+        pCharacteristic->notify();
+    }
+};
 
 
 // Sensor Callbacks
@@ -103,33 +103,35 @@ String ESP32ble::getCMD() const {
 
 void ESP32ble::setCMD(const String &cmd) {
     int sepIdx = cmd.indexOf(':');
-    if (sepIdx == -1) return; // Invalid format
+    if (sepIdx == -1) {
+        return;
+    }
 
-    // get id and value out of String
     int id = cmd.substring(0, sepIdx).toInt();
     int value = cmd.substring(sepIdx + 1).toInt();
 
-    // array: Each ID corresponding to its usage
-    int idxs[10] = {0, 1, 0, 1, 2, 3, 4, 5, 6, 7};
+    if (id < 0 || id >= 8) {
+        return;
+    }
 
-    // Safety check
-    if (id < 0 || id >= 8) return;
-
-    // only update value if has changed
     if (*cmdValues[id] != value) {
         *cmdValues[id] = value;
 
-        // connect Value to corresponding ID
         if (id <= 1) {
-            stepper.set(idxs[id], *cmdValues[id]);
+            stepper.set(id, value);
         }
-        if (id >= 2) {
-            Servo::set(idxs[id], *cmdValues[id]);
-            if (idxs[id] == 1 || idxs[id] == 3) {
-                Servo::set(idxs[id + 1], 180 - *cmdValues[id]);
-            }
+        // Servos
+        // double down
+        if (id == 2) {
+            Servo::set(0, value);
+            Servo::set(1, 180 - value);
+        } else if (id == 3) {
+            Servo::set(2, value);
+            Servo::set(3, 180 - value);
+        } // everything else
+        else if (id >= 4 && id <= 7) {
+            Servo::set(id, value);
         }
-        // update latest value that was updated so
         _latestID = id;
         if (_pCharCmdState) {
             _pCharCmdState->setValue(getCMD());
@@ -138,8 +140,9 @@ void ESP32ble::setCMD(const String &cmd) {
     }
 }
 
+
 void ESP32ble::setSensor(int id, const String &value) {
-    if (id < 0 || id >= 6) return; // Safety check
+    if (id < 0 || id >= 9) return; // Safety check
 
     if (*sensorValues[id] != value) {
         *sensorValues[id] = value;
@@ -153,7 +156,7 @@ void ESP32ble::setSensor(int id, const String &value) {
 
 // Sensor
 String ESP32ble::getSensor(const int id) {
-    if (id < 0 || id >= 6) return "Error: Data is uut of scope!"; // Safety check
+    if (id < 0 || id >= 6) return "Error: Data is out of scope!"; // Safety check
 
     return String(*sensorValues[id]);
 }
@@ -186,11 +189,11 @@ void ESP32ble::setup(const String &name) {
 
     // only used for debugging
     // Create a BLE CmdState Characteristic
-    // _pCharCmdState = pCmdService->createCharacteristic(
-    //     UUID_CHAR_CMD_STATE,
-    //     NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
-    // );
-    // _pCharCmdState->setCallbacks(new CmdStateCallbacks());
+    _pCharCmdState = pCmdService->createCharacteristic(
+        UUID_CHAR_CMD_STATE,
+        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE
+    );
+    _pCharCmdState->setCallbacks(new CmdStateCallbacks());
 
 
     // Sensor

@@ -58,7 +58,7 @@ void bleTask(void *xTaskParameters) {
 
 void setup() {
     // for debugging
-    // Serial.begin(9600);
+    Serial.begin(9600);
     // Giving ESP32 a BLE name
     esp32ble.setup("rc-rover");
     // setup I2C

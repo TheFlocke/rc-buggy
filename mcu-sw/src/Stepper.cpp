@@ -32,10 +32,6 @@ FastAccelStepperEngine engine = FastAccelStepperEngine();
 FastAccelStepper *steppers[2] = {nullptr, nullptr};
 
 void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX_PIN) {
-    // putting control gpio into array for efficiency
-    int *setStep[4] = {&STEP0, &STEP1, &DIR0, &DIR1};
-
-
     // Serial connection for up to 4 Drivers
     SERIAL_PORT.begin(115200, SERIAL_8N1, RX_PIN, TX_PIN);
     // init FastAccelStep
@@ -57,30 +53,47 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX
     }
 
     // setting up Fastaccelstepper for both Steppers
+    int stepPins[2] = {STEP0, STEP1};
+    int dirPins[2] = {DIR0, DIR1};
     for (int i = 0; i < 2; i++) {
-        steppers[i] = engine.stepperConnectToPin(*setStep[i], 2);
+        steppers[i] = engine.stepperConnectToPin(stepPins[i], 2);
         if (steppers[i]) {
-            steppers[i]->setDirectionPin(*setStep[i + 2]);
-            steppers[i]->setAcceleration(5000); // steps/s^2
+            steppers[i]->setDirectionPin(dirPins[i]);
+            steppers[i]->setAcceleration(5000);
         } else {
-            Serial.println("Failed to initialize " + String(i) + " stepper!");
+            Serial.println("Failed to initialize stepper " + String(i));
         }
     }
 }
 
 
 void Stepper::set(int stepperindex, int speed) {
-    if (!steppers[stepperindex]) return;
+    Serial.print("Stepper::set index: ");
+    Serial.print(stepperindex);
+    Serial.print(", speed: ");
+    Serial.println(speed);
+
+    if (!steppers[stepperindex]) {
+        Serial.println("Stepper pointer is NULL!");
+        return;
+    }
 
     if (speed == 0) {
         steppers[stepperindex]->stopMove();
+        Serial.println("Stepper stopped.");
         return;
     }
 
     bool direction = speed > 0;
-    speed = abs(speed);
-    uint32_t mapped_speed = map(speed, 0, 255, 0, REV_STEPS);
+    uint32_t mapped_speed = map(abs(speed), 0, 255, 0, REV_STEPS);
 
     steppers[stepperindex]->setSpeedInHz(mapped_speed);
-    direction ? steppers[stepperindex]->runForward() : steppers[stepperindex]->runBackward();
+    if (direction) {
+        steppers[stepperindex]->runForward();
+        Serial.println("Stepper running forward.");
+    } else {
+        steppers[stepperindex]->runBackward();
+        Serial.println("Stepper running backward.");
+    }
 }
+
