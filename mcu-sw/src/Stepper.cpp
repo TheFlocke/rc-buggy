@@ -39,6 +39,8 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1) {
 
 
 void Stepper::set(int stepperindex, int speed) {
+    // setting limits
+    speed = constrain(speed, -255, 255);
     if (!steppers[stepperindex]) {
         return;
     }
