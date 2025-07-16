@@ -28,7 +28,7 @@ String *sensorValues[6] = {&temp, &pressure, &humidity, &iaq, &co2, &voc};
 // CMD Callbacks
 class CmdCallbacks : public NimBLECharacteristicCallbacks {
     void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
-        esp32ble.setCMD(pCharacteristic->getValue());
+        esp32ble.setCMD(pCharacteristic->getValue().c_str());
         pCharacteristic->notify();
     }
 };

@@ -36,6 +36,8 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX
     SERIAL_PORT.begin(115200, SERIAL_8N1, RX_PIN, TX_PIN);
     // init FastAccelStep
     engine.init();
+    int stepPins[2] = {STEP0, STEP1};
+    int dirPins[2] = {DIR0, DIR1};
     // Setting up Driver
     for (int i = 0; i < 2; i++) {
         drivers[i]->begin();
@@ -50,12 +52,7 @@ void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX
         drivers[i]->microsteps(MICROSTEPS);
         drivers[i]->en_spreadCycle(true);
         drivers[i]->irun(31); // maximales Moment wenn die Motoren drehen
-    }
-
-    // setting up Fastaccelstepper for both Steppers
-    int stepPins[2] = {STEP0, STEP1};
-    int dirPins[2] = {DIR0, DIR1};
-    for (int i = 0; i < 2; i++) {
+        // setting up Fastaccelstepper for both Steppers
         steppers[i] = engine.stepperConnectToPin(stepPins[i], 2);
         if (steppers[i]) {
             steppers[i]->setDirectionPin(dirPins[i]);
@@ -96,4 +93,3 @@ void Stepper::set(int stepperindex, int speed) {
         Serial.println("Stepper running backward.");
     }
 }
-
