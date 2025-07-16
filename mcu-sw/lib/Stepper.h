@@ -15,9 +15,14 @@ class Stepper {
     FastAccelStepper *steppers[2] = {nullptr, nullptr};
 
 public:
-    void setup(int STEP0, int STEP1, int DIR0, int DIR1);
+    void setup(int STEP0, int STEP1, int DIR0, int DIR1, HardwareSerial& serial);
 
     void set(int stepperIndex, int speed);
+
+private:
+    HardwareSerial* stepperSerial = nullptr;
+
+    TMC2209Stepper* drivers[2] = {nullptr, nullptr};
 };
 
 

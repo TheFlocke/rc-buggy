@@ -16,22 +16,22 @@
 #define RMS_CURRENT 1200  // in mA max 2.1A
 
 // Don't edit these:
-#define REV_STEPS            (FULL_S#define DRIVER_ADDRESS_0 0b00 // TMC2209 Driver address according to MS1 and MS2
-TEPS * MICROSTEPS * GEAR_REDUCTION) // How many Steps are needed for one Revolution
+
+#define REV_STEPS            (FULL_STEPS * MICROSTEPS * GEAR_REDUCTION) // How many Steps are needed for one Revolution
 
 Stepper stepper;
-// Setting up drivers
-TMC2209Stepper driver0(&SERIAL_PORT, R_SENSE, DRIVER_ADDRESS_0);
-TMC2209Stepper driver1(&SERIAL_PORT, R_SENSE, DRIVER_ADDRESS_1);
-// putting them in an array for more efficiency
-TMC2209Stepper *drivers[2] = {&driver0, &driver1};
 
 // setting up FactAccel
 FastAccelStepperEngine engine = FastAccelStepperEngine();
 // putting them in a array for more efficiency
 FastAccelStepper *steppers[2] = {nullptr, nullptr};
 
-void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1) {
+
+void Stepper::setup(int STEP0, int STEP1, int DIR0, int DIR1, HardwareSerial& serial) {
+    stepperSerial = &serial;
+    // Create new driver objects with the serial port (up to 4 on one serial and max 4 serials)
+    drivers[0] = new TMC2209Stepper(stepperSerial, R_SENSE, DRIVER_ADDRESS_0);
+    drivers[1] = new TMC2209Stepper(stepperSerial, R_SENSE, DRIVER_ADDRESS_1);
     // init FastAccelStep
     engine.init();
     int stepPins[2] = {STEP0, STEP1};

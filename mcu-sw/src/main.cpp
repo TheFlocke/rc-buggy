@@ -34,6 +34,8 @@ constexpr int STEP1_STEP = 7;
 [[maybe_unused]] constexpr int GPIO_48 = 48;
 */
 
+#define SERIAL_PORT Serial1
+
 constexpr int ACT_LED = 20; // Activity LED for the Sensor PCB
 constexpr int I2C_SDA = 1;
 constexpr int I2C_SCL = 2;
@@ -59,7 +61,7 @@ void bleTask(void *xTaskParameters) {
 void setup() {
     // Serial connection for up to 4 Motor Drivers
     // !!! Disable if debugging !!!
-    //Serial1.begin(115200, SERIAL_8N1, UART_RX, UART_TX);
+    //SERIAL_PORT.begin(115200, SERIAL_8N1, UART_RX, UART_TX);
     // Giving ESP32 a BLE name
     esp32ble.setup("rc-rover");
     // setup I2C
@@ -67,7 +69,7 @@ void setup() {
     // Loading Servo Setup and executing it ==> to see more go to ../src/servo.cpp
     Servo::setup();
     // Loading and setting Serial for communication for Motordriver up. Also setting Pins for STEP and DIR
-    stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR);
+    stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, SERIAL_PORT);
     // Loading and setting Sensor up with LED set to ACT_LED
     // !!! Disable if debugging !!!
     //sensor.setup(ACT_LED);
