@@ -67,12 +67,12 @@ void setup() {
     stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR);
     // Loading and setting Sensor up with LED set to ACT_LED
     // !!! Disable if debugging !!!
-    //sensor.setup(ACT_LED);
+    sensor.setup(ACT_LED);
     xTaskCreate(bleTask, "BLETask", 4096, nullptr, 1, &BLETaskHandle);
 }
 
 
 void loop() {
     // !!! Disable if debugging !!!
-    //Sensor::read();
+    Sensor::read();
 }

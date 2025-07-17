@@ -54,7 +54,7 @@ void Stepper::set(int stepperindex, int speed) {
     uint32_t mapped_speed = map(abs(speed), 0, 255, 0, REV_STEPS);
 
     steppers[stepperindex]->setSpeedInHz(mapped_speed);
-    if (direction) {
+    if (!direction) {
         steppers[stepperindex]->runForward();
     } else {
         steppers[stepperindex]->runBackward();
