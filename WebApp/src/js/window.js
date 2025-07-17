@@ -207,18 +207,18 @@ document.addEventListener('DOMContentLoaded', function () {
             if (armClass === 0) {
                 document.querySelector('.arm0-rotate').style.transform = `rotate(${calculateDegrees(angle, 0)}deg)`;
                 current.arm0 = calculateDegrees(angle, 0);
-                writeCmd(4 + ":" + current.arm0);
+                writeCmd(2 + ":" + current.arm0);
             } else if (armClass === 1) {
                 document.querySelector('.arm1-rotate').style.transform = `rotate(${(calculateDegrees(angle, 1)) * -1}deg)`;
                 current.arm1 = calculateDegrees(angle, 1);
-                writeCmd(5 + ":" + current.arm1);
+                writeCmd(3 + ":" + current.arm1);
             } else if (armClass === 2) {
                 document.querySelector('.arm2-rotate').style.transform = `rotate(${calculateDegrees(angle, 2) - 90}deg)`;
                 current.arm2 = calculateDegrees(angle, 2);
-                writeCmd(6 + ":" + current.arm2);
+                writeCmd(4 + ":" + current.arm2);
             } else if (armClass === 3) {
                 current.arm3 = calculateDegrees(angle, 3, 'notmain');
-                writeCmd(7 + ":" + current.arm3);
+                writeCmd(5 + ":" + current.arm3);
             }
         }
 
