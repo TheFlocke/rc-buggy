@@ -12,6 +12,8 @@ constexpr int servo_freq = 50;
 
 
 void Servo::set(int pin, int angle) {
+    // setting limits for safety 
+    angle = constrain(angle, 0, 180);
     int duty = map(angle, 0, 180, servo_min, servo_max);
     if (xSemaphoreTake(i2cMutex, portMAX_DELAY) == pdTRUE) {
         pwm_servo.setPWM(pin, 0, duty);

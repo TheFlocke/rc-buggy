@@ -6,7 +6,6 @@
 #define STEPPER_H
 
 #include <Arduino.h>
-#include <TMCStepper.h>
 #include <FastAccelStepper.h>
 
 
@@ -15,7 +14,7 @@ class Stepper {
     FastAccelStepper *steppers[2] = {nullptr, nullptr};
 
 public:
-    void setup(int STEP0, int STEP1, int DIR0, int DIR1, int RX_PIN, int TX_PIN);
+    void setup(int STEP0, int STEP1, int DIR0, int DIR1);
 
     void set(int stepperIndex, int speed);
 };

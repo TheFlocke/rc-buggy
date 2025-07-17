@@ -57,8 +57,6 @@ void bleTask(void *xTaskParameters) {
 
 
 void setup() {
-    // for debugging
-    // Serial.begin(9600);
     // Giving ESP32 a BLE name
     esp32ble.setup("rc-rover");
     // setup I2C
@@ -66,13 +64,15 @@ void setup() {
     // Loading Servo Setup and executing it ==> to see more go to ../src/servo.cpp
     Servo::setup();
     // Loading and setting Serial for communication for Motordriver up. Also setting Pins for STEP and DIR
-    stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR, UART_RX, UART_TX);
+    stepper.setup(STEP0_STEP, STEP1_STEP, STEP0_DIR, STEP1_DIR);
     // Loading and setting Sensor up with LED set to ACT_LED
-    sensor.setup(ACT_LED);
+    // !!! Disable if debugging !!!
+    //sensor.setup(ACT_LED);
     xTaskCreate(bleTask, "BLETask", 4096, nullptr, 1, &BLETaskHandle);
 }
 
 
 void loop() {
-    Sensor::read();
+    // !!! Disable if debugging !!!
+    //Sensor::read();
 }
