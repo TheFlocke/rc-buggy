@@ -1,4 +1,11 @@
 # RC Rover 🌋
+## TODO
+- Settings Page zuende bauen
+- Slider für Stolen zuende bauen
+- Interpolation
+- Datenbank für Sensordaten
+- Stromstärke messen Servo
+- Wheel assembly guide through websiet (easier to do without power supply)
 
 ![Rover on Vulcano](img/rover_on_vulcano.png)
 
