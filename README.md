@@ -6,6 +6,8 @@
 - Datenbank für Sensordaten
 - Stromstärke messen Servo
 - Wheel assembly guide through websiet (easier to do without power supply)
+- Spannungsversorgung und brain trennen
+- Stromversorgung power good 
 
 ![Rover on Vulcano](img/rover_on_vulcano.png)
 
