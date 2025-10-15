@@ -1,14 +1,4 @@
 # RC Rover 🌋
-## TODO
-- Settings Page zuende bauen
-- Slider für Stolen zuende bauen
-- Interpolation
-- Datenbank für Sensordaten
-- Stromstärke messen Servo
-- Wheel assembly guide through websiet (easier to do without power supply)
-- Spannungsversorgung und brain trennen
-- Stromversorgung power good 
-
 ![Rover on Vulcano](img/rover_on_vulcano.png)
 
 This project was developed as part of a high school competition organized by the German Aerospace Center (DLR). The challenge: design and build a rover capable of:
